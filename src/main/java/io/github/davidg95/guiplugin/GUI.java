@@ -714,7 +714,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
     }//GEN-LAST:event_btnDifficultyActionPerformed
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
-        txtLogs.append("Set weather to clear for " + txtDuration.getText() + "\n");
+        toTextArea("Set weather to clear for " + txtDuration.getText());
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "weather clear " + Integer.parseInt(txtDuration.getText()));
     }//GEN-LAST:event_btnClearActionPerformed
 
