@@ -6,6 +6,7 @@
 package io.github.davidg95.guiplugin;
 
 import java.awt.CardLayout;
+import java.awt.Frame;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
@@ -45,6 +46,8 @@ public class GUI extends javax.swing.JFrame implements Listener{
         }catch(IOException e){
             
         }
+        this.setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
+        this.setUndecorated(true);
     }
     
     /**
