@@ -21,6 +21,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Time;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * The GUI class.
@@ -67,9 +70,10 @@ public class GUI extends javax.swing.JFrame implements Listener{
      * Enters a String of text to the server logs and appends it to the teat area in the GUI.
      */
     public void enterToLogs(){
-        String input = txtText.getText().toString();
+        Time time = new Time(new Date().getTime());
+        String input = txtText.getText();
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say " + input);
-        txtLogs.append("SERVER - " + input + "\n");
+        txtLogs.append("[" + time.toString() + "] SERVER - " + input + "\n");
         txtText.setText("");
     }
     
@@ -95,8 +99,9 @@ public class GUI extends javax.swing.JFrame implements Listener{
      */
     public void kick(){
         int i = lstOnline.getSelectedIndex();
+        String reason = JOptionPane.showInputDialog("Enter reason, leave blank for no reason.");
         if(i != -1){
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kick " + playerList.get(i).getPlayer().getName() + " " + JOptionPane.showInputDialog("Enter reason, leave blank for no reason."));
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kick " + playerList.get(i).getPlayer().getName() + " " + reason);
         } else{
             txtLogs.append("Select a player!\n");
         }
@@ -108,7 +113,10 @@ public class GUI extends javax.swing.JFrame implements Listener{
     public void ban(){
         int i = lstOnline.getSelectedIndex();
         if(i != -1){
+            txtLogs.append("Banned player " + playerList.get(i).getPlayer().getName() + "\n");
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban " + playerList.get(i).getName());
+        } else{
+            txtLogs.append("Select a player!\n");
         }
     }
     
@@ -123,6 +131,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
      * Saves the server by making a call to Bukkit.dispatchCommand().
      */
     public void save(){
+        txtLogs.append("Server saved!");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-all");
     }
     
@@ -180,7 +189,9 @@ public class GUI extends javax.swing.JFrame implements Listener{
      */
     @EventHandler
     public void onChat(AsyncPlayerChatEvent  e){
-        txtLogs.append(e.getPlayer().getName() + " - " + e.getMessage() + "\n");
+        Time time = new Time(new Date().getTime());
+        
+        txtLogs.append("[" + time.toString() + "] " + e.getPlayer().getName() + " - " + e.getMessage() + "\n");
     }
 
     /**
@@ -698,30 +709,37 @@ public class GUI extends javax.swing.JFrame implements Listener{
     }//GEN-LAST:event_btnDifficultyActionPerformed
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        txtLogs.append("Set weather to clear for " + txtDuration.getText() + "\n");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "weather clear " + Integer.parseInt(txtDuration.getText()));
     }//GEN-LAST:event_btnClearActionPerformed
 
     private void btnRainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRainActionPerformed
+        txtLogs.append("Set weather to rain for " + txtDuration.getText() + "\n");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "weather rain " + Integer.parseInt(txtDuration.getText()));
     }//GEN-LAST:event_btnRainActionPerformed
 
     private void btnThunderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThunderActionPerformed
+        txtLogs.append("Set weather to thunder for " + txtDuration.getText() + "\n");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "weather thunder " + Integer.parseInt(txtDuration.getText()));
     }//GEN-LAST:event_btnThunderActionPerformed
 
     private void btnMorningActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMorningActionPerformed
+        txtLogs.append("Set time to Morning (2000)\n");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "time set 2000");
     }//GEN-LAST:event_btnMorningActionPerformed
 
     private void btnNoonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNoonActionPerformed
+        txtLogs.append("Set time to Noon (6000)\n");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "time set 6000");
     }//GEN-LAST:event_btnNoonActionPerformed
 
     private void btnEveningActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEveningActionPerformed
+        txtLogs.append("Set time to Evening (10000)\n");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "time set 10000");
     }//GEN-LAST:event_btnEveningActionPerformed
 
     private void btnNightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNightActionPerformed
+        txtLogs.append("Set time to night (15000)\n");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "time set 15000");
     }//GEN-LAST:event_btnNightActionPerformed
 
@@ -730,22 +748,27 @@ public class GUI extends javax.swing.JFrame implements Listener{
     }//GEN-LAST:event_btnToggleCycleActionPerformed
 
     private void btnEnterTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnterTimeActionPerformed
+        txtLogs.append("Set time to " + txtTimeEntry.getText() + "\n");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "time set " + Integer.parseInt(txtTimeEntry.getText()));
     }//GEN-LAST:event_btnEnterTimeActionPerformed
 
     private void btnPeacefulActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPeacefulActionPerformed
+        txtLogs.append("Set difficulty to Peaceful\n");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "difficulty peaceful");
     }//GEN-LAST:event_btnPeacefulActionPerformed
 
     private void btnEasyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEasyActionPerformed
+        txtLogs.append("Set difficulty to Easy\n");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "difficulty easy");
     }//GEN-LAST:event_btnEasyActionPerformed
 
     private void btnNormalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNormalActionPerformed
+        txtLogs.append("Set difficulty to Normal\n");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "difficulty normal");
     }//GEN-LAST:event_btnNormalActionPerformed
 
     private void btnHardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHardActionPerformed
+        txtLogs.append("Set difficulty to Hard\n");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "difficulty hard");
     }//GEN-LAST:event_btnHardActionPerformed
 

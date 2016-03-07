@@ -6,8 +6,6 @@
 package io.github.davidg95.guiplugin;
 
 import java.util.ArrayList;
-import javax.swing.DefaultListModel;
-import javax.swing.SwingUtilities;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
