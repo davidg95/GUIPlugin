@@ -16,6 +16,7 @@ public class StopServerPrompt extends javax.swing.JFrame {
      */
     public StopServerPrompt() {
         initComponents();
+        this.setLocationRelativeTo(null);
     }
 
     /**

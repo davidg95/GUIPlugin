@@ -16,6 +16,7 @@ public class ReloadServerPrompt extends javax.swing.JFrame {
      */
     public ReloadServerPrompt() {
         initComponents();
+        this.setLocationRelativeTo(null);
     }
 
     /**
