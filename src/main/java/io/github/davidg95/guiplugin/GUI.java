@@ -6,9 +6,6 @@
 package io.github.davidg95.guiplugin;
 
 import java.awt.CardLayout;
-import java.awt.Frame;
-import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
@@ -21,12 +18,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Time;
-import java.util.Calendar;
 import java.util.Date;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
@@ -53,10 +45,27 @@ public class GUI extends javax.swing.JFrame implements Listener{
     
     public void updateConfig(){
         lblServerInfo.setText(c.SERVER_NAME + " running " + Bukkit.getVersion() + " " + Bukkit.getBukkitVersion());
-        btnCustom1.setEnabled(true);
-        btnCustom1.setText(c.CUSTOM1_TEXT);
-        btnCustom2.setEnabled(true);
-        btnCustom2.setText(c.CUSTOM2_TEXT);
+        if(c.CUSTOM1_TEXT.equals("")){
+            btnCustom1.setEnabled(false);
+            btnCustom1.setText("");
+        } else{
+            btnCustom1.setEnabled(true);
+            btnCustom1.setText(c.CUSTOM1_TEXT);
+        }
+        if(c.CUSTOM2_TEXT.equals("")){
+            btnCustom2.setEnabled(false);
+            btnCustom2.setText("");
+        } else{
+            btnCustom2.setEnabled(true);
+            btnCustom2.setText(c.CUSTOM3_TEXT);
+        }
+        if(c.CUSTOM3_TEXT.equals("")){
+            btnCustom3.setEnabled(false);
+            btnCustom3.setText("");
+        } else{
+            btnCustom3.setEnabled(true);
+            btnCustom3.setText(c.CUSTOM3_TEXT);
+        }
     }
     
     /**
@@ -280,6 +289,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
         lblServerInfo = new javax.swing.JLabel();
         btnCustom1 = new javax.swing.JButton();
         btnCustom2 = new javax.swing.JButton();
+        btnCustom3 = new javax.swing.JButton();
 
         setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
         setUndecorated(true);
@@ -648,7 +658,6 @@ public class GUI extends javax.swing.JFrame implements Listener{
             }
         });
 
-        btnCustom1.setText("CUSTOM");
         btnCustom1.setEnabled(false);
         btnCustom1.setPreferredSize(new java.awt.Dimension(100, 100));
         btnCustom1.addActionListener(new java.awt.event.ActionListener() {
@@ -657,12 +666,19 @@ public class GUI extends javax.swing.JFrame implements Listener{
             }
         });
 
-        btnCustom2.setText("CUSTOM");
         btnCustom2.setEnabled(false);
         btnCustom2.setPreferredSize(new java.awt.Dimension(100, 100));
         btnCustom2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCustom2ActionPerformed(evt);
+            }
+        });
+
+        btnCustom3.setEnabled(false);
+        btnCustom3.setPreferredSize(new java.awt.Dimension(100, 100));
+        btnCustom3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCustom3ActionPerformed(evt);
             }
         });
 
@@ -698,7 +714,9 @@ public class GUI extends javax.swing.JFrame implements Listener{
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnCustom1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnCustom2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(btnCustom2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnCustom3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(Menus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -743,15 +761,14 @@ public class GUI extends javax.swing.JFrame implements Listener{
                             .addComponent(Menus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btnDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(btnWeather, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(btnTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(btnCustom2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(btnCustom1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(btnWeather, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnCustom3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnCustom2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnCustom1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -915,6 +932,10 @@ public class GUI extends javax.swing.JFrame implements Listener{
         toTextArea("Dispatched command- " + c.CUSTOM2_COMMAND);
     }//GEN-LAST:event_btnCustom2ActionPerformed
 
+    private void btnCustom3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustom3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCustom3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -960,6 +981,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
     private javax.swing.JButton btnConfig;
     private javax.swing.JButton btnCustom1;
     private javax.swing.JButton btnCustom2;
+    private javax.swing.JButton btnCustom3;
     private javax.swing.JButton btnDifficulty;
     private javax.swing.JButton btnDispatchCommand;
     private javax.swing.JButton btnEasy;

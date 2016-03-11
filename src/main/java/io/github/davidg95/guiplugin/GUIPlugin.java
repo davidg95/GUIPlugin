@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 /**
@@ -18,12 +19,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class GUIPlugin extends JavaPlugin{
     protected ArrayList<Player> playerList = new ArrayList<>();
     protected static GUI g;
+    protected static FileConfiguration conf;
     
     @Override
     public void onEnable(){
         for(Player player: Bukkit.getServer().getOnlinePlayers()){
             playerList.add(player);
         }
+        
+        conf = this.getConfig();
         
         g = new GUI(playerList);
         
@@ -33,7 +37,7 @@ public class GUIPlugin extends JavaPlugin{
     
     @Override
     public void onDisable(){
-        
+        this.saveConfig();
     }
     
     @Override
