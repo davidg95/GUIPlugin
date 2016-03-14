@@ -21,6 +21,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.sql.Time;
 import java.util.Date;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerLoginEvent.Result;
 
 /**
  * The GUI class.
@@ -174,9 +175,13 @@ public class GUI extends javax.swing.JFrame implements Listener{
      */
     @EventHandler
     public void onLogin(PlayerLoginEvent event){
-        playerList.add(event.getPlayer());
-        updateOnline();
-        toTextArea(event.getPlayer().getName() + " has joined!");
+        if(event.getResult().equals(Result.ALLOWED)){
+            playerList.add(event.getPlayer());
+            updateOnline();
+            toTextArea(event.getPlayer().getName() + " has joined!");
+        } else{
+            toTextArea("Player " + event.getPlayer().getName() + " couldnt join with reason: " + event.getResult().toString());
+        }
     }
     
     /**
@@ -214,7 +219,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
         String name = event.getEntity().getName();
         String message = event.getDeathMessage();
         
-        toTextArea(name + " " + message);
+        toTextArea(message);
     }
     
     /**
