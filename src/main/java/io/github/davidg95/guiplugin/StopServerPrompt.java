@@ -10,7 +10,7 @@ import org.bukkit.Bukkit;
  *
  * @author David
  */
-public class StopServerPrompt extends javax.swing.JFrame {
+public class StopServerPrompt extends javax.swing.JDialog {
     /**
      * Creates new form OptYesNo
      */

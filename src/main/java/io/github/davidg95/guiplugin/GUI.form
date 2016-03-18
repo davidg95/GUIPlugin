@@ -72,10 +72,10 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="cmdOp" max="32767" attributes="0"/>
-                          <Component id="cmKick" max="32767" attributes="0"/>
-                          <Component id="cmdBan" max="32767" attributes="0"/>
                           <Component id="cmdEnterText" max="32767" attributes="0"/>
+                          <Component id="txtPlayerDetails" max="32767" attributes="0"/>
+                          <Component id="jButton2" max="32767" attributes="0"/>
+                          <Component id="jButton3" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane2" min="-2" pref="231" max="-2" attributes="0"/>
@@ -92,56 +92,59 @@
               <Component id="lblServerInfo" min="-2" pref="14" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane2" min="-2" pref="247" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="1" min="-2" pref="247" max="-2" attributes="0"/>
-                      <Group type="102" alignment="1" attributes="0">
-                          <Component id="cmdOp" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="cmKick" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="cmdBan" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                  </Group>
-              </Group>
-              <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="txtText" max="32767" attributes="0"/>
-                          <Component id="cmdEnterText" pref="0" max="32767" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="Menus" alignment="0" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" min="-2" pref="247" max="-2" attributes="0"/>
+                          <Component id="jScrollPane1" min="-2" pref="247" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
+                              <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="txtText" max="32767" attributes="0"/>
+                                  <Component id="cmdEnterText" pref="0" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="btnWeather" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="btnTime" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="btnDifficulty" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="Menus" alignment="0" max="32767" attributes="0"/>
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="btnWeather" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="btnTime" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="btnDifficulty" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="btnCustom3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="btnCustom2" min="-2" max="-2" attributes="0"/>
+                                          <Component id="btnCustom1" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="btnCustom3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="btnCustom2" min="-2" max="-2" attributes="0"/>
-                                  <Component id="btnCustom1" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                  <Component id="btnStop" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="btnSave" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="btnReload" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="btnCloseGUI" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="btnDispatchCommand" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="btnConfig" alignment="0" max="32767" attributes="0"/>
                               </Group>
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Component id="btnStop" alignment="0" max="32767" attributes="0"/>
-                          <Component id="btnSave" alignment="0" max="32767" attributes="0"/>
-                          <Component id="btnReload" alignment="0" max="32767" attributes="0"/>
-                          <Component id="btnCloseGUI" alignment="0" max="32767" attributes="0"/>
-                          <Component id="btnDispatchCommand" alignment="0" max="32767" attributes="0"/>
-                          <Component id="btnConfig" alignment="0" max="32767" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="btnMinMax" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
                   <Group type="102" attributes="0">
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Component id="btnMinMax" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtPlayerDetails" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jButton2" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jButton3" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -196,45 +199,6 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="cmdOp">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Op/Deop"/>
-        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[73, 73]"/>
-        </Property>
-        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[73, 73]"/>
-        </Property>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[73, 73]"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmdOpActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="cmKick">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Kick"/>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[73, 73]"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmKickActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="cmdBan">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Ban"/>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[73, 73]"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmdBanActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JButton" name="cmdEnterText">
       <Properties>
         <Property name="text" type="java.lang.String" value="Enter"/>
@@ -727,6 +691,39 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCustom3ActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="txtPlayerDetails">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Player Details"/>
+        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[73, 73]"/>
+        </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[73, 73]"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[73, 73]"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtPlayerDetailsActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButton2">
+      <Properties>
+        <Property name="enabled" type="boolean" value="false"/>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[73, 73]"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButton3">
+      <Properties>
+        <Property name="enabled" type="boolean" value="false"/>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[73, 73]"/>
+        </Property>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
