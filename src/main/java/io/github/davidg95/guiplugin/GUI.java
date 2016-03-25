@@ -293,7 +293,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
         btnCustom2 = new javax.swing.JButton();
         btnCustom3 = new javax.swing.JButton();
         txtPlayerDetails = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnWhitelist = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
 
         setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
@@ -671,8 +671,13 @@ public class GUI extends javax.swing.JFrame implements Listener{
             }
         });
 
-        jButton2.setEnabled(false);
-        jButton2.setPreferredSize(new java.awt.Dimension(73, 73));
+        btnWhitelist.setText("Whitelist");
+        btnWhitelist.setPreferredSize(new java.awt.Dimension(73, 73));
+        btnWhitelist.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnWhitelistActionPerformed(evt);
+            }
+        });
 
         jButton3.setEnabled(false);
         jButton3.setPreferredSize(new java.awt.Dimension(73, 73));
@@ -723,7 +728,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(cmdEnterText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtPlayerDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnWhitelist, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -774,7 +779,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(txtPlayerDetails, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnWhitelist, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -933,6 +938,10 @@ public class GUI extends javax.swing.JFrame implements Listener{
         }
     }//GEN-LAST:event_txtPlayerDetailsActionPerformed
 
+    private void btnWhitelistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWhitelistActionPerformed
+        new Whitelist();
+    }//GEN-LAST:event_btnWhitelistActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -999,8 +1008,8 @@ public class GUI extends javax.swing.JFrame implements Listener{
     private javax.swing.JButton btnTime;
     private javax.swing.JButton btnToggleCycle;
     private javax.swing.JButton btnWeather;
+    private javax.swing.JButton btnWhitelist;
     private javax.swing.JButton cmdEnterText;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
