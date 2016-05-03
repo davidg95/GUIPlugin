@@ -6,6 +6,9 @@
 package io.github.davidg95.guiplugin;
 
 import java.awt.CardLayout;
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
@@ -20,6 +23,8 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import java.sql.Time;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
@@ -31,15 +36,46 @@ public class GUI extends javax.swing.JFrame implements Listener{
     ArrayList<Player> playerList = new ArrayList<>();
     private boolean isDecorated = false;
     private Config c;
+    private Whitelist w;
+    private StopServerPrompt stop;
+    private ReloadServerPrompt reload;
+    //private PlayerDetails pd;
+    private final String TS_DISCON = "C:\\Users\\David\\Desktop\\Disconnect RDP.lnk";
     
     /**
      * Creates new form GUI
      */
     public GUI(ArrayList playerList) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+        //</editor-fold>
         this.playerList = playerList;
         initComponents();
         updateOnline();
         c = new Config(this);
+        w = new Whitelist();
+        stop = new StopServerPrompt();
+        reload = new ReloadServerPrompt();
+        //pd = new PlayerDetails();
         //getServerName();
         updateConfig();
     }
@@ -151,7 +187,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
      * Calls the GUI asking if they are sure they want to stop the server.
      */
     public void stop(){
-        new StopServerPrompt().setVisible(true);
+        stop.setVisible(true);
     }
     
     /**
@@ -166,7 +202,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
      * Calls the GUI asking if they are sure they want to stop the server.
      */
     public void reload(){
-        new ReloadServerPrompt().setVisible(true);
+        reload.setVisible(true);
     }
     
     /**
@@ -295,6 +331,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
         txtPlayerDetails = new javax.swing.JButton();
         btnWhitelist = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        btnDiconRDP = new javax.swing.JButton();
 
         setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
         setMaximumSize(new java.awt.Dimension(1024, 768));
@@ -693,6 +730,14 @@ public class GUI extends javax.swing.JFrame implements Listener{
         jButton3.setEnabled(false);
         jButton3.setPreferredSize(new java.awt.Dimension(73, 73));
 
+        btnDiconRDP.setBackground(new java.awt.Color(255, 0, 0));
+        btnDiconRDP.setText("Disconnect RDP");
+        btnDiconRDP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDiconRDPActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -736,7 +781,6 @@ public class GUI extends javax.swing.JFrame implements Listener{
                     .addComponent(jScrollPane1))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, 0)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtPlayerDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnWhitelist, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -745,14 +789,18 @@ public class GUI extends javax.swing.JFrame implements Listener{
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(229, 229, 229))))
+                        .addGap(229, 229, 229))
+                    .addComponent(btnDiconRDP, javax.swing.GroupLayout.Alignment.TRAILING)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(lblServerInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(14, 14, 14)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addComponent(lblServerInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnDiconRDP, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(txtPlayerDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -779,7 +827,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
                             .addComponent(btnCustom2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnCustom1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(Menus, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -943,8 +991,18 @@ public class GUI extends javax.swing.JFrame implements Listener{
     }//GEN-LAST:event_txtPlayerDetailsActionPerformed
 
     private void btnWhitelistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWhitelistActionPerformed
-        new Whitelist();
+       w.setVisible(true);
     }//GEN-LAST:event_btnWhitelistActionPerformed
+
+    private void btnDiconRDPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDiconRDPActionPerformed
+        try {
+            File document = new File(TS_DISCON);
+            Desktop dt = Desktop.getDesktop();
+            dt.open(document);
+        } catch (IOException ex) {
+            
+        }
+    }//GEN-LAST:event_btnDiconRDPActionPerformed
 
     /**
      * @param args the command line arguments
@@ -992,6 +1050,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
     private javax.swing.JButton btnCustom1;
     private javax.swing.JButton btnCustom2;
     private javax.swing.JButton btnCustom3;
+    private javax.swing.JButton btnDiconRDP;
     private javax.swing.JButton btnDifficulty;
     private javax.swing.JButton btnDispatchCommand;
     private javax.swing.JButton btnEasy;
