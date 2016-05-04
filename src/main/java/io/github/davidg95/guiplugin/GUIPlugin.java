@@ -17,9 +17,10 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @author David
  */
 public class GUIPlugin extends JavaPlugin{
-    protected ArrayList<Player> playerList = new ArrayList<>();
+    protected static ArrayList<Player> playerList = new ArrayList<>();
     protected static GUI g;
     protected static FileConfiguration conf;
+    public static String LOOK_FEEL = "Metal";
     
     @Override
     public void onEnable(){
@@ -59,6 +60,7 @@ public class GUIPlugin extends JavaPlugin{
      * Method to set the GUI to the decorated state. This method will dispose of the GUI first then repack it.
      */
     public static void minimize(){
+        g.setVisible(false);
         g.dispose();
         g.setUndecorated(false);
         g.pack();
@@ -71,11 +73,17 @@ public class GUIPlugin extends JavaPlugin{
      * Method to set the GUI to the undecorated state. This method will dispose of the GUI first then repack it.
      */
     public static void maximize(){
+        g.setVisible(false);
         g.dispose();
         g.setUndecorated(true);
         g.pack();
         g.setVisible(true);
         g.setIsDecorated(false);
         g.setBtnMinMaxTitle("Minimize GUI");
+    }
+    
+    public static void reloadGUI(){
+        g = new GUI(playerList);
+        g.setVisible(true);
     }
 }

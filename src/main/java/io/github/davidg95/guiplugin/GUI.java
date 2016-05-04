@@ -25,6 +25,7 @@ import java.sql.Time;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.UnsupportedLookAndFeelException;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
@@ -39,7 +40,8 @@ public class GUI extends javax.swing.JFrame implements Listener{
     private Whitelist w;
     private StopServerPrompt stop;
     private ReloadServerPrompt reload;
-    //private PlayerDetails pd;
+    
+    private Desktop dt;
     private final String TS_DISCON = "C:\\Users\\David\\Desktop\\Disconnect RDP.lnk";
     
     /**
@@ -51,22 +53,22 @@ public class GUI extends javax.swing.JFrame implements Listener{
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if (GUIPlugin.LOOK_FEEL.equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
         //</editor-fold>
         this.playerList = playerList;
         initComponents();
@@ -78,6 +80,12 @@ public class GUI extends javax.swing.JFrame implements Listener{
         //pd = new PlayerDetails();
         //getServerName();
         updateConfig();
+        if(!Desktop.isDesktopSupported()){
+            btnDiconRDP.setEnabled(false);
+            JOptionPane.showMessageDialog(rootPane, "Warning, Desktop API not supported on this device, Disconnect RDP button has been disabled");
+        } else{
+            dt = Desktop.getDesktop();
+        }
     }
     
     public void updateConfig(){
@@ -103,6 +111,16 @@ public class GUI extends javax.swing.JFrame implements Listener{
             btnCustom3.setEnabled(true);
             btnCustom3.setText(c.CUSTOM3_TEXT);
         }
+        if(c.LOOK_FEEL != ""){
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if (c.LOOK_FEEL.equals(info.getName())) {
+                    GUIPlugin.LOOK_FEEL = c.LOOK_FEEL;
+                    dispose();
+                    GUIPlugin.reloadGUI();
+                }
+            }
+        }
+            
     }
     
     /**
@@ -332,6 +350,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
         btnWhitelist = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         btnDiconRDP = new javax.swing.JButton();
+        btn3DMap = new javax.swing.JButton();
 
         setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
         setMaximumSize(new java.awt.Dimension(1024, 768));
@@ -738,6 +757,16 @@ public class GUI extends javax.swing.JFrame implements Listener{
             }
         });
 
+        btn3DMap.setText("Render 3D Map");
+        btn3DMap.setEnabled(false);
+        btn3DMap.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        btn3DMap.setPreferredSize(new java.awt.Dimension(100, 100));
+        btn3DMap.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn3DMapActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -755,7 +784,10 @@ public class GUI extends javax.swing.JFrame implements Listener{
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnCustom2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnCustom3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnCustom3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, 0)
+                        .addComponent(btn3DMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(Menus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
@@ -815,7 +847,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
                     .addComponent(txtText)
                     .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnWeather, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -825,9 +857,11 @@ public class GUI extends javax.swing.JFrame implements Listener{
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnCustom3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnCustom2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnCustom1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(btnCustom1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btn3DMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(Menus, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -950,6 +984,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
         } else{
             GUIPlugin.minimize();
         }
+        
     }//GEN-LAST:event_btnMinMaxActionPerformed
 
     private void btnDispatchCommandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDispatchCommandActionPerformed
@@ -997,12 +1032,20 @@ public class GUI extends javax.swing.JFrame implements Listener{
     private void btnDiconRDPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDiconRDPActionPerformed
         try {
             File document = new File(TS_DISCON);
-            Desktop dt = Desktop.getDesktop();
             dt.open(document);
         } catch (IOException ex) {
             
         }
     }//GEN-LAST:event_btnDiconRDPActionPerformed
+
+    private void btn3DMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3DMapActionPerformed
+        try {
+            File document = new File(c.MAP_3D);
+            dt.open(document);
+        } catch (IOException ex) {
+            
+        }
+    }//GEN-LAST:event_btn3DMapActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1044,6 +1087,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
     private javax.swing.JPanel Menus;
     private javax.swing.JPanel TimePanel;
     private javax.swing.JPanel WeatherPanel;
+    private javax.swing.JButton btn3DMap;
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnCloseGUI;
     private javax.swing.JButton btnConfig;
