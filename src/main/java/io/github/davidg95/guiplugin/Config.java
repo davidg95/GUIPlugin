@@ -30,7 +30,6 @@ public class Config extends javax.swing.JFrame {
     public String CUSTOM3_TEXT;
     public String CUSTOM3_COMMAND;
     public String LOOK_FEEL;
-    public String MAP_3D;
     private final String FILE = "GUIConfig.txt";
     private int selected = 0;
 
@@ -169,11 +168,6 @@ public class Config extends javax.swing.JFrame {
                 pw.println("NULL");
             } else{
                 pw.println(LOOK_FEEL);
-            }
-            if (MAP_3D.equals("")){
-                pw.println("NULL");
-            } else{
-                pw.println(MAP_3D);
             }*/
             pw.close();
         } catch (FileNotFoundException e) {
@@ -201,8 +195,7 @@ public class Config extends javax.swing.JFrame {
                 pw.println("NULL");
                 pw.println("NULL");
                 pw.println("NULL");
-                /*pw.println("NULL");
-                pw.println("NULL");*/
+                //pw.println("NULL");
                 pw.close();
             }
             FileReader fr = new FileReader(configFile);
@@ -238,10 +231,6 @@ public class Config extends javax.swing.JFrame {
             /*String lf = br.readLine();
             if(!lf.equals("NULL")){
                 LOOK_FEEL = lf;
-            }
-            String map = br.readLine();
-            if(!map.equals("NULL")){
-                MAP_3D = map;
             }*/
             br.close();
         } catch (FileNotFoundException e) {
@@ -277,8 +266,6 @@ public class Config extends javax.swing.JFrame {
         txtCustom3Command = new javax.swing.JTextField();
         cmbLookFeel = new javax.swing.JComboBox();
         jLabel4 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        txt3DMap = new javax.swing.JTextField();
 
         setAlwaysOnTop(true);
 
@@ -376,10 +363,6 @@ public class Config extends javax.swing.JFrame {
 
         jLabel4.setText("Look and Feel:");
 
-        jLabel6.setText("3D Map Batch Link");
-
-        txt3DMap.setEditable(false);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -395,25 +378,19 @@ public class Config extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jLabel6)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(58, 58, 58)
-                                        .addComponent(jLabel1)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtServerName, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(184, 184, 184)
-                                        .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cmbLookFeel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(txt3DMap))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(58, 58, 58)
+                                    .addComponent(jLabel1)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(txtServerName, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(184, 184, 184)
+                                    .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cmbLookFeel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(100, 100, 100))))
         );
         layout.setVerticalGroup(
@@ -431,12 +408,7 @@ public class Config extends javax.swing.JFrame {
                         .addGap(34, 34, 34)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
-                            .addComponent(cmbLookFeel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6)
-                            .addComponent(txt3DMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(cmbLookFeel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -459,7 +431,6 @@ public class Config extends javax.swing.JFrame {
         CUSTOM3_COMMAND = txtCustom3Command.getText();
         selected = cmbLookFeel.getSelectedIndex();
         LOOK_FEEL = cmbLookFeel.getItemAt(selected).toString();
-        //MAP_3D = txt3DMap.getText();
         saveConfig();
         g.updateConfig();
         this.setVisible(false);
@@ -508,11 +479,9 @@ public class Config extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JTextField txt3DMap;
     private javax.swing.JTextField txtCustom1Command;
     private javax.swing.JTextField txtCustom1Text;
     private javax.swing.JTextField txtCustom2Command;
