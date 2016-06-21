@@ -8,7 +8,7 @@ commands:
        permission: GUIPlugin.gui
        permission-message: You don't have <permission>
    rendermap:
-       description: This command will re-render the 3D map..
+       description: This command will re-render the 3D map.
        usage: /<command>
        permission: GUIPlugin.gui
        permission-message: You don't have <permission>
