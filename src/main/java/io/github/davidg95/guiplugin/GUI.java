@@ -223,6 +223,17 @@ public class GUI extends javax.swing.JFrame implements Listener{
         reload.setVisible(true);
     }
     
+    public void renderMap(){
+        try {
+            File document = new File(".\\Overviewer.lnk");
+            dt.open(document);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "***Rendering 3D map***");
+            toTextArea("***Rendering 3D map***");
+        } catch (IOException ex) {
+            toTextArea("***ERROR- Overviewer.bat not found***");
+        }
+    }
+    
     /**
      * Method which gets called whenever a player log into the server.
      * @param event holds details about the login including the player.
@@ -1036,14 +1047,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
     }//GEN-LAST:event_btnDiconRDPActionPerformed
 
     private void btn3DMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3DMapActionPerformed
-        try {
-            File document = new File(".\\Overviewer.lnk");
-            dt.open(document);
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "***Rendering 3D map***");
-            toTextArea("***Rendering 3D map***");
-        } catch (IOException ex) {
-            toTextArea("***ERROR- Overviewer.bat not found***");
-        }
+        renderMap();
     }//GEN-LAST:event_btn3DMapActionPerformed
 
     /**
