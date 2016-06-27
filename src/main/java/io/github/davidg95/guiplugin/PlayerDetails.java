@@ -17,7 +17,7 @@ import org.bukkit.inventory.PlayerInventory;
  */
 public class PlayerDetails extends javax.swing.JFrame {
 
-    Player player;
+    private Player player;
     /**
      * Creates new form PlayerDetails
      */
@@ -53,13 +53,11 @@ public class PlayerDetails extends javax.swing.JFrame {
         checkOp.setSelected(player.isOp());
 //        setInventoryList(player.getInventory());
         this.setLocationRelativeTo(null);
-        this.setVisible(true);
     }
     
     public PlayerDetails(){
         initComponents();
         this.setLocationRelativeTo(null);
-        this.setVisible(true);
     }
     
     private void setInventoryList(PlayerInventory pi){
@@ -98,6 +96,7 @@ public class PlayerDetails extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Details for " + player.getName());
         setAlwaysOnTop(true);
         setPreferredSize(new java.awt.Dimension(580, 360));
 

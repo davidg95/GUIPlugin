@@ -23,29 +23,27 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import java.sql.Time;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.UnsupportedLookAndFeelException;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
 /**
  * The GUI class.
+ *
  * @author David
  */
-public class GUI extends javax.swing.JFrame implements Listener{
+public class GUI extends javax.swing.JFrame implements Listener {
+
     ArrayList<Player> playerList = new ArrayList<>();
     private boolean isDecorated = false;
-    private Config c;
-    private Whitelist w;
-    private StopServerPrompt stop;
-    private ReloadServerPrompt reload;
-    
+    private final Config c;
+
     private Desktop dt;
     private final String TS_DISCON = "C:\\Users\\David\\Desktop\\Disconnect RDP.lnk";
-    
+
     /**
      * Creates new form GUI
+     *
+     * @param playerList the list of online players.
      */
     public GUI(ArrayList playerList) {
         /* Set the Nimbus look and feel */
@@ -60,13 +58,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
@@ -74,44 +66,41 @@ public class GUI extends javax.swing.JFrame implements Listener{
         initComponents();
         updateOnline();
         c = new Config(this);
-        w = new Whitelist();
-        stop = new StopServerPrompt();
-        reload = new ReloadServerPrompt();
         //pd = new PlayerDetails();
         //getServerName();
         updateConfig();
-        if(!Desktop.isDesktopSupported()){
+        if (!Desktop.isDesktopSupported()) {
             btnDiconRDP.setEnabled(false);
             JOptionPane.showMessageDialog(rootPane, "Warning, Desktop API not supported on this device, Disconnect RDP button has been disabled");
-        } else{
+        } else {
             dt = Desktop.getDesktop();
         }
     }
-    
-    public void updateConfig(){
+
+    public final void updateConfig() {
         lblServerInfo.setText(c.SERVER_NAME + " running " + Bukkit.getVersion() + " " + Bukkit.getBukkitVersion());
-        if(c.CUSTOM1_TEXT.equals("")){
+        if (c.CUSTOM1_TEXT.equals("")) {
             btnCustom1.setEnabled(false);
             btnCustom1.setText("");
-        } else{
+        } else {
             btnCustom1.setEnabled(true);
             btnCustom1.setText(c.CUSTOM1_TEXT);
         }
-        if(c.CUSTOM2_TEXT.equals("")){
+        if (c.CUSTOM2_TEXT.equals("")) {
             btnCustom2.setEnabled(false);
             btnCustom2.setText("");
-        } else{
+        } else {
             btnCustom2.setEnabled(true);
             btnCustom2.setText(c.CUSTOM2_TEXT);
         }
-        if(c.CUSTOM3_TEXT.equals("")){
+        if (c.CUSTOM3_TEXT.equals("")) {
             btnCustom3.setEnabled(false);
             btnCustom3.setText("");
-        } else{
+        } else {
             btnCustom3.setEnabled(true);
             btnCustom3.setText(c.CUSTOM3_TEXT);
         }
-        if(c.LOOK_FEEL != ""){
+        if (!c.LOOK_FEEL.equals("")) {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if (c.LOOK_FEEL.equals(info.getName())) {
                     GUIPlugin.LOOK_FEEL = c.LOOK_FEEL;
@@ -120,189 +109,207 @@ public class GUI extends javax.swing.JFrame implements Listener{
                 }
             }
         }
-            
+
     }
-    
+
     /**
      * Displays message saying functionality has not been implemented yet.
      */
-    public void notImp(){
+    public void notImp() {
         JOptionPane.showMessageDialog(rootPane, "Not implemented yet!");
     }
-    
+
     /**
-     * Updates the list of current online players by reading the contents of the playerList ArrayList.
+     * Updates the list of current online players by reading the contents of the
+     * playerList ArrayList.
      */
-    public void updateOnline(){
+    public final void updateOnline() {
         DefaultListModel lm = new DefaultListModel();
-        for(int i = 0; i < playerList.size(); i++){
-            lm.addElement(playerList.get(i).getName().toString());
+        for (Player playerList1 : playerList) {
+            lm.addElement(playerList1.getName());
         }
-        
+
         lstOnline.setModel(lm);
     }
-    
+
     /**
-     * Enters a String of text to the server logs and appends it to the teat area in the GUI.
+     * Enters a String of text to the server logs and appends it to the teat
+     * area in the GUI.
      */
-    public void enterToLogs(){
+    public void enterToLogs() {
         Time time = new Time(new Date().getTime());
         String input = txtText.getText();
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say " + input);
         toTextArea("SERVER - " + input);
         txtText.setText("");
     }
-    
-    public void toTextArea(String input){
+
+    public void toTextArea(String input) {
         Time time = new Time(new Date().getTime());
         txtLogs.append("[" + time.toString() + "] " + input + "\n");
     }
-    
+
     /**
      * Ops a player if they are not op already and deops them if they are.
      */
-    public void op(){
+    public void op() {
         int i = lstOnline.getSelectedIndex();
-        if(i != -1){
+        if (i != -1) {
             Player p = playerList.get(i);
-            if(p.isOp()){
+            if (p.isOp()) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "op " + p.getName());
-            } else{
-             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "deop " + p.getName());
+            } else {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "deop " + p.getName());
             }
-        } else{
+        } else {
             toTextArea("Select a player!");
         }
     }
-    
+
     /**
      * Kicks a player from the server.
      */
-    public void kick(){
+    public void kick() {
         int i = lstOnline.getSelectedIndex();
         String reason = JOptionPane.showInputDialog("Enter reason, leave blank for no reason.");
-        if(i != -1){
+        if (i != -1) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kick " + playerList.get(i).getPlayer().getName() + " " + reason);
-        } else{
+        } else {
             toTextArea("Select a player!");
         }
     }
-    
+
     /**
-     * Bans a player from the server by making a call to Bukkit.dispatchCommand().
+     * Bans a player from the server by making a call to
+     * Bukkit.dispatchCommand().
      */
-    public void ban(){
+    public void ban() {
         int i = lstOnline.getSelectedIndex();
-        if(i != -1){
+        if (i != -1) {
             toTextArea("Banned player " + playerList.get(i).getPlayer().getName());
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban " + playerList.get(i).getName());
-        } else{
+        } else {
             toTextArea("Select a player!");
         }
     }
-    
+
     /**
      * Calls the GUI asking if they are sure they want to stop the server.
      */
-    public void stop(){
-        stop.setVisible(true);
+    public void stop() {
+        new StopServerPrompt().setVisible(true);
     }
-    
+
     /**
      * Saves the server by making a call to Bukkit.dispatchCommand().
      */
-    public void save(){
+    public void save() {
         toTextArea("Server saved!");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-all");
     }
-    
+
     /**
      * Calls the GUI asking if they are sure they want to stop the server.
      */
-    public void reload(){
-        reload.setVisible(true);
+    public void reload() {
+        new ReloadServerPrompt().setVisible(true);
     }
-    
-    public void renderMap(){
+
+    public void renderMap() {
         try {
             File document = new File(".\\Overviewer.lnk");
             dt.open(document);
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "***Rendering 3D map***");
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say ***Rendering 3D map***");
             toTextArea("***Rendering 3D map***");
         } catch (IOException ex) {
-            toTextArea("***ERROR- Overviewer.bat not found***");
+            toTextArea("***ERROR- Overviewer.lnk not found***");
         }
     }
-    
+
+    public void backup() {
+        try {
+            File document = new File(".\\Backup.lnk");
+            dt.open(document);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say ***Saving Backup***");
+            toTextArea("***Saving Backup***");
+        } catch (IOException ex) {
+            toTextArea("***ERROR- Backup.lnk not found***");
+        }
+    }
+
     /**
      * Method which gets called whenever a player log into the server.
+     *
      * @param event holds details about the login including the player.
      */
     @EventHandler
-    public void onLogin(PlayerLoginEvent event){
-        if(event.getResult().equals(Result.ALLOWED)){
+    public void onLogin(PlayerLoginEvent event) {
+        if (event.getResult().equals(Result.ALLOWED)) {
             playerList.add(event.getPlayer());
             updateOnline();
             toTextArea(event.getPlayer().getName() + " has joined!");
-        } else{
+        } else {
             toTextArea("Player " + event.getPlayer().getName() + " couldnt join with reason: " + event.getResult().toString());
         }
     }
-    
+
     /**
      * Method which gets called whenever a player leaves the server.
+     *
      * @param event holds details about the quit including the player.
      */
     @EventHandler
-    public void onQuit(PlayerQuitEvent event){
-        for(int i = 0; i < playerList.size(); i++){
-            if(event.getPlayer().equals(playerList.get(i))){
+    public void onQuit(PlayerQuitEvent event) {
+        for (int i = 0; i < playerList.size(); i++) {
+            if (event.getPlayer().equals(playerList.get(i))) {
                 playerList.remove(i);
             }
         }
         toTextArea(event.getPlayer().getName() + " has left");
         updateOnline();
     }
-    
+
     /**
      * A method which gets called whenever a player gets kicked from the server.
+     *
      * @param event holds details about the kick such as the player.
      */
     @EventHandler
-    public void onKick(PlayerKickEvent event){
-        for(int i = 0; i < playerList.size(); i++){
-            if(event.getPlayer().equals(playerList.get(i))){
+    public void onKick(PlayerKickEvent event) {
+        for (int i = 0; i < playerList.size(); i++) {
+            if (event.getPlayer().equals(playerList.get(i))) {
                 playerList.remove(i);
             }
         }
         toTextArea(event.getPlayer().getName() + " has been kicked with reason " + event.getReason());
         updateOnline();
     }
-    
+
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event){
+    public void onPlayerDeath(PlayerDeathEvent event) {
         String name = event.getEntity().getName();
         String message = event.getDeathMessage();
-        
+
         toTextArea(message);
     }
-    
+
     /**
      * Method which gets called whenever someone talks in the chat.
+     *
      * @param e holds details about the chat such as the text and the player.
      */
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent  e){
+    public void onChat(AsyncPlayerChatEvent e) {
         Time time = new Time(new Date().getTime());
-        
+
         toTextArea(e.getPlayer().getName() + " - " + e.getMessage());
     }
-    
-    public void setIsDecorated(boolean b){
+
+    public void setIsDecorated(boolean b) {
         this.isDecorated = b;
     }
-    
-    public void setBtnMinMaxTitle(String t){
+
+    public void setBtnMinMaxTitle(String t) {
         btnMinMax.setText(t);
     }
 
@@ -362,6 +369,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
         jButton3 = new javax.swing.JButton();
         btnDiconRDP = new javax.swing.JButton();
         btn3DMap = new javax.swing.JButton();
+        btnBackup = new javax.swing.JButton();
 
         setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
         setMaximumSize(new java.awt.Dimension(1024, 768));
@@ -777,6 +785,14 @@ public class GUI extends javax.swing.JFrame implements Listener{
             }
         });
 
+        btnBackup.setText("Backup");
+        btnBackup.setPreferredSize(new java.awt.Dimension(100, 100));
+        btnBackup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackupActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -795,8 +811,11 @@ public class GUI extends javax.swing.JFrame implements Listener{
                         .addComponent(btnCustom2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, 0)
                         .addComponent(btnCustom3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btn3DMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btn3DMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(btnBackup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(Menus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -867,7 +886,9 @@ public class GUI extends javax.swing.JFrame implements Listener{
                             .addComponent(btnCustom2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnCustom1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btn3DMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btn3DMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnBackup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(Menus, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -987,17 +1008,17 @@ public class GUI extends javax.swing.JFrame implements Listener{
     }//GEN-LAST:event_btnHardActionPerformed
 
     private void btnMinMaxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMinMaxActionPerformed
-        if(isDecorated){
+        if (isDecorated) {
             GUIPlugin.maximize();
-        } else{
+        } else {
             GUIPlugin.minimize();
         }
-        
+
     }//GEN-LAST:event_btnMinMaxActionPerformed
 
     private void btnDispatchCommandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDispatchCommandActionPerformed
         String command = JOptionPane.showInputDialog("Enter command to send to server:");
-        if(!command.equals(null)){
+        if (!command.equals("")) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
             toTextArea("Dispatched command- " + command);
         }
@@ -1009,7 +1030,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
 
     private void btnCustom1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustom1ActionPerformed
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), c.CUSTOM1_COMMAND);
-        toTextArea("Dispatched command- " + c.CUSTOM1_COMMAND);
+        //toTextArea("Dispatched command- " + c.CUSTOM1_COMMAND);
     }//GEN-LAST:event_btnCustom1ActionPerformed
 
     private void btnCustom2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustom2ActionPerformed
@@ -1024,17 +1045,17 @@ public class GUI extends javax.swing.JFrame implements Listener{
 
     private void txtPlayerDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPlayerDetailsActionPerformed
         int i = lstOnline.getSelectedIndex();
-        
-        if(i == -1){
-            //JOptionPane.showMessageDialog(rootPane, "Select a player!");
-            PlayerDetails pd = new PlayerDetails();
-        } else{
-            PlayerDetails pd = new PlayerDetails(playerList.get(i));
+
+        if (i == -1) {
+            JOptionPane.showMessageDialog(rootPane, "Select a player!");
+            //new PlayerDetails().setVisible(true);
+        } else {
+            new PlayerDetails(playerList.get(i)).setVisible(true);
         }
     }//GEN-LAST:event_txtPlayerDetailsActionPerformed
 
     private void btnWhitelistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWhitelistActionPerformed
-       w.setVisible(true);
+        new Whitelist().setVisible(true);
     }//GEN-LAST:event_btnWhitelistActionPerformed
 
     private void btnDiconRDPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDiconRDPActionPerformed
@@ -1042,7 +1063,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
             File document = new File(TS_DISCON);
             dt.open(document);
         } catch (IOException ex) {
-            
+
         }
     }//GEN-LAST:event_btnDiconRDPActionPerformed
 
@@ -1050,9 +1071,13 @@ public class GUI extends javax.swing.JFrame implements Listener{
         renderMap();
     }//GEN-LAST:event_btn3DMapActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void btnBackupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackupActionPerformed
+        backup();
+    }//GEN-LAST:event_btnBackupActionPerformed
+
+//    /**
+//     * @param args the command line arguments
+//     */
 //    public static void main(String args[]) {
 //        /* Set the Nimbus look and feel */
 //        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -1080,7 +1105,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
 //        /* Create and display the form */
 //        java.awt.EventQueue.invokeLater(new Runnable() {
 //            public void run() {
-//                new GUI().setVisible(true);
+//                new GUI(new ArrayList<Player>()).setVisible(true);
 //            }
 //        });
 //    }
@@ -1091,6 +1116,7 @@ public class GUI extends javax.swing.JFrame implements Listener{
     private javax.swing.JPanel TimePanel;
     private javax.swing.JPanel WeatherPanel;
     private javax.swing.JButton btn3DMap;
+    private javax.swing.JButton btnBackup;
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnCloseGUI;
     private javax.swing.JButton btnConfig;

@@ -5,8 +5,7 @@
  */
 package io.github.davidg95.guiplugin;
 
-import org.bukkit.Bukkit;
-
+//import org.bukkit.Bukkit;
 /**
  *
  * @author David
@@ -14,6 +13,7 @@ import org.bukkit.Bukkit;
 public class CodeEntry extends javax.swing.JFrame {
 
     private final int CODE = 3696;
+
     /**
      * Creates new form CodeEntry
      */
@@ -68,7 +68,7 @@ public class CodeEntry extends javax.swing.JFrame {
         btnEnter = new javax.swing.JButton();
         txtCode = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(320, 320));
         setMinimumSize(new java.awt.Dimension(320, 320));
 
@@ -228,65 +228,68 @@ public class CodeEntry extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn1ActionPerformed
-        txtCode.setText(txtCode.getText() + "1");
+        txtCode.setText(txtCode.getText() + "*");
     }//GEN-LAST:event_btn1ActionPerformed
 
     private void btn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2ActionPerformed
-        txtCode.setText(txtCode.getText() + "2");
+        txtCode.setText(txtCode.getText() + "*");
     }//GEN-LAST:event_btn2ActionPerformed
 
     private void btn3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3ActionPerformed
-        txtCode.setText(txtCode.getText() + "3");
+        txtCode.setText(txtCode.getText() + "*");
     }//GEN-LAST:event_btn3ActionPerformed
 
     private void btn4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn4ActionPerformed
-        txtCode.setText(txtCode.getText() + "4");
+        txtCode.setText(txtCode.getText() + "*");
     }//GEN-LAST:event_btn4ActionPerformed
 
     private void btn5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn5ActionPerformed
-        txtCode.setText(txtCode.getText() + "5");
+        txtCode.setText(txtCode.getText() + "*");
     }//GEN-LAST:event_btn5ActionPerformed
 
     private void btn6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn6ActionPerformed
-        txtCode.setText(txtCode.getText() + "6");
+        txtCode.setText(txtCode.getText() + "*");
     }//GEN-LAST:event_btn6ActionPerformed
 
     private void btn7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn7ActionPerformed
-        txtCode.setText(txtCode.getText() + "7");
+        txtCode.setText(txtCode.getText() + "*");
     }//GEN-LAST:event_btn7ActionPerformed
 
     private void btn8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn8ActionPerformed
-        txtCode.setText(txtCode.getText() + "8");
+        txtCode.setText(txtCode.getText() + "*");
     }//GEN-LAST:event_btn8ActionPerformed
 
     private void btn9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn9ActionPerformed
-        txtCode.setText(txtCode.getText() + "9");
+        txtCode.setText(txtCode.getText() + "*");
     }//GEN-LAST:event_btn9ActionPerformed
 
     private void btnCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCActionPerformed
+        if(txtCode.getText().equals("")){
+            this.dispose();
+        }
         txtCode.setText("");
     }//GEN-LAST:event_btnCActionPerformed
 
     private void btnEnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnterActionPerformed
-        if(!txtCode.getText().equals("")){
+        if (!txtCode.getText().equals("")) {
             int input = Integer.parseInt(txtCode.getText());
             txtCode.setText("");
-            if(CODE == input){
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+            if (CODE == input) {
+                //Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
                 this.dispose();
-            } else{
+            } else {
                 this.dispose();
             }
         }
     }//GEN-LAST:event_btnEnterActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+//    /**
+//     * @param args the command line arguments
+//     */
 //    public static void main(String args[]) {
 //        /* Set the Nimbus look and feel */
 //        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//                /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
 //         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
 //         */
 //        try {

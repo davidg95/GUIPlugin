@@ -54,6 +54,8 @@ public class ReloadServerPrompt extends javax.swing.JDialog {
         btnNo = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Reload Server?");
         setAlwaysOnTop(true);
 
         btnYes.setBackground(new java.awt.Color(102, 255, 0));
@@ -108,7 +110,7 @@ public class ReloadServerPrompt extends javax.swing.JDialog {
     }//GEN-LAST:event_btnYesActionPerformed
 
     private void btnNoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNoActionPerformed
-        this.setVisible(false);
+        this.dispose();
     }//GEN-LAST:event_btnNoActionPerformed
 
     /**

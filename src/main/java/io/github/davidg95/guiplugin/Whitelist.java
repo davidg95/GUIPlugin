@@ -5,6 +5,7 @@
  */
 package io.github.davidg95.guiplugin;
 
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import org.bukkit.Bukkit;
@@ -16,6 +17,8 @@ import org.bukkit.OfflinePlayer;
  */
 public class Whitelist extends javax.swing.JFrame {
 
+    private final ArrayList<OfflinePlayer> playerList;
+    
     /**
      * Creates new form Whitelist
      */
@@ -43,6 +46,7 @@ public class Whitelist extends javax.swing.JFrame {
 //        }
         //</editor-fold>
         initComponents();
+        playerList = new ArrayList<>();
         updateWhitelist();
         this.setLocationRelativeTo(null);
     }
@@ -53,12 +57,12 @@ public class Whitelist extends javax.swing.JFrame {
         super.setVisible(visible);
     }
     
-    public void updateWhitelist(){
+    public final void updateWhitelist(){
         DefaultListModel lm = new DefaultListModel();
         for(OfflinePlayer p: Bukkit.getWhitelistedPlayers()){
-            lm.addElement(p.getName().toString());
+            lm.addElement(p.getName());
+            playerList.add(p);
         }
-        
         lstWhitelist.setModel(lm);
     }
 
@@ -78,6 +82,7 @@ public class Whitelist extends javax.swing.JFrame {
         btnRemove = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Whitelist");
         setAlwaysOnTop(true);
 
         lstWhitelist.setModel(new javax.swing.AbstractListModel() {
@@ -148,47 +153,50 @@ public class Whitelist extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
-        JOptionPane.showMessageDialog(rootPane, "Not implemented yet!");
+        String name = playerList.get(lstWhitelist.getSelectedIndex()).getName();
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist remove " + name);
+        updateWhitelist();
+        JOptionPane.showMessageDialog(rootPane, name + " removed from whitelist");
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseActionPerformed
-        this.setVisible(false);
+        this.dispose();
     }//GEN-LAST:event_btnCloseActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Whitelist.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Whitelist.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Whitelist.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Whitelist.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Whitelist().setVisible(true);
-            }
-        });
-    }
+//    /**
+//     * @param args the command line arguments
+//     */
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(Whitelist.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(Whitelist.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(Whitelist.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(Whitelist.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new Whitelist().setVisible(true);
+//            }
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
