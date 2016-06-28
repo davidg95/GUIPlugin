@@ -6,6 +6,9 @@
 package io.github.davidg95.guiplugin;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,7 +25,11 @@ public class GUIPlugin extends JavaPlugin {
     protected static ArrayList<Player> playerList = new ArrayList<>();
     protected static GUI g;
     protected static FileConfiguration conf;
+    protected static int STOP_HOUR = 23;
+    protected static int STOP_MINUTE = 28;
     public static String LOOK_FEEL = "Metal";
+    protected static Timer timWarning = new Timer();
+    protected static Timer timStop = new Timer();
 
     @Override
     public void onEnable() {
@@ -36,6 +43,8 @@ public class GUIPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(g, this);
         g.setVisible(true);
+
+        serverStopTimer();
     }
 
     @Override
@@ -58,6 +67,46 @@ public class GUIPlugin extends JavaPlugin {
             return true;
         }
         return false;
+    }
+
+    public static void serverStopTimer() {
+        Calendar warning = Calendar.getInstance();
+        warning.set(Calendar.HOUR, 23);
+        warning.set(Calendar.MINUTE, 23);
+        warning.set(Calendar.SECOND, 0);
+        warning.set(Calendar.MILLISECOND, 0);
+        // Schedule to run every night at 23:23
+        timWarning.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say ***SERVER SHUTDOWN IN 5 MINUTES***");
+                    }
+                },
+                warning.getTime(),
+                1000 * 60 * 60 * 24 * 7
+        );
+        Calendar stopper = Calendar.getInstance();
+        stopper.set(Calendar.HOUR, STOP_HOUR);
+        stopper.set(Calendar.MINUTE, STOP_MINUTE);
+        stopper.set(Calendar.SECOND, 0);
+        stopper.set(Calendar.MILLISECOND, 0);
+        // Schedule to run every night at 23:28
+        timStop.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                    }
+                },
+                stopper.getTime(),
+                1000 * 60 * 60 * 24 * 7
+        );
+    }
+    
+    public static void cancelStopTimer(){
+        timWarning.cancel();
+        timStop.cancel();
     }
 
     /**

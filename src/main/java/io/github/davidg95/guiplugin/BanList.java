@@ -169,6 +169,8 @@ public class BanList extends javax.swing.JFrame {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pardon " + name);
                 updateBanList();
                 JOptionPane.showMessageDialog(this, name + " has been pardoned");
+            } else {
+                JOptionPane.showMessageDialog(this, "Select a player!", "Ban List", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             JOptionPane.showMessageDialog(this, "Select a player!", "Ban List", JOptionPane.ERROR_MESSAGE);

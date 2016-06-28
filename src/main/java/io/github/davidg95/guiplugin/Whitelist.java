@@ -169,6 +169,8 @@ public class Whitelist extends javax.swing.JFrame {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist remove " + name);
                 updateWhitelist();
                 JOptionPane.showMessageDialog(this, name + " removed from whitelist");
+            } else {
+                JOptionPane.showMessageDialog(this, "Select a player!", "Whitelist", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             JOptionPane.showMessageDialog(this, "Select a player!", "Whitelist", JOptionPane.ERROR_MESSAGE);

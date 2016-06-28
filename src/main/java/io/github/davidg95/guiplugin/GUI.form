@@ -86,19 +86,26 @@
                   <Component id="txtText" max="32767" attributes="0"/>
                   <Component id="jScrollPane1" max="32767" attributes="0"/>
               </Group>
-              <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="txtPlayerDetails" max="32767" attributes="0"/>
-                          <Component id="btnWhitelist" max="32767" attributes="0"/>
-                          <Component id="btnBanList" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="txtPlayerDetails" max="32767" attributes="0"/>
+                              <Component id="btnWhitelist" max="32767" attributes="0"/>
+                              <Component id="btnBanList" max="32767" attributes="0"/>
+                          </Group>
+                          <Component id="jScrollPane2" min="-2" pref="229" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" min="-2" pref="229" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+                          <Component id="cmdEnterText" min="-2" pref="73" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
                   </Group>
-                  <Component id="btnDiconRDP" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="cmdEnterText" min="-2" pref="73" max="-2" attributes="0"/>
+                  <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
+                      <Component id="btnDiconRDP" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
           </Group>
       </Group>
@@ -145,10 +152,8 @@
                           <Component id="btnCustom1" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="btn3DMap" min="-2" max="-2" attributes="0"/>
-                              <Component id="btnBackup" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="btn3DMap" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnBackup" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                               <Component id="jButton1" min="-2" max="-2" attributes="0"/>
@@ -697,7 +702,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnConfig">
       <Properties>
-        <Property name="text" type="java.lang.String" value="GUI Config"/>
+        <Property name="text" type="java.lang.String" value="Config"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[2, 0, 0, 0]"/>
         </Property>
