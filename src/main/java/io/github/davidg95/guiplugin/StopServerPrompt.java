@@ -55,7 +55,7 @@ public class StopServerPrompt extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Reload Server?");
+        setTitle("Stop Server?");
         setAlwaysOnTop(true);
 
         btnYes.setBackground(new java.awt.Color(102, 255, 0));

@@ -241,10 +241,12 @@ public class PlayerDetails extends javax.swing.JFrame {
 
     private void btnKickActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKickActionPerformed
         player.kickPlayer(JOptionPane.showInputDialog("Enter reason, leave blank for no reason"));
+        JOptionPane.showMessageDialog(rootPane, player.getName() + " has been kicked from this server");
     }//GEN-LAST:event_btnKickActionPerformed
 
     private void btnBanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBanActionPerformed
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban " + player.getName());
+        JOptionPane.showMessageDialog(rootPane, player.getName() + " has been banned from this server");
     }//GEN-LAST:event_btnBanActionPerformed
 
 //    /**
