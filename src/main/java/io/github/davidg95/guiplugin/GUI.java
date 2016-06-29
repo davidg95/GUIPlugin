@@ -40,6 +40,8 @@ public class GUI extends javax.swing.JFrame implements Listener {
     private Desktop dt;
     private final String TS_DISCON = "C:\\Users\\David\\Desktop\\Disconnect RDP.lnk";
 
+    private final String CODE = "3696";
+
     /**
      * Creates new form GUI
      *
@@ -66,6 +68,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
         initComponents();
         jScrollPane1.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         txtLogs.setLineWrap(true);
+        setStopTimeLabel("Server will stop at " + Config.STOP_HOUR + ":" + Config.STOP_MINUTE);
         updateOnline();
         c = new Config(this);
         //pd = new PlayerDetails();
@@ -103,15 +106,19 @@ public class GUI extends javax.swing.JFrame implements Listener {
             btnCustom3.setText(c.CUSTOM3_TEXT);
         }
         /*if (!c.LOOK_FEEL.equals("")) {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if (c.LOOK_FEEL.equals(info.getName())) {
-                    GUIPlugin.LOOK_FEEL = c.LOOK_FEEL;
-                    dispose();
-                    GUIPlugin.reloadGUI();
-                }
-            }
-        }*/
+         for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+         if (c.LOOK_FEEL.equals(info.getName())) {
+         GUIPlugin.LOOK_FEEL = c.LOOK_FEEL;
+         dispose();
+         GUIPlugin.reloadGUI();
+         }
+         }
+         }*/
 
+    }
+    
+    public void setStopTimeLabel(String s){
+        lblStopTime.setText(s);
     }
 
     /**
@@ -375,12 +382,12 @@ public class GUI extends javax.swing.JFrame implements Listener {
         btn3DMap = new javax.swing.JButton();
         btnBackup = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        lblStopTime = new javax.swing.JLabel();
 
         setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
         setMaximumSize(new java.awt.Dimension(1024, 768));
         setMinimumSize(new java.awt.Dimension(1024, 768));
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(1024, 768));
 
         txtLogs.setEditable(false);
         txtLogs.setColumns(20);
@@ -856,7 +863,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
                         .addComponent(lblServerInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(txtText)
                     .addComponent(jScrollPane1))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(layout.createSequentialGroup()
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -865,11 +872,11 @@ public class GUI extends javax.swing.JFrame implements Listener {
                                 .addComponent(btnBanList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addGap(0, 0, 0)
                             .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addContainerGap()))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(48, 48, 48)
+                        .addComponent(lblStopTime, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnDiconRDP))))
         );
         layout.setVerticalGroup(
@@ -879,7 +886,9 @@ public class GUI extends javax.swing.JFrame implements Listener {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(5, 5, 5)
                         .addComponent(lblServerInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btnDiconRDP, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnDiconRDP, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblStopTime, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
@@ -909,9 +918,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btn3DMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnBackup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, 0)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(Menus, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1185,6 +1192,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
     private javax.swing.JLabel lblManualEntry;
     private javax.swing.JLabel lblSeconds;
     private javax.swing.JLabel lblServerInfo;
+    private javax.swing.JLabel lblStopTime;
     private javax.swing.JList lstOnline;
     private javax.swing.JTextField txtDuration;
     private javax.swing.JTextArea txtLogs;

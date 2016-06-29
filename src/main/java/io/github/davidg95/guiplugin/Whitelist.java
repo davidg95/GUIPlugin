@@ -15,7 +15,7 @@ import org.bukkit.OfflinePlayer;
  *
  * @author David
  */
-public class Whitelist extends javax.swing.JFrame {
+public class Whitelist extends javax.swing.JDialog {
 
     private ArrayList<OfflinePlayer> playerList;
 
@@ -46,6 +46,7 @@ public class Whitelist extends javax.swing.JFrame {
 //        }
         //</editor-fold>
         initComponents();
+        setModal(true);
         playerList = new ArrayList<>();
         updateWhitelist();
         this.setLocationRelativeTo(null);
@@ -88,6 +89,7 @@ public class Whitelist extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Whitelist");
         setAlwaysOnTop(true);
+        setResizable(false);
 
         lstWhitelist.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };

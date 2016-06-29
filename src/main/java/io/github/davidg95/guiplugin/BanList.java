@@ -15,7 +15,7 @@ import org.bukkit.OfflinePlayer;
  *
  * @author David
  */
-public class BanList extends javax.swing.JFrame {
+public class BanList extends javax.swing.JDialog {
 
     private ArrayList<OfflinePlayer> playerList;
 
@@ -46,6 +46,7 @@ public class BanList extends javax.swing.JFrame {
 //        }
         //</editor-fold>
         initComponents();
+        setModal(true);
         playerList = new ArrayList<>();
         updateBanList();
         this.setLocationRelativeTo(null);
@@ -88,6 +89,7 @@ public class BanList extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Ban List");
         setAlwaysOnTop(true);
+        setResizable(false);
 
         lstBanList.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };

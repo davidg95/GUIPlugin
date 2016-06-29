@@ -12,9 +12,6 @@
       <Dimension value="[1024, 768]"/>
     </Property>
     <Property name="undecorated" type="boolean" value="true"/>
-    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[1024, 768]"/>
-    </Property>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -86,7 +83,7 @@
                   <Component id="txtText" max="32767" attributes="0"/>
                   <Component id="jScrollPane1" max="32767" attributes="0"/>
               </Group>
-              <Group type="103" groupAlignment="1" attributes="0">
+              <Group type="103" groupAlignment="1" max="-2" attributes="0">
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -97,13 +94,13 @@
                           <Component id="jScrollPane2" min="-2" pref="229" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                           <Component id="cmdEnterText" min="-2" pref="73" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="lblStopTime" min="-2" pref="139" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="btnDiconRDP" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -118,7 +115,10 @@
                       <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                       <Component id="lblServerInfo" min="-2" pref="14" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="btnDiconRDP" alignment="0" min="-2" pref="31" max="-2" attributes="0"/>
+                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                      <Component id="btnDiconRDP" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
+                      <Component id="lblStopTime" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -154,10 +154,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="btn3DMap" min="-2" max="-2" attributes="0"/>
                           <Component id="btnBackup" min="-2" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="jButton1" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Component id="Menus" min="-2" pref="306" max="-2" attributes="0"/>
@@ -831,6 +828,8 @@
           <Dimension value="[100, 100]"/>
         </Property>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblStopTime">
     </Component>
   </SubComponents>
 </Form>

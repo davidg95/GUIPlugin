@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -25,8 +26,6 @@ public class GUIPlugin extends JavaPlugin {
     protected static ArrayList<Player> playerList = new ArrayList<>();
     protected static GUI g;
     protected static FileConfiguration conf;
-    protected static int STOP_HOUR = 23;
-    protected static int STOP_MINUTE = 28;
     public static String LOOK_FEEL = "Metal";
     protected static Timer timWarning = new Timer();
     protected static Timer timStop = new Timer();
@@ -71,26 +70,24 @@ public class GUIPlugin extends JavaPlugin {
 
     public static void serverStopTimer() {
         Calendar warning = Calendar.getInstance();
-        warning.set(Calendar.HOUR, 23);
-        warning.set(Calendar.MINUTE, 23);
+        warning.set(Calendar.HOUR_OF_DAY, Config.WARNING_HOUR);
+        warning.set(Calendar.MINUTE, Config.WARNING_MINUTE);
         warning.set(Calendar.SECOND, 0);
-        warning.set(Calendar.MILLISECOND, 0);
         // Schedule to run every night at 23:23
         timWarning.schedule(
                 new TimerTask() {
                     @Override
                     public void run() {
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say ***SERVER SHUTDOWN IN 5 MINUTES***");
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say " + Config.WARNING_MESSAGE);
                     }
                 },
                 warning.getTime(),
-                1000 * 60 * 60 * 24 * 7
+                TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
         );
         Calendar stopper = Calendar.getInstance();
-        stopper.set(Calendar.HOUR, STOP_HOUR);
-        stopper.set(Calendar.MINUTE, STOP_MINUTE);
+        stopper.set(Calendar.HOUR_OF_DAY, Config.STOP_HOUR);
+        stopper.set(Calendar.MINUTE, Config.STOP_MINUTE);
         stopper.set(Calendar.SECOND, 0);
-        stopper.set(Calendar.MILLISECOND, 0);
         // Schedule to run every night at 23:28
         timStop.schedule(
                 new TimerTask() {
@@ -100,7 +97,7 @@ public class GUIPlugin extends JavaPlugin {
                     }
                 },
                 stopper.getTime(),
-                1000 * 60 * 60 * 24 * 7
+                TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
         );
     }
     

@@ -33,6 +33,12 @@ public class Config extends javax.swing.JFrame {
     private final String FILE = "GUIConfig.txt";
     private int selected = 0;
     public boolean autoStop = true;
+    public boolean initAutoStop;
+    protected static int WARNING_HOUR = 23;
+    protected static int WARNING_MINUTE = 23;
+    protected static int STOP_HOUR = 23;
+    protected static int STOP_MINUTE = 28;
+    protected static String WARNING_MESSAGE = "***SERVER SHUTDOWN IN 5 MINUTES***";
 
     /**
      * Creates new form Config
@@ -69,6 +75,7 @@ public class Config extends javax.swing.JFrame {
         CUSTOM3_COMMAND = "";
         LOOK_FEEL = "";
         this.g = g;
+        initAutoStop = autoStop;
         loadConfig();
         initComponents();
         getLookAndFeel();
@@ -271,6 +278,16 @@ public class Config extends javax.swing.JFrame {
         chkLog2 = new javax.swing.JCheckBox();
         chkLog1 = new javax.swing.JCheckBox();
         chkStop = new javax.swing.JCheckBox();
+        txtStopHour = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        txtStopMin = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        txtWarnHour = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        txtWarnMin = new javax.swing.JTextField();
+        txtWarnMessage = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
 
         setTitle("Configuration");
         setAlwaysOnTop(true);
@@ -380,13 +397,32 @@ public class Config extends javax.swing.JFrame {
 
         chkStop.setSelected(true);
         chkStop.setText("Auto Server Stop");
-        chkStop.setEnabled(false);
+
+        txtStopHour.setText(Integer.toString(STOP_HOUR));
+
+        jLabel6.setText("Server Stop Time:");
+
+        txtStopMin.setText(Integer.toString(STOP_MINUTE));
+
+        jLabel7.setText(":");
+
+        jLabel8.setText("Waring Time:");
+
+        txtWarnHour.setText(Integer.toString(WARNING_HOUR));
+
+        jLabel9.setText(":");
+
+        txtWarnMin.setText(Integer.toString(WARNING_MINUTE));
+
+        txtWarnMessage.setText(WARNING_MESSAGE);
+
+        jLabel10.setText("Warning Message:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -409,14 +445,36 @@ public class Config extends javax.swing.JFrame {
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(chkLog3)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(cmbLookFeel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(chkStop))
-                .addGap(127, 127, 127))
+                    .addComponent(chkStop)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel10))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtStopHour, javax.swing.GroupLayout.DEFAULT_SIZE, 19, Short.MAX_VALUE)
+                                    .addComponent(txtWarnHour))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel7)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtStopMin, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel9)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtWarnMin))))
+                            .addComponent(txtWarnMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -436,19 +494,37 @@ public class Config extends javax.swing.JFrame {
                             .addComponent(cmbLookFeel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(chkLog1))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(chkStop)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(txtStopHour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7)
+                            .addComponent(txtStopMin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8)
+                            .addComponent(txtWarnHour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9)
+                            .addComponent(txtWarnMin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addComponent(chkLog2)
+                            .addGap(38, 38, 38))))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(chkLog2)
-                        .addGap(38, 38, 38))
-                    .addComponent(chkStop))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 6, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(chkLog3)
+                            .addComponent(txtWarnMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel10))
+                        .addGap(92, 92, 92))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(chkLog3)
-                        .addGap(92, 92, 92)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(19, 19, 19))
         );
@@ -467,6 +543,20 @@ public class Config extends javax.swing.JFrame {
         selected = cmbLookFeel.getSelectedIndex();
         LOOK_FEEL = cmbLookFeel.getItemAt(selected).toString();
         autoStop = chkStop.isSelected();
+        WARNING_HOUR = Integer.parseInt(txtWarnHour.getText());
+        WARNING_MINUTE = Integer.parseInt(txtWarnMin.getText());
+        STOP_HOUR = Integer.parseInt(txtStopHour.getText());
+        STOP_MINUTE = Integer.parseInt(txtStopMin.getText());
+        WARNING_MESSAGE = txtWarnMessage.getText();
+        if(!initAutoStop){
+            GUIPlugin.cancelStopTimer();
+        }
+        if(autoStop){
+            GUIPlugin.serverStopTimer();
+            g.setStopTimeLabel("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
+        } else{
+            g.setStopTimeLabel("Server stop disabled");
+        }
         saveConfig();
         g.updateConfig();
         this.setVisible(false);
@@ -515,10 +605,15 @@ public class Config extends javax.swing.JFrame {
     private javax.swing.JCheckBox chkStop;
     private javax.swing.JComboBox cmbLookFeel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -529,5 +624,10 @@ public class Config extends javax.swing.JFrame {
     private javax.swing.JTextField txtCustom3Command;
     private javax.swing.JTextField txtCustom3Text;
     private javax.swing.JTextField txtServerName;
+    private javax.swing.JTextField txtStopHour;
+    private javax.swing.JTextField txtStopMin;
+    private javax.swing.JTextField txtWarnHour;
+    private javax.swing.JTextField txtWarnMessage;
+    private javax.swing.JTextField txtWarnMin;
     // End of variables declaration//GEN-END:variables
 }

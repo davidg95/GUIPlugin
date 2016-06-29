@@ -38,6 +38,7 @@ public class ReloadServerPrompt extends javax.swing.JDialog {
 //        }
         //</editor-fold>
         initComponents();
+        setModal(true);
         this.setLocationRelativeTo(null);
     }
 
@@ -57,6 +58,7 @@ public class ReloadServerPrompt extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Reload Server?");
         setAlwaysOnTop(true);
+        setResizable(false);
 
         btnYes.setBackground(new java.awt.Color(102, 255, 0));
         btnYes.setText("Yes");

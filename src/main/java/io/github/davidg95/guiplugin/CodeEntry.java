@@ -6,18 +6,32 @@
 package io.github.davidg95.guiplugin;
 
 //import org.bukkit.Bukkit;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
+import javax.swing.JDialog;
+
 /**
  *
  * @author David
  */
-public class CodeEntry extends javax.swing.JFrame {
+public class CodeEntry extends javax.swing.JDialog {
 
-    private final int CODE = 3696;
+    private final String CODE;
+
+    private static JDialog dialog;
+
+    private static String inputValue = "";
+    
+    private static boolean correct;
 
     /**
      * Creates new form CodeEntry
+     *
+     * @param CODE the code for this CodeEntry.
      */
-    public CodeEntry() {
+    public CodeEntry(String CODE) {
+        this.CODE = CODE;
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -40,10 +54,38 @@ public class CodeEntry extends javax.swing.JFrame {
 //            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        }
         //</editor-fold>
-        this.setUndecorated(true);
+        //this.setUndecorated(true);
         initComponents();
         this.setLocationRelativeTo(null);
-        this.setVisible(true);
+        //this.setVisible(true);
+    }
+
+    public static boolean showCodeEntryDialog(Frame parent, String code) {
+        dialog = new CodeEntry(code);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        // [add components to dialog here]
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(parent);
+        
+        dialog.setVisible(true);
+        
+        return correct;
+    }
+
+    private class ButtonAction extends AbstractAction {
+
+        private static final long serialVersionUID = 1;
+
+        ButtonAction(String text, String actionCommand) {
+            super(text);
+            putValue(ACTION_COMMAND_KEY, actionCommand);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            inputValue += event.getActionCommand();
+        }
     }
 
     /**
@@ -74,6 +116,7 @@ public class CodeEntry extends javax.swing.JFrame {
 
         btn1.setText("1");
         btn1.setPreferredSize(new java.awt.Dimension(80, 80));
+        btn1.setAction(new ButtonAction("1", "1"));
         btn1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn1ActionPerformed(evt);
@@ -82,6 +125,7 @@ public class CodeEntry extends javax.swing.JFrame {
 
         btn2.setText("2");
         btn2.setPreferredSize(new java.awt.Dimension(80, 80));
+        btn2.setAction(new ButtonAction("2", "2"));
         btn2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn2ActionPerformed(evt);
@@ -90,6 +134,7 @@ public class CodeEntry extends javax.swing.JFrame {
 
         btn3.setText("3");
         btn3.setPreferredSize(new java.awt.Dimension(80, 80));
+        btn3.setAction(new ButtonAction("3", "3"));
         btn3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn3ActionPerformed(evt);
@@ -98,6 +143,7 @@ public class CodeEntry extends javax.swing.JFrame {
 
         btn4.setText("4");
         btn4.setPreferredSize(new java.awt.Dimension(80, 80));
+        btn4.setAction(new ButtonAction("4", "4"));
         btn4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn4ActionPerformed(evt);
@@ -106,6 +152,7 @@ public class CodeEntry extends javax.swing.JFrame {
 
         btn5.setText("5");
         btn5.setPreferredSize(new java.awt.Dimension(80, 80));
+        btn5.setAction(new ButtonAction("5", "5"));
         btn5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn5ActionPerformed(evt);
@@ -114,6 +161,7 @@ public class CodeEntry extends javax.swing.JFrame {
 
         btn6.setText("6");
         btn6.setPreferredSize(new java.awt.Dimension(80, 80));
+        btn6.setAction(new ButtonAction("6", "6"));
         btn6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn6ActionPerformed(evt);
@@ -122,6 +170,7 @@ public class CodeEntry extends javax.swing.JFrame {
 
         btn7.setText("7");
         btn7.setPreferredSize(new java.awt.Dimension(80, 80));
+        btn7.setAction(new ButtonAction("7", "7"));
         btn7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn7ActionPerformed(evt);
@@ -130,6 +179,7 @@ public class CodeEntry extends javax.swing.JFrame {
 
         btn8.setText("8");
         btn8.setPreferredSize(new java.awt.Dimension(80, 80));
+        btn8.setAction(new ButtonAction("8", "8"));
         btn8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn8ActionPerformed(evt);
@@ -138,6 +188,7 @@ public class CodeEntry extends javax.swing.JFrame {
 
         btn9.setText("9");
         btn9.setPreferredSize(new java.awt.Dimension(80, 80));
+        btn9.setAction(new ButtonAction("9", "9"));
         btn9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn9ActionPerformed(evt);
@@ -264,22 +315,17 @@ public class CodeEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_btn9ActionPerformed
 
     private void btnCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCActionPerformed
-        if(txtCode.getText().equals("")){
+        if (txtCode.getText().equals("")) {
             this.dispose();
         }
         txtCode.setText("");
     }//GEN-LAST:event_btnCActionPerformed
 
     private void btnEnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnterActionPerformed
-        if (!txtCode.getText().equals("")) {
-            int input = Integer.parseInt(txtCode.getText());
+        if (!inputValue.equals("")) {
             txtCode.setText("");
-            if (CODE == input) {
-                //Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-                this.dispose();
-            } else {
-                this.dispose();
-            }
+            correct = inputValue.equals(CODE);
+            this.dispose();
         }
     }//GEN-LAST:event_btnEnterActionPerformed
 
@@ -319,15 +365,15 @@ public class CodeEntry extends javax.swing.JFrame {
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btn1;
-    private javax.swing.JButton btn2;
-    private javax.swing.JButton btn3;
-    private javax.swing.JButton btn4;
-    private javax.swing.JButton btn5;
-    private javax.swing.JButton btn6;
-    private javax.swing.JButton btn7;
-    private javax.swing.JButton btn8;
-    private javax.swing.JButton btn9;
+    public javax.swing.JButton btn1;
+    public javax.swing.JButton btn2;
+    public javax.swing.JButton btn3;
+    public javax.swing.JButton btn4;
+    public javax.swing.JButton btn5;
+    public javax.swing.JButton btn6;
+    public javax.swing.JButton btn7;
+    public javax.swing.JButton btn8;
+    public javax.swing.JButton btn9;
     private javax.swing.JButton btnC;
     private javax.swing.JButton btnEnter;
     private javax.swing.JTextField txtCode;
