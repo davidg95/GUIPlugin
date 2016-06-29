@@ -18,11 +18,13 @@ import org.bukkit.OfflinePlayer;
 public class Whitelist extends javax.swing.JDialog {
 
     private ArrayList<OfflinePlayer> playerList;
+    private final GUI g;
 
     /**
      * Creates new form Whitelist
      */
-    public Whitelist() {
+    public Whitelist(GUI g) {
+        this.g = g;
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -96,6 +98,11 @@ public class Whitelist extends javax.swing.JDialog {
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        lstWhitelist.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lstWhitelistMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(lstWhitelist);
 
         btnClose.setText("Close");
@@ -159,6 +166,7 @@ public class Whitelist extends javax.swing.JDialog {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist add " + name);
             updateWhitelist();
             JOptionPane.showMessageDialog(this, name + " added to whitelist");
+            g.toTextArea(name + " added to whitelist");
         } else {
             JOptionPane.showMessageDialog(rootPane, "You must enter a player!", "Ban Player", JOptionPane.ERROR_MESSAGE);
         }
@@ -171,6 +179,7 @@ public class Whitelist extends javax.swing.JDialog {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist remove " + name);
                 updateWhitelist();
                 JOptionPane.showMessageDialog(this, name + " removed from whitelist");
+                g.toTextArea(name + " removed from whitelist");
             } else {
                 JOptionPane.showMessageDialog(this, "Select a player!", "Whitelist", JOptionPane.ERROR_MESSAGE);
             }
@@ -182,6 +191,13 @@ public class Whitelist extends javax.swing.JDialog {
     private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnCloseActionPerformed
+
+    private void lstWhitelistMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstWhitelistMouseClicked
+        if(evt.getClickCount() == 2){
+            new PlayerDetails(playerList.get(lstWhitelist.getSelectedIndex())).setVisible(true);
+            this.dispose();
+        }
+    }//GEN-LAST:event_lstWhitelistMouseClicked
 
 //    /**
 //     * @param args the command line arguments

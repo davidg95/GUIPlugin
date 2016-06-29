@@ -18,11 +18,13 @@ import org.bukkit.OfflinePlayer;
 public class BanList extends javax.swing.JDialog {
 
     private ArrayList<OfflinePlayer> playerList;
-
+    private final GUI g;
+    
     /**
      * Creates new form BanList
      */
-    public BanList() {
+    public BanList(GUI g) {
+        this.g = g;
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -96,6 +98,11 @@ public class BanList extends javax.swing.JDialog {
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        lstBanList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lstBanListMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(lstBanList);
 
         btnClose.setText("Close");
@@ -159,6 +166,7 @@ public class BanList extends javax.swing.JDialog {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban " + name);
             updateBanList();
             JOptionPane.showMessageDialog(this, name + " has been banned from this server");
+            g.toTextArea(name + " has been banned from this server");
         } else {
             JOptionPane.showMessageDialog(rootPane, "You must enter a player!", "Ban Player", JOptionPane.ERROR_MESSAGE);
         }
@@ -171,6 +179,7 @@ public class BanList extends javax.swing.JDialog {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pardon " + name);
                 updateBanList();
                 JOptionPane.showMessageDialog(this, name + " has been pardoned");
+                g.toTextArea(name + " has been pardoned");
             } else {
                 JOptionPane.showMessageDialog(this, "Select a player!", "Ban List", JOptionPane.ERROR_MESSAGE);
             }
@@ -182,6 +191,13 @@ public class BanList extends javax.swing.JDialog {
     private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnCloseActionPerformed
+
+    private void lstBanListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstBanListMouseClicked
+        if(evt.getClickCount() == 2){
+            new PlayerDetails(playerList.get(lstBanList.getSelectedIndex())).setVisible(true);
+            this.dispose();
+        }
+    }//GEN-LAST:event_lstBanListMouseClicked
 
 //    /**
 //     * @param args the command line arguments

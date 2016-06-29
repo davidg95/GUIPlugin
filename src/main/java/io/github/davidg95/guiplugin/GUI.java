@@ -33,7 +33,7 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
  */
 public class GUI extends javax.swing.JFrame implements Listener {
 
-    ArrayList<Player> playerList = new ArrayList<>();
+    private ArrayList<Player> playerList = new ArrayList<>();
     private boolean isDecorated = false;
     private final Config c;
 
@@ -76,7 +76,9 @@ public class GUI extends javax.swing.JFrame implements Listener {
         updateConfig();
         if (!Desktop.isDesktopSupported()) {
             btnDiconRDP.setEnabled(false);
-            JOptionPane.showMessageDialog(rootPane, "Warning, Desktop API not supported on this device, Disconnect RDP button has been disabled");
+            btn3DMap.setEnabled(false);
+            btnBackup.setEnabled(false);
+            JOptionPane.showMessageDialog(rootPane, "Warning, Desktop API not supported on this device, some buttons have been disabled.");
         } else {
             dt = Desktop.getDesktop();
         }
@@ -105,16 +107,6 @@ public class GUI extends javax.swing.JFrame implements Listener {
             btnCustom3.setEnabled(true);
             btnCustom3.setText(c.CUSTOM3_TEXT);
         }
-        /*if (!c.LOOK_FEEL.equals("")) {
-         for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-         if (c.LOOK_FEEL.equals(info.getName())) {
-         GUIPlugin.LOOK_FEEL = c.LOOK_FEEL;
-         dispose();
-         GUIPlugin.reloadGUI();
-         }
-         }
-         }*/
-
     }
     
     public void setStopTimeLabel(String s){
@@ -1089,7 +1081,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
     }//GEN-LAST:event_txtPlayerDetailsActionPerformed
 
     private void btnWhitelistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWhitelistActionPerformed
-        new Whitelist().setVisible(true);
+        new Whitelist(this).setVisible(true);
     }//GEN-LAST:event_btnWhitelistActionPerformed
 
     private void btnDiconRDPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDiconRDPActionPerformed
@@ -1110,7 +1102,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
     }//GEN-LAST:event_btnBackupActionPerformed
 
     private void btnBanListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBanListActionPerformed
-        new BanList().setVisible(true);
+        new BanList(this).setVisible(true);
     }//GEN-LAST:event_btnBanListActionPerformed
 
 //    /**
