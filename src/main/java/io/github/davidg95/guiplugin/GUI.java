@@ -71,9 +71,16 @@ public class GUI extends javax.swing.JFrame implements Listener {
         setStopTimeLabel("Server will stop at " + Config.STOP_HOUR + ":" + Config.STOP_MINUTE);
         updateOnline();
         c = new Config(this);
-        //pd = new PlayerDetails();
-        //getServerName();
         updateConfig();
+        toTextArea("Server " + c.SERVER_NAME + " running on port number " + Bukkit.getPort());
+        toTextArea("Running " + Bukkit.getVersion() + " " + Bukkit.getBukkitVersion());
+        toTextArea("Up to " + Bukkit.getMaxPlayers() + " players can be on at once");
+        toTextArea((Bukkit.hasWhitelist() ? "Sever is whitelisted" : "Server is not whitelisted"));
+        toTextArea((Bukkit.getOnlineMode() ? "Server authenticates clients" : "Server does not authenticate clients"));
+        toTextArea("Spawn protection radius: " + Bukkit.getSpawnRadius());
+        toTextArea((Bukkit.getAllowNether() ? "Nether is allowed" : "Nether is not allowed"));
+        toTextArea((Bukkit.getAllowEnd() ? "End is allowed" : "End is not allowed"));
+        toTextArea("Server will stop at " + Config.STOP_HOUR + ":" + Config.STOP_MINUTE);
         if (!Desktop.isDesktopSupported()) {
             btnDiconRDP.setEnabled(false);
             btn3DMap.setEnabled(false);
@@ -85,7 +92,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
     }
 
     public final void updateConfig() {
-        lblServerInfo.setText(c.SERVER_NAME + " running " + Bukkit.getVersion() + " " + Bukkit.getBukkitVersion());
+        lblServerInfo.setText(c.SERVER_NAME + " running " + Bukkit.getVersion() + " " + Bukkit.getBukkitVersion() + " " + (Bukkit.getIp().equals("") ? "No Bound IP" : "IP Address: " + Bukkit.getIp()) + " Port Number: " + Bukkit.getPort());
         if (c.CUSTOM1_TEXT.equals("")) {
             btnCustom1.setEnabled(false);
             btnCustom1.setText("");
@@ -108,8 +115,8 @@ public class GUI extends javax.swing.JFrame implements Listener {
             btnCustom3.setText(c.CUSTOM3_TEXT);
         }
     }
-    
-    public void setStopTimeLabel(String s){
+
+    public final void setStopTimeLabel(String s) {
         lblStopTime.setText(s);
     }
 
@@ -126,13 +133,14 @@ public class GUI extends javax.swing.JFrame implements Listener {
      */
     public final void updateOnline() {
         DefaultListModel lm = new DefaultListModel();
-        for (Player playerList1 : playerList) {
-            lm.addElement(playerList1.getName());
+        for (Player p : playerList) {
+            lm.addElement(p.getName() + " " + (p.isOp() ? "*" : ""));
         }
         if (lm.isEmpty()) {
             lm.addElement("There are currently no players online");
         }
         lstOnline.setModel(lm);
+        lblOnline.setText(playerList.size() + "/" + Bukkit.getMaxPlayers() + " players online");
     }
 
     /**
@@ -148,7 +156,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
         }
     }
 
-    public void toTextArea(String input) {
+    public final void toTextArea(String input) {
         txtLogs.append("[" + new Time(new Date().getTime()).toString() + "] " + input + "\n");
     }
 
@@ -332,9 +340,6 @@ public class GUI extends javax.swing.JFrame implements Listener {
         lstOnline = new javax.swing.JList();
         cmdEnterText = new javax.swing.JButton();
         btnCloseGUI = new javax.swing.JButton();
-        btnWeather = new javax.swing.JButton();
-        btnTime = new javax.swing.JButton();
-        btnDifficulty = new javax.swing.JButton();
         btnStop = new javax.swing.JButton();
         btnSave = new javax.swing.JButton();
         btnReload = new javax.swing.JButton();
@@ -375,6 +380,11 @@ public class GUI extends javax.swing.JFrame implements Listener {
         btnBackup = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         lblStopTime = new javax.swing.JLabel();
+        btnWeather = new javax.swing.JToggleButton();
+        btnTime = new javax.swing.JToggleButton();
+        btnDifficulty = new javax.swing.JToggleButton();
+        lblOnline = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
         setMaximumSize(new java.awt.Dimension(1024, 768));
@@ -415,30 +425,6 @@ public class GUI extends javax.swing.JFrame implements Listener {
         btnCloseGUI.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCloseGUIActionPerformed(evt);
-            }
-        });
-
-        btnWeather.setText("Weather");
-        btnWeather.setPreferredSize(new java.awt.Dimension(100, 100));
-        btnWeather.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnWeatherActionPerformed(evt);
-            }
-        });
-
-        btnTime.setText("Time");
-        btnTime.setPreferredSize(new java.awt.Dimension(100, 100));
-        btnTime.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTimeActionPerformed(evt);
-            }
-        });
-
-        btnDifficulty.setText("Difficulty");
-        btnDifficulty.setPreferredSize(new java.awt.Dimension(100, 100));
-        btnDifficulty.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDifficultyActionPerformed(evt);
             }
         });
 
@@ -807,6 +793,38 @@ public class GUI extends javax.swing.JFrame implements Listener {
 
         jButton1.setEnabled(false);
         jButton1.setPreferredSize(new java.awt.Dimension(100, 100));
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        btnWeather.setSelected(true);
+        btnWeather.setText("Weather");
+        btnWeather.setPreferredSize(new java.awt.Dimension(100, 100));
+        btnWeather.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnWeatherActionPerformed(evt);
+            }
+        });
+
+        btnTime.setText("Time");
+        btnTime.setPreferredSize(new java.awt.Dimension(100, 100));
+        btnTime.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTimeActionPerformed(evt);
+            }
+        });
+
+        btnDifficulty.setText("Diffuculty");
+        btnDifficulty.setPreferredSize(new java.awt.Dimension(100, 100));
+        btnDifficulty.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDifficultyActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("* - Op");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -814,12 +832,6 @@ public class GUI extends javax.swing.JFrame implements Listener {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnWeather, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(btnTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(btnDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnCustom1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, 0)
@@ -831,7 +843,13 @@ public class GUI extends javax.swing.JFrame implements Listener {
                         .addGap(0, 0, 0)
                         .addComponent(btnBackup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, 0)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnWeather, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(btnTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(btnDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(Menus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
@@ -843,7 +861,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
                 .addGap(0, 0, 0)
                 .addComponent(btnDispatchCommand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(btnConfig, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
+                .addComponent(btnConfig, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addComponent(btnMinMax, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
@@ -865,6 +883,10 @@ public class GUI extends javax.swing.JFrame implements Listener {
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(lblOnline, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(33, 33, 33)
+                            .addComponent(jLabel1)
                             .addContainerGap()))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblStopTime, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -894,15 +916,17 @@ public class GUI extends javax.swing.JFrame implements Listener {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(txtText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, 0)
+                    .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblOnline, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnWeather, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, 0)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, 0)
+                                .addComponent(btnDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnCustom3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnCustom2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -935,11 +959,29 @@ public class GUI extends javax.swing.JFrame implements Listener {
     }//GEN-LAST:event_txtTextActionPerformed
 
     private void btnCloseGUIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseGUIActionPerformed
-        this.setVisible(false);
+        if (Config.GUI_LOCK) {
+            CodeEntry.showCodeEntryDialog("Close GUI", CODE, new Runnable() {
+                @Override
+                public void run() {
+                    setVisible(false);
+                }
+            });
+        } else {
+            this.setVisible(false);
+        }
     }//GEN-LAST:event_btnCloseGUIActionPerformed
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
-        stop();
+        if (Config.GUI_LOCK) {
+            CodeEntry.showCodeEntryDialog("Stop Server", CODE, new Runnable() {
+                @Override
+                public void run() {
+                    stop();
+                }
+            });
+        } else {
+            stop();
+        }
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
@@ -947,23 +989,17 @@ public class GUI extends javax.swing.JFrame implements Listener {
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
-        reload();
+        if (Config.GUI_LOCK) {
+            CodeEntry.showCodeEntryDialog("Reload Server", CODE, new Runnable() {
+                @Override
+                public void run() {
+                    reload();
+                }
+            });
+        } else {
+            reload();
+        }
     }//GEN-LAST:event_btnReloadActionPerformed
-
-    private void btnWeatherActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWeatherActionPerformed
-        CardLayout card = (CardLayout) Menus.getLayout();
-        card.show(Menus, "WeatherCard");
-    }//GEN-LAST:event_btnWeatherActionPerformed
-
-    private void btnTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimeActionPerformed
-        CardLayout card = (CardLayout) Menus.getLayout();
-        card.show(Menus, "TimeCard");
-    }//GEN-LAST:event_btnTimeActionPerformed
-
-    private void btnDifficultyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDifficultyActionPerformed
-        CardLayout card = (CardLayout) Menus.getLayout();
-        card.show(Menus, "DifficultyCard");
-    }//GEN-LAST:event_btnDifficultyActionPerformed
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
         toTextArea("Set weather to clear for " + txtDuration.getText());
@@ -1033,21 +1069,38 @@ public class GUI extends javax.swing.JFrame implements Listener {
         if (isDecorated) {
             GUIPlugin.maximize();
         } else {
-            GUIPlugin.minimize();
+            if (Config.GUI_LOCK) {
+                CodeEntry.showCodeEntryDialog("Minimize GUI", CODE, new Runnable() {
+                    @Override
+                    public void run() {
+                        GUIPlugin.minimize();
+                    }
+                });
+            } else {
+                GUIPlugin.minimize();
+            }
         }
-
     }//GEN-LAST:event_btnMinMaxActionPerformed
 
     private void btnDispatchCommandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDispatchCommandActionPerformed
         String command = JOptionPane.showInputDialog("Enter command to send to server:");
-        if (!command.equals("")) {
+
+        if (command != null && !command.equals("")) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
             toTextArea("Dispatched command- " + command);
         }
     }//GEN-LAST:event_btnDispatchCommandActionPerformed
 
     private void btnConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigActionPerformed
-        c.setVisible(true);
+        if (Config.GUI_LOCK) {
+            CodeEntry.showCodeEntryDialog("Config Window", CODE, new Runnable() {
+                public void run() {
+                    c.setVisible(true);
+                }
+            });
+        } else {
+            c.setVisible(true);
+        }
     }//GEN-LAST:event_btnConfigActionPerformed
 
     private void btnCustom1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustom1ActionPerformed
@@ -1105,6 +1158,34 @@ public class GUI extends javax.swing.JFrame implements Listener {
         new BanList(this).setVisible(true);
     }//GEN-LAST:event_btnBanListActionPerformed
 
+    private void btnWeatherActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWeatherActionPerformed
+        btnWeather.setSelected(true);
+        btnTime.setSelected(false);
+        btnDifficulty.setSelected(false);
+        CardLayout card = (CardLayout) Menus.getLayout();
+        card.show(Menus, "WeatherCard");
+    }//GEN-LAST:event_btnWeatherActionPerformed
+
+    private void btnTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimeActionPerformed
+        btnWeather.setSelected(false);
+        btnTime.setSelected(true);
+        btnDifficulty.setSelected(false);
+        CardLayout card = (CardLayout) Menus.getLayout();
+        card.show(Menus, "TimeCard");
+    }//GEN-LAST:event_btnTimeActionPerformed
+
+    private void btnDifficultyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDifficultyActionPerformed
+        btnWeather.setSelected(false);
+        btnTime.setSelected(false);
+        btnDifficulty.setSelected(true);
+        CardLayout card = (CardLayout) Menus.getLayout();
+        card.show(Menus, "DifficultyCard");
+    }//GEN-LAST:event_btnDifficultyActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        //new Help().setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
 //    /**
 //     * @param args the command line arguments
 //     */
@@ -1155,7 +1236,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
     private javax.swing.JButton btnCustom2;
     private javax.swing.JButton btnCustom3;
     private javax.swing.JButton btnDiconRDP;
-    private javax.swing.JButton btnDifficulty;
+    private javax.swing.JToggleButton btnDifficulty;
     private javax.swing.JButton btnDispatchCommand;
     private javax.swing.JButton btnEasy;
     private javax.swing.JButton btnEnterTime;
@@ -1172,16 +1253,18 @@ public class GUI extends javax.swing.JFrame implements Listener {
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnStop;
     private javax.swing.JButton btnThunder;
-    private javax.swing.JButton btnTime;
+    private javax.swing.JToggleButton btnTime;
     private javax.swing.JButton btnToggleCycle;
-    private javax.swing.JButton btnWeather;
+    private javax.swing.JToggleButton btnWeather;
     private javax.swing.JButton btnWhitelist;
     private javax.swing.JButton cmdEnterText;
     private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblDuration;
     private javax.swing.JLabel lblManualEntry;
+    private javax.swing.JLabel lblOnline;
     private javax.swing.JLabel lblSeconds;
     private javax.swing.JLabel lblServerInfo;
     private javax.swing.JLabel lblStopTime;

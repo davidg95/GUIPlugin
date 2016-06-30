@@ -5,8 +5,6 @@
  */
 package io.github.davidg95.guiplugin;
 
-//import org.bukkit.Bukkit;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JDialog;
@@ -18,59 +16,32 @@ import javax.swing.JDialog;
 public class CodeEntry extends javax.swing.JDialog {
 
     private final String CODE;
-
     private static JDialog dialog;
-
-    private static String inputValue = "";
-    
-    private static boolean correct;
+    private String inputValue = "";
+    private final Runnable run;
 
     /**
      * Creates new form CodeEntry
      *
+     * @param title the title to give to the window.
      * @param CODE the code for this CodeEntry.
+     * @param run the runnable to run if the code is entered correctly.
      */
-    public CodeEntry(String CODE) {
+    public CodeEntry(String title, String CODE, Runnable run) {
         this.CODE = CODE;
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-        //</editor-fold>
-        //this.setUndecorated(true);
+        this.run = run;
+        inputValue = "";
         initComponents();
+        this.setTitle(title + " - Enter Code");
         this.setLocationRelativeTo(null);
-        //this.setVisible(true);
+        this.setModal(true);
     }
 
-    public static boolean showCodeEntryDialog(Frame parent, String code) {
-        dialog = new CodeEntry(code);
+    public static void showCodeEntryDialog(String title, String code, Runnable run) {
+        dialog = new CodeEntry(title, code, run);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        // [add components to dialog here]
 
-        dialog.pack();
-        dialog.setLocationRelativeTo(parent);
-        
         dialog.setVisible(true);
-        
-        return correct;
     }
 
     private class ButtonAction extends AbstractAction {
@@ -84,7 +55,11 @@ public class CodeEntry extends javax.swing.JDialog {
 
         @Override
         public void actionPerformed(ActionEvent event) {
-            inputValue += event.getActionCommand();
+            if (event.getActionCommand().equals("C")) {
+                inputValue = "";
+            } else {
+                inputValue += event.getActionCommand();
+            }
         }
     }
 
@@ -197,6 +172,7 @@ public class CodeEntry extends javax.swing.JDialog {
 
         btnC.setText("C");
         btnC.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnC.setAction(new ButtonAction("C", "C"));
         btnC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCActionPerformed(evt);
@@ -324,9 +300,12 @@ public class CodeEntry extends javax.swing.JDialog {
     private void btnEnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnterActionPerformed
         if (!inputValue.equals("")) {
             txtCode.setText("");
-            correct = inputValue.equals(CODE);
+            if (inputValue.equals(CODE)) {
+                run.run();
+            }
             this.dispose();
         }
+        this.dispose();
     }//GEN-LAST:event_btnEnterActionPerformed
 
 //    /**

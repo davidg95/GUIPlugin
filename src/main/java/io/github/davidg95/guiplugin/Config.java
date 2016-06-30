@@ -5,7 +5,6 @@
  */
 package io.github.davidg95.guiplugin;
 
-import java.awt.Component;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,7 +20,7 @@ import org.bukkit.Bukkit;
  */
 public class Config extends javax.swing.JDialog {
 
-    private GUI g;
+    private final GUI g;
     public String SERVER_NAME;
     public String CUSTOM1_TEXT;
     public String CUSTOM2_TEXT;
@@ -39,9 +38,12 @@ public class Config extends javax.swing.JDialog {
     protected static int STOP_HOUR = 23;
     protected static int STOP_MINUTE = 28;
     protected static String WARNING_MESSAGE = "***SERVER SHUTDOWN IN 5 MINUTES***";
+    protected static boolean GUI_LOCK = false;
 
     /**
      * Creates new form Config
+     *
+     * @param g reference to the main GUI.
      */
     public Config(GUI g) {
         /* Set the Nimbus look and feel */
@@ -89,41 +91,38 @@ public class Config extends javax.swing.JDialog {
         txtCustom2Command.setText(CUSTOM2_COMMAND);
         txtCustom3Text.setText(CUSTOM3_TEXT);
         txtCustom3Command.setText(CUSTOM3_COMMAND);
+        checkWhitelist.setSelected(Bukkit.hasWhitelist());
+        checkPasscode.setSelected(GUI_LOCK);
     }
-
-//    public Config(GUI g) {
-//        this.g = g;
-//        initComponents();
-//    }
     
     @Override
-    public void setVisible(boolean visible){
+    public void setVisible(boolean visible) {
         this.setLocationRelativeTo(null);
         super.setVisible(visible);
     }
-    
-    public void getLookAndFeel(){
+
+    public final void getLookAndFeel() {
         for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
             cmbLookFeel.addItem(info.getName());
         }
     }
-    
-    public void save(){
+
+    public void save() {
         GUIPlugin.conf.set("ServerName", SERVER_NAME);
         GUIPlugin.conf.set("Custom1Text", CUSTOM1_TEXT);
         GUIPlugin.conf.set("Custom1Command", CUSTOM1_COMMAND);
         GUIPlugin.conf.set("Custom2Text", CUSTOM2_TEXT);
         GUIPlugin.conf.set("Custom2Command", CUSTOM2_COMMAND);
     }
-    
-    public void load(){
+
+    public void load() {
         SERVER_NAME = (String) GUIPlugin.conf.get("ServerName");
         CUSTOM1_TEXT = (String) GUIPlugin.conf.get("Custom1Text");
         CUSTOM1_COMMAND = (String) GUIPlugin.conf.get("Custom1Command");
         CUSTOM2_TEXT = (String) GUIPlugin.conf.get("Custom2Text");
         CUSTOM2_COMMAND = (String) GUIPlugin.conf.get("Custom2Command");
     }
-    
+
     public void saveConfig() {
         try {
             File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("GUIPlugin").getDataFolder();
@@ -137,48 +136,48 @@ public class Config extends javax.swing.JDialog {
             boolean temp = configFile.delete();
             configFile.createNewFile();
             FileWriter fw = new FileWriter(configFile, true);
-            PrintWriter pw = new PrintWriter(fw);
-            if (SERVER_NAME.equals("")) {
-                pw.println("NULL");
-            } else {
-                pw.println(SERVER_NAME);
+            try (PrintWriter pw = new PrintWriter(fw)) {
+                if (SERVER_NAME.equals("")) {
+                    pw.println("NULL");
+                } else {
+                    pw.println(SERVER_NAME);
+                }
+                if (CUSTOM1_TEXT.equals("")) {
+                    pw.println("NULL");
+                } else {
+                    pw.println(CUSTOM1_TEXT);
+                }
+                if (CUSTOM1_COMMAND.equals("")) {
+                    pw.println("NULL");
+                } else {
+                    pw.println(CUSTOM1_COMMAND);
+                }
+                if (CUSTOM2_TEXT.equals("")) {
+                    pw.println("NULL");
+                } else {
+                    pw.println(CUSTOM2_TEXT);
+                }
+                if (CUSTOM2_COMMAND.equals("")) {
+                    pw.println("NULL");
+                } else {
+                    pw.println(CUSTOM2_COMMAND);
+                }
+                if (CUSTOM3_TEXT.equals("")) {
+                    pw.println("NULL");
+                } else {
+                    pw.println(CUSTOM3_TEXT);
+                }
+                if (CUSTOM3_COMMAND.equals("")) {
+                    pw.println("NULL");
+                } else {
+                    pw.println(CUSTOM3_COMMAND);
+                }
+                if (GUI_LOCK) {
+                    pw.println("TRUE");
+                } else {
+                    pw.println("FALSE");
+                }
             }
-            if (CUSTOM1_TEXT.equals("")) {
-                pw.println("NULL");
-            } else {
-                pw.println(CUSTOM1_TEXT);
-            }
-            if (CUSTOM1_COMMAND.equals("")) {
-                pw.println("NULL");
-            } else {
-                pw.println(CUSTOM1_COMMAND);
-            }
-            if (CUSTOM2_TEXT.equals("")) {
-                pw.println("NULL");
-            } else {
-                pw.println(CUSTOM2_TEXT);
-            }
-            if (CUSTOM2_COMMAND.equals("")) {
-                pw.println("NULL");
-            } else {
-                pw.println(CUSTOM2_COMMAND);
-            }
-            if (CUSTOM3_TEXT.equals("")) {
-                pw.println("NULL");
-            } else {
-                pw.println(CUSTOM3_TEXT);
-            }
-            if (CUSTOM3_COMMAND.equals("")) {
-                pw.println("NULL");
-            } else {
-                pw.println(CUSTOM3_COMMAND);
-            }
-            /*if(LOOK_FEEL.equals("")){
-                pw.println("NULL");
-            } else{
-                pw.println(LOOK_FEEL);
-            }*/
-            pw.close();
         } catch (FileNotFoundException e) {
             System.out.println(e);
         } catch (IOException e) {
@@ -186,7 +185,7 @@ public class Config extends javax.swing.JDialog {
         }
     }
 
-    public void loadConfig() {
+    public final void loadConfig() {
         try {
             File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("GUIPlugin").getDataFolder();
             if (!dataFolder.exists()) {
@@ -196,16 +195,16 @@ public class Config extends javax.swing.JDialog {
             if (!configFile.exists()) {
                 configFile.createNewFile();
                 FileWriter fw = new FileWriter(configFile, true);
-                PrintWriter pw = new PrintWriter(fw);
-                pw.println("NULL");
-                pw.println("NULL");
-                pw.println("NULL");
-                pw.println("NULL");
-                pw.println("NULL");
-                pw.println("NULL");
-                pw.println("NULL");
-                //pw.println("NULL");
-                pw.close();
+                try (PrintWriter pw = new PrintWriter(fw)) {
+                    pw.println("NULL");
+                    pw.println("NULL");
+                    pw.println("NULL");
+                    pw.println("NULL");
+                    pw.println("NULL");
+                    pw.println("NULL");
+                    pw.println("NULL");
+                    pw.println("FALSE");
+                }
             }
             FileReader fr = new FileReader(configFile);
             BufferedReader br = new BufferedReader(fr);
@@ -237,10 +236,10 @@ public class Config extends javax.swing.JDialog {
             if (!cus3Com.equals("NULL")) {
                 CUSTOM3_COMMAND = cus3Com;
             }
-            /*String lf = br.readLine();
-            if(!lf.equals("NULL")){
-                LOOK_FEEL = lf;
-            }*/
+            String lock = br.readLine();
+            if (!lock.equals("FALSE")) {
+                GUI_LOCK = true;
+            }
             br.close();
         } catch (FileNotFoundException e) {
             System.out.println(e);
@@ -291,6 +290,8 @@ public class Config extends javax.swing.JDialog {
         txtCustom1Text = new javax.swing.JTextField();
         txtCustom1Command = new javax.swing.JTextField();
         chkLog1 = new javax.swing.JCheckBox();
+        checkWhitelist = new javax.swing.JCheckBox();
+        checkPasscode = new javax.swing.JCheckBox();
 
         setTitle("Configuration");
         setAlwaysOnTop(true);
@@ -522,6 +523,10 @@ public class Config extends javax.swing.JDialog {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        checkWhitelist.setText("Enable Whitelist");
+
+        checkPasscode.setText("Require Passcode");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -542,6 +547,10 @@ public class Config extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(checkWhitelist)
+                        .addGap(35, 35, 35)
+                        .addComponent(checkPasscode))
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(cmbLookFeel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -551,10 +560,12 @@ public class Config extends javax.swing.JDialog {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addGap(19, 19, 19)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(txtServerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtServerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(checkWhitelist)
+                    .addComponent(checkPasscode))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(34, 34, 34)
@@ -566,7 +577,7 @@ public class Config extends javax.swing.JDialog {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
                 .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(19, 19, 19))
         );
@@ -585,20 +596,28 @@ public class Config extends javax.swing.JDialog {
         selected = cmbLookFeel.getSelectedIndex();
         LOOK_FEEL = cmbLookFeel.getItemAt(selected).toString();
         autoStop = chkStop.isSelected();
+        Bukkit.setWhitelist(checkWhitelist.isSelected());
+        Config.GUI_LOCK = checkPasscode.isSelected();
         WARNING_HOUR = Integer.parseInt(txtWarnHour.getText());
         WARNING_MINUTE = Integer.parseInt(txtWarnMin.getText());
         STOP_HOUR = Integer.parseInt(txtStopHour.getText());
         STOP_MINUTE = Integer.parseInt(txtStopMin.getText());
         WARNING_MESSAGE = txtWarnMessage.getText();
-        if(!initAutoStop){
-            GUIPlugin.cancelStopTimer();
-        }
-        if(autoStop){
+        if (initAutoStop == false && autoStop == true) {
             GUIPlugin.serverStopTimer();
             g.setStopTimeLabel("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
-        } else{
+            g.toTextArea("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
+        } else if (initAutoStop == true && autoStop == false) {
+            GUIPlugin.cancelStopTimer();
             g.setStopTimeLabel("Server stop disabled");
+            g.toTextArea("Server stip disabled");
+        } else if (initAutoStop == true && autoStop == true) {
+            GUIPlugin.cancelStopTimer();
+            GUIPlugin.serverStopTimer();
+            g.setStopTimeLabel("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
+            g.toTextArea("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
         }
+        initAutoStop = autoStop;
         saveConfig();
         g.updateConfig();
         this.setVisible(false);
@@ -641,6 +660,8 @@ public class Config extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnUpdate;
+    private javax.swing.JCheckBox checkPasscode;
+    private javax.swing.JCheckBox checkWhitelist;
     private javax.swing.JCheckBox chkLog1;
     private javax.swing.JCheckBox chkLog2;
     private javax.swing.JCheckBox chkLog3;

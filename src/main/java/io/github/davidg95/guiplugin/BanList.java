@@ -19,9 +19,10 @@ public class BanList extends javax.swing.JDialog {
 
     private ArrayList<OfflinePlayer> playerList;
     private final GUI g;
-    
+
     /**
      * Creates new form BanList
+     * @param g a reference to the main GUI.
      */
     public BanList(GUI g) {
         this.g = g;
@@ -193,9 +194,11 @@ public class BanList extends javax.swing.JDialog {
     }//GEN-LAST:event_btnCloseActionPerformed
 
     private void lstBanListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstBanListMouseClicked
-        if(evt.getClickCount() == 2){
-            new PlayerDetails(playerList.get(lstBanList.getSelectedIndex())).setVisible(true);
-            this.dispose();
+        if (evt.getClickCount() == 2) {
+            if (playerList.size() > 0) {
+                new PlayerDetails(playerList.get(lstBanList.getSelectedIndex())).setVisible(true);
+                this.dispose();
+            }
         }
     }//GEN-LAST:event_lstBanListMouseClicked
 

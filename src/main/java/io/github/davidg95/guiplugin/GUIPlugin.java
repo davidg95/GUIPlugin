@@ -87,6 +87,8 @@ public class GUIPlugin extends JavaPlugin {
     }
 
     public static void serverStopTimer() {
+        timWarning = new Timer();
+        timStop = new Timer();
         Calendar warning = Calendar.getInstance();
         warning.set(Calendar.HOUR_OF_DAY, Config.WARNING_HOUR);
         warning.set(Calendar.MINUTE, Config.WARNING_MINUTE);
