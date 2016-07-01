@@ -10,20 +10,15 @@ import javax.swing.AbstractAction;
 import javax.swing.JDialog;
 
 /**
- * A simple code entry dialog which asks the user to enter a code. If the code
- * is correct, a runnable is executed which is passed in as a parameter.
  *
  * @author David
  */
-public class CodeEntry extends javax.swing.JDialog {
+public class CodeEntryOLD extends javax.swing.JDialog {
 
     private final String CODE;
     private static JDialog dialog;
     private String inputValue = "";
-    private final Runnable run1;
-    private final Runnable run2;
-    private static boolean result = false;
-    private static String codeResult = "";
+    private final Runnable run;
 
     /**
      * Creates new form CodeEntry
@@ -32,134 +27,38 @@ public class CodeEntry extends javax.swing.JDialog {
      * @param CODE the code for this CodeEntry.
      * @param run the runnable to run if the code is entered correctly.
      */
-    public CodeEntry(String title, String CODE, Runnable run) {
+    public CodeEntryOLD(String title, String CODE, Runnable run) {
         this.CODE = CODE;
-        this.run1 = run;
-        this.run2 = null;
+        this.run = run;
         inputValue = "";
         initComponents();
-        this.setTitle(title);
+        this.setTitle(title + " - Enter Code");
         this.setLocationRelativeTo(null);
         this.setModal(true);
     }
 
-    /**
-     * Creates new form CodeEntry
-     *
-     * @param title the title to give to the window.
-     * @param CODE the code for this CodeEntry.
-     * @param run1 the runnable which will be executed if the code is entered
-     * correctly.
-     * @param run2 the runnable which will be executed if the code is entered
-     * incorrectly.
-     */
-    public CodeEntry(String title, String CODE, Runnable run1, Runnable run2) {
-        this.CODE = CODE;
-        this.run1 = run1;
-        this.run2 = run2;
-        inputValue = "";
-        initComponents();
-        this.setTitle(title);
-        this.setLocationRelativeTo(null);
-        this.setModal(true);
-    }
-
-    /**
-     * Creates new form CodeEntry
-     *
-     * @param title the title to give to the window.
-     * @param CODE the code for this CodeEntry.
-     */
-    public CodeEntry(String title, String CODE) {
-        this.CODE = CODE;
-        this.run1 = null;
-        this.run2 = null;
-        inputValue = "";
-        initComponents();
-        this.setTitle(title);
-        this.setLocationRelativeTo(null);
-        this.setModal(true);
-    }
-
-    /**
-     * Creates new form CodeEntry
-     *
-     * @param title the title to give to the window.
-     */
-    public CodeEntry(String title) {
+    public CodeEntryOLD(String title, Runnable run) {
+        this.run = run;
         this.CODE = null;
-        this.run1 = null;
-        this.run2 = null;
         inputValue = "";
         initComponents();
-        this.setTitle(title);
+        this.setTitle(title + " - Enter Code");
         this.setLocationRelativeTo(null);
         this.setModal(true);
     }
 
-    /**
-     * Method to show the CodeEntry dialog.
-     *
-     * @param title the title to show on the window.
-     * @param code the code to use. The code the used enters must match this
-     * code.
-     * @param run the runnable which will be executed if the code is entered
-     * correctly.
-     */
     public static void showCodeEntryDialog(String title, String code, Runnable run) {
-        dialog = new CodeEntry(title, code, run);
+        dialog = new CodeEntryOLD(title, code, run);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         dialog.setVisible(true);
     }
 
-    /**
-     * Method to show the CodeEntry dialog.
-     *
-     * @param title the title to show on the window.
-     * @param code the code to use. The code the used enters must match this
-     * code.
-     * @param run1 the runnable which will be executed if the code is entered
-     * correctly.
-     * @param run2 the runnable which will be executed if the code is entered
-     * incorrectly.
-     */
-    public static void showCodeEntryDialog(String title, String code, Runnable run1, Runnable run2) {
-        dialog = new CodeEntry(title, code, run1, run2);
+    public static void showNumberEntryDialog(String title, Runnable run) {
+        dialog = new CodeEntryOLD(title, run);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         dialog.setVisible(true);
-    }
-
-    /**
-     * Method to show the CodeEntry dialog.
-     *
-     * @param title the title to give to the window.
-     * @param code the code to use. The code the user enters must match this
-     * code.
-     * @return true if the code matches, false otherwise. false will also be
-     * returned if the user cancels.
-     */
-    public static boolean showCodeEntryDialog(String title, String code) {
-        dialog = new CodeEntry(title, code);
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-        dialog.setVisible(true);
-        return result;
-    }
-
-    /**
-     * Method to show the CodeEntry dialog.
-     *
-     * @param title the title to give to the window.
-     * @return the code the user entered as a String.
-     */
-    public static String showCodeEntryDialog(String title) {
-        dialog = new CodeEntry(title);
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-        dialog.setVisible(true);
-        return codeResult;
     }
 
     private class ButtonAction extends AbstractAction {
@@ -173,22 +72,15 @@ public class CodeEntry extends javax.swing.JDialog {
 
         @Override
         public void actionPerformed(ActionEvent event) {
-            switch (event.getActionCommand()) {
-                case "C": //If the user pressed cancel
-                    inputValue = "";
-                    if (txtCode.getPassword().length == 0) {
-                        dispose();
-                    }
-                    txtCode.setText("");
-                    break;
-                case "Enter": //If the user pressed enter
-                    checkCode();
-                    break;
-                default: //If a number key was pressed
-                    inputValue = new String(txtCode.getPassword());
-                    inputValue += event.getActionCommand();
-                    txtCode.setText(inputValue);
-                    break;
+            if (event.getActionCommand().equals("C")) {
+                inputValue = "";
+                if (txtCode.getText().equals("")) {
+                    dispose();
+                }
+                txtCode.setText("");
+            } else {
+                inputValue += event.getActionCommand();
+                txtCode.setText(txtCode.getText() + "*");
             }
         }
     }
@@ -213,9 +105,10 @@ public class CodeEntry extends javax.swing.JDialog {
         btn9 = new javax.swing.JButton();
         btnC = new javax.swing.JButton();
         btnEnter = new javax.swing.JButton();
-        txtCode = new javax.swing.JPasswordField();
+        txtCode = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setMaximumSize(new java.awt.Dimension(320, 320));
         setMinimumSize(new java.awt.Dimension(320, 320));
 
         btn1.setText("1");
@@ -260,48 +153,56 @@ public class CodeEntry extends javax.swing.JDialog {
 
         btnEnter.setText("Enter");
         btnEnter.setPreferredSize(new java.awt.Dimension(80, 160));
-        btnEnter.setAction(new ButtonAction("Enter", "Enter"));
+        btnEnter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEnterActionPerformed(evt);
+            }
+        });
 
         txtCode.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
-        txtCode.setAction(new ButtonAction("", "Enter"));
+        txtCode.setToolTipText("");
         txtCode.setPreferredSize(new java.awt.Dimension(320, 40));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(btn4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(0, 0, 0)
-                            .addComponent(btn5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(0, 0, 0)
-                            .addComponent(btn6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(btn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(0, 0, 0)
-                            .addComponent(btn2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(0, 0, 0)
-                            .addComponent(btn3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btn7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(btn8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(btn9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGroup(layout.createSequentialGroup()
                 .addGap(0, 0, 0)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEnter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addComponent(txtCode, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(btn4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(0, 0, 0)
+                                    .addComponent(btn5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(0, 0, 0)
+                                    .addComponent(btn6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(btn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(0, 0, 0)
+                                    .addComponent(btn2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(0, 0, 0)
+                                    .addComponent(btn3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btn7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, 0)
+                                .addComponent(btn8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, 0)
+                                .addComponent(btn9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, 0)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnEnter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(txtCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnEnter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
@@ -325,31 +226,16 @@ public class CodeEntry extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * Method to check the code.
-     */
-    private void checkCode() {
-        if (txtCode.getPassword().length != 0) {
-            if (CODE != null) {
-                if (new String(txtCode.getPassword()).equals(CODE)) { //Check the correct code was entered
-                    if (run1 != null) { //Check if a runnable was passed in
-                        run1.run();
-                    } else {
-                        result = true; //If no runnable was passed in then set the result to equal true
-                    }
-                } else {
-                    if (run2 != null) { //Check if a runnable was passed in
-                        run2.run();
-                    }
-                }
-                txtCode.setText("");
-                this.dispose();
-            } else {
-                codeResult = new String(txtCode.getPassword());
+    private void btnEnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnterActionPerformed
+        if (!inputValue.equals("")) {
+            txtCode.setText("");
+            if (inputValue.equals(CODE) || CODE == null) {
+                run.run();
             }
+            this.dispose();
         }
         this.dispose();
-    }
+    }//GEN-LAST:event_btnEnterActionPerformed
 
 //    /**
 //     * @param args the command line arguments
@@ -398,6 +284,6 @@ public class CodeEntry extends javax.swing.JDialog {
     public javax.swing.JButton btn9;
     private javax.swing.JButton btnC;
     private javax.swing.JButton btnEnter;
-    private javax.swing.JPasswordField txtCode;
+    private javax.swing.JTextField txtCode;
     // End of variables declaration//GEN-END:variables
 }

@@ -410,6 +410,11 @@ public class GUI extends javax.swing.JFrame implements Listener {
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        lstOnline.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lstOnlineMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(lstOnline);
 
         cmdEnterText.setText("Enter");
@@ -816,7 +821,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
             }
         });
 
-        btnDifficulty.setText("Diffuculty");
+        btnDifficulty.setText("Difficulty");
         btnDifficulty.setPreferredSize(new java.awt.Dimension(100, 100));
         btnDifficulty.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -924,9 +929,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnWeather, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, 0)
-                                .addComponent(btnDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(btnDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnCustom3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnCustom2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -960,7 +963,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
 
     private void btnCloseGUIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseGUIActionPerformed
         if (Config.GUI_LOCK) {
-            CodeEntry.showCodeEntryDialog("Close GUI", CODE, new Runnable() {
+            CodeEntry.showCodeEntryDialog("Close GUI - Enter Code", CODE, new Runnable() {
                 @Override
                 public void run() {
                     setVisible(false);
@@ -973,7 +976,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
         if (Config.GUI_LOCK) {
-            CodeEntry.showCodeEntryDialog("Stop Server", CODE, new Runnable() {
+            CodeEntry.showCodeEntryDialog("Stop Server - Enter Code", CODE, new Runnable() {
                 @Override
                 public void run() {
                     stop();
@@ -990,7 +993,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
 
     private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
         if (Config.GUI_LOCK) {
-            CodeEntry.showCodeEntryDialog("Reload Server", CODE, new Runnable() {
+            CodeEntry.showCodeEntryDialog("Reload Server - Enter Code", CODE, new Runnable() {
                 @Override
                 public void run() {
                     reload();
@@ -1070,7 +1073,7 @@ public class GUI extends javax.swing.JFrame implements Listener {
             GUIPlugin.maximize();
         } else {
             if (Config.GUI_LOCK) {
-                CodeEntry.showCodeEntryDialog("Minimize GUI", CODE, new Runnable() {
+                CodeEntry.showCodeEntryDialog("Minimize GUI - Enter Code", CODE, new Runnable() {
                     @Override
                     public void run() {
                         GUIPlugin.minimize();
@@ -1083,17 +1086,32 @@ public class GUI extends javax.swing.JFrame implements Listener {
     }//GEN-LAST:event_btnMinMaxActionPerformed
 
     private void btnDispatchCommandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDispatchCommandActionPerformed
-        String command = JOptionPane.showInputDialog("Enter command to send to server:");
+        if (Config.GUI_LOCK) {
+            CodeEntry.showCodeEntryDialog("Dispatch Command - Enter Code", CODE, new Runnable() {
+                @Override
+                public void run() {
+                    String command = JOptionPane.showInputDialog("Enter command to send to server:");
 
-        if (command != null && !command.equals("")) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-            toTextArea("Dispatched command- " + command);
+                    if (command != null && !command.equals("")) {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                        toTextArea("Dispatched command- " + command);
+                    }
+                }
+            });
+        } else {
+            String command = JOptionPane.showInputDialog("Enter command to send to server:");
+
+            if (command != null && !command.equals("")) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                toTextArea("Dispatched command- " + command);
+            }
         }
     }//GEN-LAST:event_btnDispatchCommandActionPerformed
 
     private void btnConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigActionPerformed
         if (Config.GUI_LOCK) {
-            CodeEntry.showCodeEntryDialog("Config Window", CODE, new Runnable() {
+            CodeEntry.showCodeEntryDialog("Config Window - Enter Code", CODE, new Runnable() {
+                @Override
                 public void run() {
                     c.setVisible(true);
                 }
@@ -1185,6 +1203,21 @@ public class GUI extends javax.swing.JFrame implements Listener {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         //new Help().setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void lstOnlineMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstOnlineMouseClicked
+        if (evt.getClickCount() == 2) {
+            int i = lstOnline.getSelectedIndex();
+
+            if (i == -1) {
+                JOptionPane.showMessageDialog(rootPane, "Select a player!", "Player Details", JOptionPane.ERROR_MESSAGE);
+                //new PlayerDetails().setVisible(true);
+            } else {
+                if (!playerList.isEmpty()) {
+                    new PlayerDetails(playerList.get(i)).setVisible(true);
+                }
+            }
+        }
+    }//GEN-LAST:event_lstOnlineMouseClicked
 
 //    /**
 //     * @param args the command line arguments
