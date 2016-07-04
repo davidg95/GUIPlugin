@@ -67,6 +67,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
         this.playerList = playerList;
         initComponents();
         jScrollPane1.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        jScrollPane2.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         txtLogs.setLineWrap(true);
         setStopTimeLabel("Server will stop at " + Config.STOP_HOUR + ":" + Config.STOP_MINUTE);
         updateOnline();
@@ -584,7 +585,8 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             }
         });
 
-        btnToggleCycle.setText("Toggle Cycle");
+        btnToggleCycle.setText("<html><center>Toggle<br />Cycle</center></html>");
+        btnToggleCycle.setEnabled(false);
         btnToggleCycle.setPreferredSize(new java.awt.Dimension(100, 100));
         btnToggleCycle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -762,7 +764,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             }
         });
 
-        txtPlayerDetails.setText("Player Details");
+        txtPlayerDetails.setText("<html><center>Player<br />Details</center></html>");
         txtPlayerDetails.setMaximumSize(new java.awt.Dimension(73, 73));
         txtPlayerDetails.setMinimumSize(new java.awt.Dimension(73, 73));
         txtPlayerDetails.setPreferredSize(new java.awt.Dimension(73, 73));
@@ -895,25 +897,24 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                         .addComponent(lblServerInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(txtText)
                     .addComponent(jScrollPane1))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtPlayerDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnWhitelist, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnBanList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(lblOnline, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(33, 33, 33)
-                            .addComponent(jLabel1)
-                            .addContainerGap()))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblStopTime, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtPlayerDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnWhitelist, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnBanList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(lblStopTime, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnDiconRDP))))
+                        .addComponent(btnDiconRDP))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(lblOnline, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel1)
+                        .addGap(26, 26, 26))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -980,12 +981,9 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnCloseGUIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseGUIActionPerformed
         if (Config.GUI_LOCK) {
-            CodeEntry.showCodeEntryDialog("Close GUI - Enter Code", CODE, new Runnable() {
-                @Override
-                public void run() {
-                    setVisible(false);
-                }
-            });
+            if (CodeEntry.showCodeEntryDialog("Stop Server - Enter Code", CODE)) {
+                this.setVisible(false);
+            }
         } else {
             this.setVisible(false);
         }
@@ -993,12 +991,9 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
         if (Config.GUI_LOCK) {
-            CodeEntry.showCodeEntryDialog("Stop Server - Enter Code", CODE, new Runnable() {
-                @Override
-                public void run() {
-                    stop();
-                }
-            });
+            if (CodeEntry.showCodeEntryDialog("Stop Server - Enter Code", CODE)) {
+                stop();
+            }
         } else {
             stop();
         }
@@ -1010,12 +1005,9 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
         if (Config.GUI_LOCK) {
-            CodeEntry.showCodeEntryDialog("Reload Server - Enter Code", CODE, new Runnable() {
-                @Override
-                public void run() {
-                    reload();
-                }
-            });
+            if (CodeEntry.showCodeEntryDialog("Stop Server - Enter Code", CODE)) {
+                reload();
+            }
         } else {
             reload();
         }
@@ -1090,12 +1082,9 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             GUIPlugin.maximize();
         } else {
             if (Config.GUI_LOCK) {
-                CodeEntry.showCodeEntryDialog("Minimize GUI - Enter Code", CODE, new Runnable() {
-                    @Override
-                    public void run() {
-                        GUIPlugin.minimize();
-                    }
-                });
+                if (CodeEntry.showCodeEntryDialog("Stop Server - Enter Code", CODE)) {
+                    GUIPlugin.minimize();
+                }
             } else {
                 GUIPlugin.minimize();
             }
@@ -1104,17 +1093,14 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnDispatchCommandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDispatchCommandActionPerformed
         if (Config.GUI_LOCK) {
-            CodeEntry.showCodeEntryDialog("Dispatch Command - Enter Code", CODE, new Runnable() {
-                @Override
-                public void run() {
-                    String command = JOptionPane.showInputDialog("Enter command to send to server:");
+            if (CodeEntry.showCodeEntryDialog("Stop Server - Enter Code", CODE)) {
+                String command = JOptionPane.showInputDialog("Enter command to send to server:");
 
-                    if (command != null && !command.equals("")) {
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-                        toTextArea("Dispatched command- " + command);
-                    }
+                if (command != null && !command.equals("")) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                    toTextArea("Dispatched command- " + command);
                 }
-            });
+            }
         } else {
             String command = JOptionPane.showInputDialog("Enter command to send to server:");
 
@@ -1127,12 +1113,9 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigActionPerformed
         if (Config.GUI_LOCK) {
-            CodeEntry.showCodeEntryDialog("Config Window - Enter Code", CODE, new Runnable() {
-                @Override
-                public void run() {
-                    c.setVisible(true);
-                }
-            });
+            if (CodeEntry.showCodeEntryDialog("Stop Server - Enter Code", CODE)) {
+                c.setVisible(true);
+            }
         } else {
             c.setVisible(true);
         }
@@ -1145,12 +1128,12 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnCustom2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustom2ActionPerformed
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), c.CUSTOM2_COMMAND);
-        toTextArea("Dispatched command- " + c.CUSTOM2_COMMAND);
+        //toTextArea("Dispatched command- " + c.CUSTOM2_COMMAND);
     }//GEN-LAST:event_btnCustom2ActionPerformed
 
     private void btnCustom3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustom3ActionPerformed
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), c.CUSTOM3_COMMAND);
-        toTextArea("Dispatched command- " + c.CUSTOM3_COMMAND);
+        //toTextArea("Dispatched command- " + c.CUSTOM3_COMMAND);
     }//GEN-LAST:event_btnCustom3ActionPerformed
 
     private void txtPlayerDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPlayerDetailsActionPerformed
@@ -1161,7 +1144,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             //new PlayerDetails().setVisible(true);
         } else {
             if (!playerList.isEmpty()) {
-                new PlayerDetails(playerList.get(i)).setVisible(true);
+                new PlayerDetails(playerList.get(i), this).setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(rootPane, "Select a player!", "Player Details", JOptionPane.ERROR_MESSAGE);
             }
@@ -1230,7 +1213,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                 //new PlayerDetails().setVisible(true);
             } else {
                 if (!playerList.isEmpty()) {
-                    new PlayerDetails(playerList.get(i)).setVisible(true);
+                    new PlayerDetails(playerList.get(i), this).setVisible(true);
                 }
             }
         }

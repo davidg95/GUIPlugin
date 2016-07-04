@@ -22,6 +22,7 @@ public class Whitelist extends javax.swing.JDialog {
 
     /**
      * Creates new form Whitelist
+     *
      * @param g a reference to the main GUI
      */
     public Whitelist(GUI g) {
@@ -196,7 +197,7 @@ public class Whitelist extends javax.swing.JDialog {
     private void lstWhitelistMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstWhitelistMouseClicked
         if (evt.getClickCount() == 2) {
             if (playerList.size() > 0) {
-                new PlayerDetails(playerList.get(lstWhitelist.getSelectedIndex())).setVisible(true);
+                new PlayerDetails(playerList.get(lstWhitelist.getSelectedIndex()), g).setVisible(true);
                 this.dispose();
             }
         }

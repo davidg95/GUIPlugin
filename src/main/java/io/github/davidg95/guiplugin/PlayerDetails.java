@@ -20,13 +20,15 @@ public class PlayerDetails extends javax.swing.JDialog {
     private Player player;
     private OfflinePlayer offlinePlayer;
     private String PLAYER_NAME;
+    private final GUIInterface g;
 
     /**
      * Creates new form PlayerDetails
      *
      * @param p the Player to show details for.
+     * @param g reference to the main GUI.
      */
-    public PlayerDetails(Player p) {
+    public PlayerDetails(Player p, GUIInterface g) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -50,6 +52,7 @@ public class PlayerDetails extends javax.swing.JDialog {
 //        }
         //</editor-fold>
         this.player = p;
+        this.g = g;
         PLAYER_NAME = p.getName();
         initComponents();
         setModal(true);
@@ -72,7 +75,7 @@ public class PlayerDetails extends javax.swing.JDialog {
      *
      * @param p the Player to show details for.
      */
-    public PlayerDetails(OfflinePlayer p) {
+    public PlayerDetails(OfflinePlayer p, GUIInterface g) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -96,6 +99,7 @@ public class PlayerDetails extends javax.swing.JDialog {
 //        }
         //</editor-fold>
         this.offlinePlayer = p;
+        this.g = g;
         PLAYER_NAME = p.getName();
         initComponents();
         setModal(true);
@@ -120,6 +124,7 @@ public class PlayerDetails extends javax.swing.JDialog {
     public PlayerDetails() {
         initComponents();
         this.setLocationRelativeTo(null);
+        this.g = null;
     }
 
     private void setInventoryList(PlayerInventory pi) {
@@ -392,6 +397,7 @@ public class PlayerDetails extends javax.swing.JDialog {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "op " + player.getName());
             JOptionPane.showMessageDialog(this, player.getName() + " has been opped");
         }
+        g.updateOnline();
     }//GEN-LAST:event_checkOpActionPerformed
 
     private void checkSleepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkSleepActionPerformed

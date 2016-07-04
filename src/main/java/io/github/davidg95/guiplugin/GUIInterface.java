@@ -31,4 +31,11 @@ public interface GUIInterface {
      * Update the GUI according to the config.
      */
     public void updateConfig();
+
+    /**
+     * Updates the list of current online players by reading the contents of the
+     * playerList ArrayList.
+     */
+    public void updateOnline();
+
 }

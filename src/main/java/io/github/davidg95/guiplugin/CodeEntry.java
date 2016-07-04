@@ -217,6 +217,7 @@ public class CodeEntry extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(320, 320));
+        setResizable(false);
 
         btn1.setText("1");
         btn1.setPreferredSize(new java.awt.Dimension(80, 80));
@@ -340,6 +341,8 @@ public class CodeEntry extends javax.swing.JDialog {
                 } else {
                     if (run2 != null) { //Check if a runnable was passed in
                         run2.run();
+                    } else {
+                        result = false; //If no runnable was passed in then set the result to equal true
                     }
                 }
                 txtCode.setText("");
