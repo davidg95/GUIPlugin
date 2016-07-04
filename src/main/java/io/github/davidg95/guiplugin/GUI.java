@@ -31,7 +31,7 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
  *
  * @author David
  */
-public class GUI extends javax.swing.JFrame implements Listener {
+public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private ArrayList<Player> playerList = new ArrayList<>();
     private boolean isDecorated = false;
@@ -91,6 +91,10 @@ public class GUI extends javax.swing.JFrame implements Listener {
         }
     }
 
+    /**
+     * Update the GUI according to the config.
+     */
+    @Override
     public final void updateConfig() {
         lblServerInfo.setText(c.SERVER_NAME + " running " + Bukkit.getVersion() + " " + Bukkit.getBukkitVersion() + " " + (Bukkit.getIp().equals("") ? "No Bound IP" : "IP Address: " + Bukkit.getIp()) + " Port Number: " + Bukkit.getPort());
         if (c.CUSTOM1_TEXT.equals("")) {
@@ -116,6 +120,12 @@ public class GUI extends javax.swing.JFrame implements Listener {
         }
     }
 
+    /**
+     * Set the value of the label for the stop time.
+     *
+     * @param s the String to set as the value.
+     */
+    @Override
     public final void setStopTimeLabel(String s) {
         lblStopTime.setText(s);
     }
@@ -156,6 +166,13 @@ public class GUI extends javax.swing.JFrame implements Listener {
         }
     }
 
+    /**
+     * Method to output to the text area. The time will be appended to the
+     * start.
+     *
+     * @param input the String to output to the text area.
+     */
+    @Override
     public final void toTextArea(String input) {
         txtLogs.append("[" + new Time(new Date().getTime()).toString() + "] " + input + "\n");
     }

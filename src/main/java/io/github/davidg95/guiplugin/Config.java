@@ -21,7 +21,7 @@ import org.bukkit.Bukkit;
  */
 public class Config extends javax.swing.JDialog {
 
-    private final GUI g;
+    private final GUIInterface g;
     public String SERVER_NAME;
     public String CUSTOM1_TEXT;
     public String CUSTOM2_TEXT;
@@ -46,7 +46,7 @@ public class Config extends javax.swing.JDialog {
      *
      * @param g reference to the main GUI.
      */
-    public Config(GUI g) {
+    public Config(GUIInterface g) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -95,7 +95,7 @@ public class Config extends javax.swing.JDialog {
         checkWhitelist.setSelected(Bukkit.hasWhitelist());
         checkPasscode.setSelected(GUI_LOCK);
     }
-    
+
     @Override
     public void setVisible(boolean visible) {
         this.setLocationRelativeTo(null);

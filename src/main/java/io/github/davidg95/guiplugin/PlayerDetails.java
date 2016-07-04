@@ -20,9 +20,11 @@ public class PlayerDetails extends javax.swing.JDialog {
     private Player player;
     private OfflinePlayer offlinePlayer;
     private String PLAYER_NAME;
-    
+
     /**
      * Creates new form PlayerDetails
+     *
+     * @param p the Player to show details for.
      */
     public PlayerDetails(Player p) {
         /* Set the Nimbus look and feel */
@@ -58,15 +60,17 @@ public class PlayerDetails extends javax.swing.JDialog {
         txtGameMode.setText(player.getGameMode().toString());
         checkOp.setSelected(player.isOp());
         checkSleep.setSelected(player.isSleepingIgnored());
-        prgHealth.setValue((int)player.getHealth());
+        prgHealth.setValue((int) player.getHealth());
         prgHungar.setValue(player.getFoodLevel());
         lblXP.setText(Integer.toString(player.getLevel()));
-        prgXP.setValue((int)(player.getExp() * 100));
+        prgXP.setValue((int) (player.getExp() * 100));
         this.setLocationRelativeTo(null);
     }
-    
+
     /**
      * Creates new form PlayerDetails
+     *
+     * @param p the Player to show details for.
      */
     public PlayerDetails(OfflinePlayer p) {
         /* Set the Nimbus look and feel */
@@ -112,13 +116,13 @@ public class PlayerDetails extends javax.swing.JDialog {
         btnBan.setEnabled(false);
         this.setLocationRelativeTo(null);
     }
-    
-    public PlayerDetails(){
+
+    public PlayerDetails() {
         initComponents();
         this.setLocationRelativeTo(null);
     }
-    
-    private void setInventoryList(PlayerInventory pi){
+
+    private void setInventoryList(PlayerInventory pi) {
 //        DefaultListModel lm = new DefaultListModel();
 //        for(int i = 0; i < pi.getSize(); i++){
 //            lm.addElement(pi.getItem(i).getItemMeta().getDisplayName());
@@ -282,19 +286,18 @@ public class PlayerDetails extends javax.swing.JDialog {
                         .addComponent(checkOp)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
                         .addComponent(checkSleep))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addComponent(lblXP, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(prgXP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addComponent(prgHungar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(prgHealth, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txtGameMode, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(txtUUID, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(txtMessage, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
-                        .addComponent(txtAddress, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(txtCustomName, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(txtName, javax.swing.GroupLayout.Alignment.LEADING)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblXP, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(prgXP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(prgHungar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(prgHealth, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtGameMode)
+                    .addComponent(txtUUID)
+                    .addComponent(txtMessage, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
+                    .addComponent(txtAddress)
+                    .addComponent(txtCustomName)
+                    .addComponent(txtName))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSend)
                 .addContainerGap(39, Short.MAX_VALUE))
@@ -382,19 +385,19 @@ public class PlayerDetails extends javax.swing.JDialog {
     }//GEN-LAST:event_txtMessageActionPerformed
 
     private void checkOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkOpActionPerformed
-        if(player.isOp()){
+        if (player.isOp()) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "deop " + player.getName());
             JOptionPane.showMessageDialog(this, player.getName() + " has been de opped");
-        } else{
+        } else {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "op " + player.getName());
             JOptionPane.showMessageDialog(this, player.getName() + " has been opped");
         }
     }//GEN-LAST:event_checkOpActionPerformed
 
     private void checkSleepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkSleepActionPerformed
-        if(player.isSleepingIgnored()){
+        if (player.isSleepingIgnored()) {
             player.setSleepingIgnored(false);
-        } else{
+        } else {
             player.setSleepingIgnored(true);
         }
     }//GEN-LAST:event_checkSleepActionPerformed

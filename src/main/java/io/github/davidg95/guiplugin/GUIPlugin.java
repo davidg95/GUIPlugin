@@ -31,13 +31,13 @@ public class GUIPlugin extends JavaPlugin {
     protected static Timer timWarning = new Timer();
     protected static Timer timStop = new Timer();
     protected static boolean dtAPI;
-    
+
     @Override
     public void onEnable() {
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             playerList.add(player);
         }
-        
+
         dtAPI = Desktop.isDesktopSupported();
 
         conf = this.getConfig();
@@ -66,19 +66,19 @@ public class GUIPlugin extends JavaPlugin {
                 return true;
             }
         } else if (cmd.getName().equalsIgnoreCase("rendermap")) {
-            if(dtAPI){
-            g.renderMap();
-            }else{
+            if (dtAPI) {
+                g.renderMap();
+            } else {
                 sender.sendMessage("Desktop API not supported, render map has been disabled.");
             }
             return true;
-        } else if (cmd.getName().equalsIgnoreCase("ignoresleep")){
-            if(sender instanceof Player){
+        } else if (cmd.getName().equalsIgnoreCase("ignoresleep")) {
+            if (sender instanceof Player) {
                 Player p = (Player) sender;
                 p.setSleepingIgnored(!p.isSleepingIgnored());
-                if(p.isSleepingIgnored()){
+                if (p.isSleepingIgnored()) {
                     sender.sendMessage("Sleeping ignored");
-                } else{
+                } else {
                     sender.sendMessage("Sleeping no longer ignored");
                 }
             }
@@ -120,8 +120,8 @@ public class GUIPlugin extends JavaPlugin {
                 TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
         );
     }
-    
-    public static void cancelStopTimer(){
+
+    public static void cancelStopTimer() {
         timWarning.cancel();
         timStop.cancel();
     }
