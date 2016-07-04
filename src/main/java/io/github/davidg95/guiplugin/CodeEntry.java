@@ -175,6 +175,7 @@ public class CodeEntry extends javax.swing.JDialog {
         public void actionPerformed(ActionEvent event) {
             switch (event.getActionCommand()) {
                 case "C": //If the user pressed cancel
+                    result = false;
                     inputValue = "";
                     if (txtCode.getPassword().length == 0) {
                         dispose();
@@ -342,7 +343,7 @@ public class CodeEntry extends javax.swing.JDialog {
                     if (run2 != null) { //Check if a runnable was passed in
                         run2.run();
                     } else {
-                        result = false; //If no runnable was passed in then set the result to equal true
+                        result = false; //If no runnable was passed in then set the result to equal false
                     }
                 }
                 txtCode.setText("");
