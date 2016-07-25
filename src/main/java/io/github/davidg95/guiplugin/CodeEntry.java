@@ -143,7 +143,8 @@ public class CodeEntry extends javax.swing.JDialog {
     public static boolean showCodeEntryDialog(String title, String code) {
         dialog = new CodeEntry(title, code);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
+        
+        result = false;
         dialog.setVisible(true);
         return result;
     }

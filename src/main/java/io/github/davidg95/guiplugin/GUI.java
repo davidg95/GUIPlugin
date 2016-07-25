@@ -981,7 +981,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnCloseGUIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseGUIActionPerformed
         if (Config.GUI_LOCK) {
-            if (CodeEntry.showCodeEntryDialog("Stop Server - Enter Code", CODE)) {
+            if (CodeEntry.showCodeEntryDialog("Close GUI - Enter Code", CODE)) {
                 this.setVisible(false);
             }
         } else {
@@ -1005,7 +1005,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
         if (Config.GUI_LOCK) {
-            if (CodeEntry.showCodeEntryDialog("Stop Server - Enter Code", CODE)) {
+            if (CodeEntry.showCodeEntryDialog("Reload Server - Enter Code", CODE)) {
                 reload();
             }
         } else {
@@ -1082,7 +1082,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             GUIPlugin.maximize();
         } else {
             if (Config.GUI_LOCK) {
-                if (CodeEntry.showCodeEntryDialog("Stop Server - Enter Code", CODE)) {
+                if (CodeEntry.showCodeEntryDialog("Minimize GUI - Enter Code", CODE)) {
                     GUIPlugin.minimize();
                 }
             } else {
@@ -1093,7 +1093,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnDispatchCommandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDispatchCommandActionPerformed
         if (Config.GUI_LOCK) {
-            if (CodeEntry.showCodeEntryDialog("Stop Server - Enter Code", CODE)) {
+            if (CodeEntry.showCodeEntryDialog("Dispatch Command - Enter Code", CODE)) {
                 String command = JOptionPane.showInputDialog("Enter command to send to server:");
 
                 if (command != null && !command.equals("")) {
@@ -1113,7 +1113,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigActionPerformed
         if (Config.GUI_LOCK) {
-            if (CodeEntry.showCodeEntryDialog("Stop Server - Enter Code", CODE)) {
+            if (CodeEntry.showCodeEntryDialog("Config - Enter Code", CODE)) {
                 c.setVisible(true);
             }
         } else {
