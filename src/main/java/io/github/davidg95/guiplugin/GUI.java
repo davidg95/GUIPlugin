@@ -246,7 +246,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             if (choice == 1) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
             } else if (choice == 2) {
-                File document = new File("C:\\Windows\\System32\\shutdown.exe");
+                File document = new File(".\\shutdown.lnk");
                 dt.open(document);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
             } else if (choice == 3) {
@@ -262,7 +262,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                         new java.util.TimerTask() {
                             @Override
                             public void run() {
-                                File document = new File("C:\\Windows\\System32\\shutdown.exe");
+                                File document = new File(".\\shutdown.lnk");
                                 try {
                                     dt.open(document);
                                 } catch (IOException ex) {
