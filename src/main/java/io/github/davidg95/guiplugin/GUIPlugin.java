@@ -6,6 +6,8 @@
 package io.github.davidg95.guiplugin;
 
 import java.awt.Desktop;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Timer;
@@ -28,9 +30,10 @@ public class GUIPlugin extends JavaPlugin {
     protected static GUI g;
     protected static FileConfiguration conf;
     public static String LOOK_FEEL = "Metal";
-    protected static Timer timWarning = new Timer();
-    protected static Timer timStop = new Timer();
     protected static boolean dtAPI;
+    private ServerSocket s;
+    private int PORT = 25566;
+    private ConnectionThread connThread;
 
     @Override
     public void onEnable() {
@@ -46,8 +49,16 @@ public class GUIPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(g, this);
         g.setVisible(true);
+        
+        try {
+            s = new ServerSocket(PORT);
+        } catch (IOException ex) {
+            
+        }
+        
+        connThread = new ConnectionThread(s, g);
 
-        serverStopTimer();
+        g.serverStopTimer();
     }
 
     @Override
@@ -86,45 +97,7 @@ public class GUIPlugin extends JavaPlugin {
         return false;
     }
 
-    public static void serverStopTimer() {
-        timWarning = new Timer();
-        timStop = new Timer();
-        Calendar warning = Calendar.getInstance();
-        warning.set(Calendar.HOUR_OF_DAY, Config.WARNING_HOUR);
-        warning.set(Calendar.MINUTE, Config.WARNING_MINUTE);
-        warning.set(Calendar.SECOND, 0);
-        // Schedule to run every night at 23:23
-        timWarning.schedule(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say " + Config.WARNING_MESSAGE);
-                    }
-                },
-                warning.getTime(),
-                TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
-        );
-        Calendar stopper = Calendar.getInstance();
-        stopper.set(Calendar.HOUR_OF_DAY, Config.STOP_HOUR);
-        stopper.set(Calendar.MINUTE, Config.STOP_MINUTE);
-        stopper.set(Calendar.SECOND, 0);
-        // Schedule to run every night at 23:28
-        timStop.schedule(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-                    }
-                },
-                stopper.getTime(),
-                TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
-        );
-    }
-
-    public static void cancelStopTimer() {
-        timWarning.cancel();
-        timStop.cancel();
-    }
+    
 
     /**
      * Method to set the GUI to the decorated state. This method will dispose of

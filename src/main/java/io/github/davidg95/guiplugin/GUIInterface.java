@@ -37,5 +37,11 @@ public interface GUIInterface {
      * playerList ArrayList.
      */
     public void updateOnline();
+    
+    public void displayConnectionMessage();
+    
+    public void serverStopTimer();
+    
+    public void cancelStopTimer();
 
 }

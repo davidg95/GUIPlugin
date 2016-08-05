@@ -22,7 +22,11 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import java.sql.Time;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
@@ -35,7 +39,10 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private ArrayList<Player> playerList = new ArrayList<>();
     private boolean isDecorated = false;
-    private final Config c;
+    protected final Config c;
+
+    protected static Timer timWarning = new Timer();
+    protected static Timer timStop = new Timer();
 
     private Desktop dt;
     private final String TS_DISCON = "C:\\Users\\David\\Desktop\\Disconnect RDP.lnk";
@@ -66,6 +73,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
         //</editor-fold>
         this.playerList = playerList;
         initComponents();
+        this.toFront();
         jScrollPane1.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         jScrollPane2.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         txtLogs.setLineWrap(true);
@@ -90,6 +98,11 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
         } else {
             dt = Desktop.getDesktop();
         }
+    }
+
+    @Override
+    public void displayConnectionMessage() {
+
     }
 
     /**
@@ -226,7 +239,63 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
      * Calls the GUI asking if they are sure they want to stop the server.
      */
     public void stop() {
-        new StopServerPrompt().setVisible(true);
+        //new StopServerPrompt().setVisible(true);
+        int choice = StopServerOptions.showStopOptions();
+
+        try {
+            if (choice == 1) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+            } else if (choice == 2) {
+                File document = new File("C:\\Windows\\System32\\shutdown.exe");
+                dt.open(document);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+            } else if (choice == 3) {
+                File document = new File(".\\sleep.lnk");
+                dt.open(document);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+            } else if (choice == 4) {
+                backup();
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+            } else if (choice == 5) {
+                backup();
+                new java.util.Timer().schedule(
+                        new java.util.TimerTask() {
+                            @Override
+                            public void run() {
+                                File document = new File("C:\\Windows\\System32\\shutdown.exe");
+                                try {
+                                    dt.open(document);
+                                } catch (IOException ex) {
+
+                                }
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                            }
+                        },
+                        10000
+                );
+                JOptionPane.showMessageDialog(this, "Server will stop in 10 seconds", "Server Shutdown", JOptionPane.WARNING_MESSAGE);
+            } else if (choice == 6) {
+                backup();
+                new java.util.Timer().schedule(
+                        new java.util.TimerTask() {
+                            @Override
+                            public void run() {
+                                File document = new File(".\\sleep.lnk");
+                                try {
+                                    dt.open(document);
+                                } catch (IOException ex) {
+
+                                }
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                            }
+                        },
+                        10000
+                );
+                JOptionPane.showMessageDialog(this, "Server will stop in 10 seconds", "Server Sleep", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (IOException ex) {
+
+        }
     }
 
     /**
@@ -340,6 +409,55 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     public void setBtnMinMaxTitle(String t) {
         btnMinMax.setText(t);
+    }
+
+    @Override
+    public void serverStopTimer() {
+        timWarning = new Timer();
+        timStop = new Timer();
+        Calendar warning = Calendar.getInstance();
+        warning.set(Calendar.HOUR_OF_DAY, Config.WARNING_HOUR);
+        warning.set(Calendar.MINUTE, Config.WARNING_MINUTE);
+        warning.set(Calendar.SECOND, 0);
+        // Schedule to run every night at 23:23
+        timWarning.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        backup();
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say " + Config.WARNING_MESSAGE);
+                    }
+                },
+                warning.getTime(),
+                TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
+        );
+        Calendar stopper = Calendar.getInstance();
+        stopper.set(Calendar.HOUR_OF_DAY, Config.STOP_HOUR);
+        stopper.set(Calendar.MINUTE, Config.STOP_MINUTE);
+        stopper.set(Calendar.SECOND, 0);
+        // Schedule to run every night at 23:28
+        timStop.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        File document = new File(".\\sleep.lnk");
+                        try {
+                            dt.open(document);
+                        } catch (IOException ex) {
+
+                        }
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                    }
+                },
+                stopper.getTime(),
+                TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
+        );
+    }
+
+    @Override
+    public void cancelStopTimer() {
+        timWarning.cancel();
+        timStop.cancel();
     }
 
     /**

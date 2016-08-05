@@ -617,16 +617,16 @@ public class Config extends javax.swing.JDialog {
         STOP_MINUTE = Integer.parseInt(txtStopMin.getText());
         WARNING_MESSAGE = txtWarnMessage.getText();
         if (initAutoStop == false && autoStop == true) {
-            GUIPlugin.serverStopTimer();
+            g.serverStopTimer();
             g.setStopTimeLabel("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
             g.toTextArea("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
         } else if (initAutoStop == true && autoStop == false) {
-            GUIPlugin.cancelStopTimer();
+            g.cancelStopTimer();
             g.setStopTimeLabel("Server stop disabled");
             g.toTextArea("Server stip disabled");
         } else if (initAutoStop == true && autoStop == true) {
-            GUIPlugin.cancelStopTimer();
-            GUIPlugin.serverStopTimer();
+            g.cancelStopTimer();
+            g.serverStopTimer();
             g.setStopTimeLabel("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
         }
         initAutoStop = autoStop;
