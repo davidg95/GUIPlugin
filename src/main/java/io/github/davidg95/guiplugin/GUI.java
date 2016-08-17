@@ -6,7 +6,10 @@
 package io.github.davidg95.guiplugin;
 
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Desktop;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,11 +25,15 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
@@ -39,7 +46,6 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private ArrayList<Player> playerList = new ArrayList<>();
     private boolean isDecorated = false;
-    protected final Config c;
 
     protected static Timer timWarning = new Timer();
     protected static Timer timStop = new Timer();
@@ -47,7 +53,12 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
     private Desktop dt;
     private final String TS_DISCON = "C:\\Users\\David\\Desktop\\Disconnect RDP.lnk";
 
+    private MouseListener mouseClick;
+
     private final String CODE = "3696";
+
+    protected ClockThread clockThread;
+    protected FlashCompThread stopPanelThread;
 
     /**
      * Creates new form GUI
@@ -73,16 +84,20 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
         //</editor-fold>
         this.playerList = playerList;
         initComponents();
-        this.toFront();
+        mouseClick = new MouseClickListener();
+        this.addMouseListener((MouseListener) mouseClick);
+        clockThread = new ClockThread(lblTime);
+        clockThread.start();
         jScrollPane1.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         jScrollPane2.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         txtLogs.setLineWrap(true);
-        setStopTimeLabel("Server will stop at " + Config.STOP_HOUR + ":" + Config.STOP_MINUTE);
         updateOnline();
-        c = new Config(this);
-        updateConfig();
-        toTextArea("Server " + c.SERVER_NAME + " running on port number " + Bukkit.getPort());
+        Config.initConfig(this);
+        this.setTitle(Config.SERVER_NAME + " " + Bukkit.getBukkitVersion());
+        setStopTimeLabel("Server will stop at " + Config.STOP_HOUR + ":" + Config.STOP_MINUTE);
+        toTextArea("Server " + Config.SERVER_NAME + " running on port number " + Bukkit.getPort());
         toTextArea("Running " + Bukkit.getVersion() + " " + Bukkit.getBukkitVersion());
+        toTextArea("Processor Cores: " + Runtime.getRuntime().availableProcessors());
         toTextArea("Up to " + Bukkit.getMaxPlayers() + " players can be on at once");
         toTextArea((Bukkit.hasWhitelist() ? "Sever is whitelisted" : "Server is not whitelisted"));
         toTextArea((Bukkit.getOnlineMode() ? "Server authenticates clients" : "Server does not authenticate clients"));
@@ -94,14 +109,131 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             btnDiconRDP.setEnabled(false);
             btn3DMap.setEnabled(false);
             btnBackup.setEnabled(false);
-            JOptionPane.showMessageDialog(rootPane, "Warning, Desktop API not supported on this device, some buttons have been disabled.");
+            BigPrompt.showMessageDialog("Desktop API Not Supported", "Warning, Desktop API not supported on this device, some buttons have been disabled.");
+            //JOptionPane.showMessageDialog(rootPane, "Warning, Desktop API not supported on this device, some buttons have been disabled.");
         } else {
             dt = Desktop.getDesktop();
         }
+
+        SwingUtilities.invokeLater(() -> {
+            this.toFront();
+            this.repaint();
+        });
     }
 
     @Override
     public void displayConnectionMessage() {
+
+    }
+
+    public class MouseClickListener implements MouseListener {
+
+        @Override
+        public void mouseClicked(MouseEvent evt) {
+            if (evt.getClickCount() == 2) {
+                if (isDecorated) {
+                    GUIPlugin.maximize();
+                }
+            }
+
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+
+        }
+
+    }
+
+    public class FlashCompThread extends Thread {
+
+        protected boolean isRunning;
+
+        protected JComponent flashComp;
+
+        protected boolean isRed;
+
+        public FlashCompThread(JComponent flashComp) {
+            this.flashComp = flashComp;
+            this.isRunning = false;
+            this.isRed = false;
+        }
+
+        @Override
+        public void run() {
+            while (isRunning) {
+                SwingUtilities.invokeLater(() -> {
+                    if (isRed) {
+                        flashComp.setBackground(null);
+                        isRed = false;
+                    } else {
+                        flashComp.setBackground(Color.RED);
+                        isRed = true;
+                    }
+                });
+
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+
+        public void setRunning(boolean isRunning) {
+            this.isRunning = isRunning;
+        }
+    }
+
+    public class ClockThread extends Thread {
+
+        protected boolean isRunning;
+
+        protected JLabel dateTimeLabel;
+
+        protected SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+
+        public ClockThread(JLabel dateTimeLabel) {
+            this.dateTimeLabel = dateTimeLabel;
+            this.isRunning = true;
+        }
+
+        @Override
+        public void run() {
+            while (isRunning) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        Calendar currentCalendar = Calendar.getInstance();
+                        Date currentTime = currentCalendar.getTime();
+                        dateTimeLabel.setText(timeFormat.format(currentTime));
+                    }
+                });
+
+                try {
+                    Thread.sleep(5000L);
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+
+        public void setRunning(boolean isRunning) {
+            this.isRunning = isRunning;
+        }
 
     }
 
@@ -110,27 +242,28 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
      */
     @Override
     public final void updateConfig() {
-        lblServerInfo.setText(c.SERVER_NAME + " running " + Bukkit.getVersion() + " " + Bukkit.getBukkitVersion() + " " + (Bukkit.getIp().equals("") ? "No Bound IP" : "IP Address: " + Bukkit.getIp()) + " Port Number: " + Bukkit.getPort());
-        if (c.CUSTOM1_TEXT.equals("")) {
+        lblServerInfo.setText("Server- " + Config.SERVER_NAME);
+        this.setTitle(Config.SERVER_NAME + " " + Bukkit.getBukkitVersion());
+        if (Config.CUSTOM1_TEXT.equals("")) {
             btnCustom1.setEnabled(false);
             btnCustom1.setText("");
         } else {
             btnCustom1.setEnabled(true);
-            btnCustom1.setText(c.CUSTOM1_TEXT);
+            btnCustom1.setText(Config.CUSTOM1_TEXT);
         }
-        if (c.CUSTOM2_TEXT.equals("")) {
+        if (Config.CUSTOM2_TEXT.equals("")) {
             btnCustom2.setEnabled(false);
             btnCustom2.setText("");
         } else {
             btnCustom2.setEnabled(true);
-            btnCustom2.setText(c.CUSTOM2_TEXT);
+            btnCustom2.setText(Config.CUSTOM2_TEXT);
         }
-        if (c.CUSTOM3_TEXT.equals("")) {
+        if (Config.CUSTOM3_TEXT.equals("")) {
             btnCustom3.setEnabled(false);
             btnCustom3.setText("");
         } else {
             btnCustom3.setEnabled(true);
-            btnCustom3.setText(c.CUSTOM3_TEXT);
+            btnCustom3.setText(Config.CUSTOM3_TEXT);
         }
     }
 
@@ -148,7 +281,8 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
      * Displays message saying functionality has not been implemented yet.
      */
     public void notImp() {
-        JOptionPane.showMessageDialog(rootPane, "Not implemented yet!");
+        //JOptionPane.showMessageDialog(rootPane, "Not implemented yet!");
+        BigPrompt.showMessageDialog("Not Implemented", "Not implemented yet!");
     }
 
     /**
@@ -243,20 +377,100 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
         int choice = StopServerOptions.showStopOptions();
 
         try {
-            if (choice == 1) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-            } else if (choice == 2) {
-                File document = new File(".\\shutdown.lnk");
-                dt.open(document);
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-            } else if (choice == 3) {
-                File document = new File(".\\sleep.lnk");
-                dt.open(document);
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-            } else if (choice == 4) {
+            if (choice == 1) { //If stop with no backup was selected
+                if (Bukkit.getOnlinePlayers().size() > 0) {
+                    new java.util.Timer().schedule(
+                            new java.util.TimerTask() {
+                                @Override
+                                public void run() {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                                }
+                            },
+                            5000
+                    );
+                    stopPanelThread = new FlashCompThread(topPanel);
+                    stopPanelThread.start();
+                    stopPanelThread.setRunning(true);
+                    Bukkit.broadcastMessage("***SERVER STOPPING IN 5 SECONDS***");
+                    JOptionPane.showMessageDialog(this, "Server will stop in 5 seconds", "Server Stop", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                }
+            } else if (choice == 2) { //If shutdown with no backup was selected
+                if (Bukkit.getOnlinePlayers().size() > 0) {
+                    new java.util.Timer().schedule(
+                            new java.util.TimerTask() {
+                                @Override
+                                public void run() {
+                                    File document = new File(".\\shutdown.lnk");
+                                    try {
+                                        dt.open(document);
+                                    } catch (IOException ex) {
+
+                                    }
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                                }
+                            },
+                            5000
+                    );
+                    stopPanelThread = new FlashCompThread(topPanel);
+                    stopPanelThread.start();
+                    stopPanelThread.setRunning(true);
+                    Bukkit.broadcastMessage("***SERVER STOPPING IN 5 SECONDS***");
+                    JOptionPane.showMessageDialog(this, "Server will stop in 5 seconds", "Server Stop", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    File document = new File(".\\shutdown.lnk");
+                    dt.open(document);
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                }
+            } else if (choice == 3) { //If sleep with no backup was selected
+                if (Bukkit.getOnlinePlayers().size() > 0) {
+                    new java.util.Timer().schedule(
+                            new java.util.TimerTask() {
+                                @Override
+                                public void run() {
+                                    File document = new File(".\\sleep.lnk");
+                                    try {
+                                        dt.open(document);
+                                    } catch (IOException ex) {
+
+                                    }
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                                }
+                            },
+                            5000
+                    );
+                    stopPanelThread = new FlashCompThread(topPanel);
+                    stopPanelThread.start();
+                    stopPanelThread.setRunning(true);
+                    Bukkit.broadcastMessage("***SERVER STOPPING IN 5 SECONDS***");
+                    JOptionPane.showMessageDialog(this, "Server will stop in 5 seconds", "Server Stop", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    File document = new File(".\\sleep.lnk");
+                    dt.open(document);
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                }
+            } else if (choice == 4) { //If stop with backup was selected
                 backup();
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-            } else if (choice == 5) {
+                if (Bukkit.getOnlinePlayers().size() > 0) {
+                    new java.util.Timer().schedule(
+                            new java.util.TimerTask() {
+                                @Override
+                                public void run() {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                                }
+                            },
+                            5000
+                    );
+                    stopPanelThread = new FlashCompThread(topPanel);
+                    stopPanelThread.start();
+                    stopPanelThread.setRunning(true);
+                    Bukkit.broadcastMessage("***SERVER STOPPING IN 5 SECONDS***");
+                    JOptionPane.showMessageDialog(this, "Server will stop in 5 seconds", "Server Stop", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                }
+            } else if (choice == 5) { //If shutdown with backup was selected
                 backup();
                 new java.util.Timer().schedule(
                         new java.util.TimerTask() {
@@ -273,8 +487,9 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                         },
                         10000
                 );
+                Bukkit.broadcastMessage("***SERVER STOPPING IN 10 SECONDS***");
                 JOptionPane.showMessageDialog(this, "Server will stop in 10 seconds", "Server Shutdown", JOptionPane.WARNING_MESSAGE);
-            } else if (choice == 6) {
+            } else if (choice == 6) { //If sleep with backup was selected
                 backup();
                 new java.util.Timer().schedule(
                         new java.util.TimerTask() {
@@ -291,6 +506,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                         },
                         10000
                 );
+                Bukkit.broadcastMessage("***SERVER STOPPING IN 10 SECONDS***");
                 JOptionPane.showMessageDialog(this, "Server will stop in 10 seconds", "Server Sleep", JOptionPane.WARNING_MESSAGE);
             }
         } catch (IOException ex) {
@@ -424,8 +640,12 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                 new TimerTask() {
                     @Override
                     public void run() {
-                        backup();
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say " + Config.WARNING_MESSAGE);
+                        Bukkit.broadcastMessage(Config.WARNING_MESSAGE);
+                        toTextArea(Config.WARNING_MESSAGE);
+                        stopPanelThread = new FlashCompThread(topPanel);
+                        stopPanelThread.start();
+                        stopPanelThread.setRunning(true);
+                        //backup();
                     }
                 },
                 warning.getTime(),
@@ -469,12 +689,6 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtLogs = new javax.swing.JTextArea();
-        txtText = new javax.swing.JTextField();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        lstOnline = new javax.swing.JList();
-        cmdEnterText = new javax.swing.JButton();
         btnCloseGUI = new javax.swing.JButton();
         btnStop = new javax.swing.JButton();
         btnSave = new javax.swing.JButton();
@@ -504,61 +718,39 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
         btnMinMax = new javax.swing.JButton();
         btnDispatchCommand = new javax.swing.JButton();
         btnConfig = new javax.swing.JButton();
-        lblServerInfo = new javax.swing.JLabel();
         btnCustom1 = new javax.swing.JButton();
         btnCustom2 = new javax.swing.JButton();
         btnCustom3 = new javax.swing.JButton();
-        txtPlayerDetails = new javax.swing.JButton();
-        btnWhitelist = new javax.swing.JButton();
-        btnBanList = new javax.swing.JButton();
-        btnDiconRDP = new javax.swing.JButton();
         btn3DMap = new javax.swing.JButton();
         btnBackup = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
-        lblStopTime = new javax.swing.JLabel();
         btnWeather = new javax.swing.JToggleButton();
         btnTime = new javax.swing.JToggleButton();
         btnDifficulty = new javax.swing.JToggleButton();
-        lblOnline = new javax.swing.JLabel();
+        topPanel = new javax.swing.JPanel();
+        btnDiconRDP = new javax.swing.JButton();
+        lblStopTime = new javax.swing.JLabel();
+        lblTime = new javax.swing.JLabel();
+        lblServerInfo = new javax.swing.JLabel();
+        logPanel = new javax.swing.JPanel();
+        txtText = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtLogs = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        lstOnline = new javax.swing.JList();
+        txtPlayerDetails = new javax.swing.JButton();
+        btnWhitelist = new javax.swing.JButton();
+        btnBanList = new javax.swing.JButton();
+        cmdEnterText = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        lblOnline = new javax.swing.JLabel();
 
+        setTitle(Config.SERVER_NAME + " " + Bukkit.getBukkitVersion());
         setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
         setMaximumSize(new java.awt.Dimension(1024, 768));
         setMinimumSize(new java.awt.Dimension(1024, 768));
         setUndecorated(true);
-
-        txtLogs.setEditable(false);
-        txtLogs.setColumns(20);
-        txtLogs.setRows(5);
-        jScrollPane1.setViewportView(txtLogs);
-        DefaultCaret caret = (DefaultCaret)txtLogs.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-
-        txtText.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        txtText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtTextActionPerformed(evt);
-            }
-        });
-
-        lstOnline.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        lstOnline.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                lstOnlineMouseClicked(evt);
-            }
-        });
-        jScrollPane2.setViewportView(lstOnline);
-
-        cmdEnterText.setText("Enter");
-        cmdEnterText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmdEnterTextActionPerformed(evt);
-            }
-        });
+        setPreferredSize(new java.awt.Dimension(1024, 768));
 
         btnCloseGUI.setText("Close GUI");
         btnCloseGUI.setMargin(new java.awt.Insets(2, 0, 0, 0));
@@ -644,14 +836,14 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addGroup(WeatherPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(WeatherPanelLayout.createSequentialGroup()
-                        .addComponent(btnRain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(btnThunder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(WeatherPanelLayout.createSequentialGroup()
                         .addComponent(txtDuration, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblSeconds)))
-                .addContainerGap(343, Short.MAX_VALUE))
+                        .addComponent(lblSeconds))
+                    .addGroup(WeatherPanelLayout.createSequentialGroup()
+                        .addComponent(btnRain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(btnThunder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         WeatherPanelLayout.setVerticalGroup(
             WeatherPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -747,7 +939,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                         .addGap(0, 0, 0)
                         .addComponent(btnToggleCycle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btnEnterTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(143, Short.MAX_VALUE))
+                .addContainerGap(166, Short.MAX_VALUE))
         );
         TimePanelLayout.setVerticalGroup(
             TimePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -815,7 +1007,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                 .addComponent(btnNormal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(btnHard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(243, Short.MAX_VALUE))
+                .addContainerGap(266, Short.MAX_VALUE))
         );
         DifficultyPanelLayout.setVerticalGroup(
             DifficultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -882,40 +1074,6 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             }
         });
 
-        txtPlayerDetails.setText("<html><center>Player<br />Details</center></html>");
-        txtPlayerDetails.setMaximumSize(new java.awt.Dimension(73, 73));
-        txtPlayerDetails.setMinimumSize(new java.awt.Dimension(73, 73));
-        txtPlayerDetails.setPreferredSize(new java.awt.Dimension(73, 73));
-        txtPlayerDetails.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtPlayerDetailsActionPerformed(evt);
-            }
-        });
-
-        btnWhitelist.setText("Whitelist");
-        btnWhitelist.setPreferredSize(new java.awt.Dimension(73, 73));
-        btnWhitelist.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnWhitelistActionPerformed(evt);
-            }
-        });
-
-        btnBanList.setText("Ban List");
-        btnBanList.setPreferredSize(new java.awt.Dimension(73, 73));
-        btnBanList.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBanListActionPerformed(evt);
-            }
-        });
-
-        btnDiconRDP.setBackground(new java.awt.Color(255, 0, 0));
-        btnDiconRDP.setText("Disconnect RDP");
-        btnDiconRDP.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDiconRDPActionPerformed(evt);
-            }
-        });
-
         btn3DMap.setText("Render 3D Map");
         btn3DMap.setMargin(new java.awt.Insets(0, 0, 0, 0));
         btn3DMap.setPreferredSize(new java.awt.Dimension(100, 100));
@@ -966,12 +1124,191 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             }
         });
 
+        topPanel.setMaximumSize(new java.awt.Dimension(1024, 31));
+        topPanel.setMinimumSize(new java.awt.Dimension(1024, 31));
+        topPanel.setPreferredSize(new java.awt.Dimension(1024, 31));
+        topPanel.setRequestFocusEnabled(false);
+
+        btnDiconRDP.setBackground(new java.awt.Color(255, 0, 0));
+        btnDiconRDP.setText("Disconnect RDP");
+        btnDiconRDP.setMaximumSize(new java.awt.Dimension(107, 31));
+        btnDiconRDP.setMinimumSize(new java.awt.Dimension(107, 31));
+        btnDiconRDP.setPreferredSize(new java.awt.Dimension(107, 31));
+        btnDiconRDP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDiconRDPActionPerformed(evt);
+            }
+        });
+
+        lblStopTime.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        lblStopTime.setPreferredSize(new java.awt.Dimension(1024, 23));
+
+        lblTime.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+
+        lblServerInfo.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+
+        javax.swing.GroupLayout topPanelLayout = new javax.swing.GroupLayout(topPanel);
+        topPanel.setLayout(topPanelLayout);
+        topPanelLayout.setHorizontalGroup(
+            topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(topPanelLayout.createSequentialGroup()
+                .addComponent(lblTime, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(38, 38, 38)
+                .addComponent(lblServerInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblStopTime, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnDiconRDP, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0))
+        );
+        topPanelLayout.setVerticalGroup(
+            topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(lblStopTime, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(lblTime, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btnDiconRDP, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
+            .addComponent(lblServerInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        logPanel.setMaximumSize(new java.awt.Dimension(1024, 340));
+        logPanel.setMinimumSize(new java.awt.Dimension(1024, 340));
+        logPanel.setName(""); // NOI18N
+        logPanel.setPreferredSize(new java.awt.Dimension(1024, 340));
+
+        txtText.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        txtText.setPreferredSize(new java.awt.Dimension(5, 35));
+        txtText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtTextActionPerformed(evt);
+            }
+        });
+
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(166, 301));
+
+        txtLogs.setEditable(false);
+        txtLogs.setColumns(20);
+        txtLogs.setRows(5);
+        jScrollPane1.setViewportView(txtLogs);
+        DefaultCaret caret = (DefaultCaret)txtLogs.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(35, 301));
+
+        lstOnline.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        lstOnline.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lstOnlineMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(lstOnline);
+
+        txtPlayerDetails.setText("<html><center>Player<br />Details</center></html>");
+        txtPlayerDetails.setMaximumSize(new java.awt.Dimension(73, 73));
+        txtPlayerDetails.setMinimumSize(new java.awt.Dimension(73, 73));
+        txtPlayerDetails.setPreferredSize(new java.awt.Dimension(73, 73));
+        txtPlayerDetails.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPlayerDetailsActionPerformed(evt);
+            }
+        });
+
+        btnWhitelist.setText("Whitelist");
+        btnWhitelist.setPreferredSize(new java.awt.Dimension(73, 73));
+        btnWhitelist.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnWhitelistActionPerformed(evt);
+            }
+        });
+
+        btnBanList.setText("Ban List");
+        btnBanList.setMaximumSize(new java.awt.Dimension(80, 80));
+        btnBanList.setMinimumSize(new java.awt.Dimension(80, 80));
+        btnBanList.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnBanList.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBanListActionPerformed(evt);
+            }
+        });
+
+        cmdEnterText.setText("Enter");
+        cmdEnterText.setPreferredSize(new java.awt.Dimension(80, 23));
+        cmdEnterText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdEnterTextActionPerformed(evt);
+            }
+        });
+
         jLabel1.setText("* - Op");
+
+        javax.swing.GroupLayout logPanelLayout = new javax.swing.GroupLayout(logPanel);
+        logPanel.setLayout(logPanelLayout);
+        logPanelLayout.setHorizontalGroup(
+            logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, logPanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 702, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 702, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(logPanelLayout.createSequentialGroup()
+                        .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblOnline, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(29, 29, 29)
+                        .addComponent(jLabel1))
+                    .addGroup(logPanelLayout.createSequentialGroup()
+                        .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtPlayerDetails, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnWhitelist, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnBanList, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 0, 0)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE))))
+        );
+        logPanelLayout.setVerticalGroup(
+            logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, logPanelLayout.createSequentialGroup()
+                .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(logPanelLayout.createSequentialGroup()
+                        .addComponent(txtPlayerDetails, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(btnWhitelist, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(btnBanList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(cmdEnterText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(logPanelLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel1))))
+            .addComponent(lblOnline, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(btnReload, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(btnDispatchCommand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(btnConfig, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(btnMinMax, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(btnCloseGUI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -992,74 +1329,19 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                         .addComponent(btnTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, 0)
                         .addComponent(btnDifficulty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(Menus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(btnReload, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(btnDispatchCommand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(btnConfig, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(0, 0, 0)
-                .addComponent(btnMinMax, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(btnCloseGUI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(lblServerInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(txtText)
-                    .addComponent(jScrollPane1))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtPlayerDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnWhitelist, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnBanList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(lblStopTime, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnDiconRDP))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(lblOnline, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel1)
-                        .addGap(26, 26, 26))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(Menus, javax.swing.GroupLayout.PREFERRED_SIZE, 666, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(logPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(topPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(5, 5, 5)
-                        .addComponent(lblServerInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnDiconRDP, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lblStopTime, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addComponent(topPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(txtPlayerDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(btnWhitelist, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(btnBanList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblOnline, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                .addComponent(logPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1075,7 +1357,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                             .addComponent(btnBackup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(Menus, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnStop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1232,45 +1514,62 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
     private void btnConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigActionPerformed
         if (Config.GUI_LOCK) {
             if (CodeEntry.showCodeEntryDialog("Config - Enter Code", CODE)) {
-                c.setVisible(true);
+                Config.showConfigDialog();
             }
         } else {
-            c.setVisible(true);
+            Config.showConfigDialog();
         }
     }//GEN-LAST:event_btnConfigActionPerformed
 
     private void btnCustom1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustom1ActionPerformed
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), c.CUSTOM1_COMMAND);
-        //toTextArea("Dispatched command- " + c.CUSTOM1_COMMAND);
+        if (Config.CUSTOM1_LOCK) {
+            if (CodeEntry.showCodeEntryDialog(Config.CUSTOM1_TEXT + " - Enter Code", CODE)) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Config.CUSTOM1_COMMAND);
+            }
+        } else {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Config.CUSTOM1_COMMAND);
+        }
     }//GEN-LAST:event_btnCustom1ActionPerformed
 
     private void btnCustom2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustom2ActionPerformed
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), c.CUSTOM2_COMMAND);
-        //toTextArea("Dispatched command- " + c.CUSTOM2_COMMAND);
+        if (Config.CUSTOM2_LOCK) {
+            if (CodeEntry.showCodeEntryDialog(Config.CUSTOM2_TEXT + " - Enter Code", CODE)) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Config.CUSTOM2_COMMAND);
+            }
+        } else {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Config.CUSTOM2_COMMAND);
+        }
     }//GEN-LAST:event_btnCustom2ActionPerformed
 
     private void btnCustom3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustom3ActionPerformed
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), c.CUSTOM3_COMMAND);
-        //toTextArea("Dispatched command- " + c.CUSTOM3_COMMAND);
+        if (Config.CUSTOM3_LOCK) {
+            if (CodeEntry.showCodeEntryDialog(Config.CUSTOM3_TEXT + " - Enter Code", CODE)) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Config.CUSTOM3_COMMAND);
+            }
+        } else {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Config.CUSTOM3_COMMAND);
+        }
     }//GEN-LAST:event_btnCustom3ActionPerformed
 
     private void txtPlayerDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPlayerDetailsActionPerformed
         int i = lstOnline.getSelectedIndex();
 
         if (i == -1) {
-            JOptionPane.showMessageDialog(rootPane, "Select a player!", "Player Details", JOptionPane.ERROR_MESSAGE);
-            //new PlayerDetails().setVisible(true);
+            BigPrompt.showMessageDialog("Player Details", "Select a player!");
+            //JOptionPane.showMessageDialog(rootPane, "Select a player!", "Player Details", JOptionPane.ERROR_MESSAGE);
         } else {
             if (!playerList.isEmpty()) {
-                new PlayerDetails(playerList.get(i), this).setVisible(true);
+                PlayerDetails.showPlayerDetailsDialog(playerList.get(i));
+                this.updateOnline();
             } else {
-                JOptionPane.showMessageDialog(rootPane, "Select a player!", "Player Details", JOptionPane.ERROR_MESSAGE);
+                BigPrompt.showMessageDialog("Player Details", "Select a player!");
+                //JOptionPane.showMessageDialog(rootPane, "Select a player!", "Player Details", JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_txtPlayerDetailsActionPerformed
 
     private void btnWhitelistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWhitelistActionPerformed
-        new Whitelist(this).setVisible(true);
+        Whitelist.showWhitelist(this);
     }//GEN-LAST:event_btnWhitelistActionPerformed
 
     private void btnDiconRDPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDiconRDPActionPerformed
@@ -1291,7 +1590,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
     }//GEN-LAST:event_btnBackupActionPerformed
 
     private void btnBanListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBanListActionPerformed
-        new BanList(this).setVisible(true);
+        BanList.showBanlist(this);
     }//GEN-LAST:event_btnBanListActionPerformed
 
     private void btnWeatherActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWeatherActionPerformed
@@ -1327,11 +1626,12 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             int i = lstOnline.getSelectedIndex();
 
             if (i == -1) {
-                JOptionPane.showMessageDialog(rootPane, "Select a player!", "Player Details", JOptionPane.ERROR_MESSAGE);
+                BigPrompt.showMessageDialog("Player Details", "Select a player!");
+                //JOptionPane.showMessageDialog(rootPane, "Select a player!", "Player Details", JOptionPane.ERROR_MESSAGE);
                 //new PlayerDetails().setVisible(true);
             } else {
                 if (!playerList.isEmpty()) {
-                    new PlayerDetails(playerList.get(i), this).setVisible(true);
+                    PlayerDetails.showPlayerDetailsDialog(playerList.get(i));
                 }
             }
         }
@@ -1419,7 +1719,10 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
     private javax.swing.JLabel lblSeconds;
     private javax.swing.JLabel lblServerInfo;
     private javax.swing.JLabel lblStopTime;
+    private javax.swing.JLabel lblTime;
+    private javax.swing.JPanel logPanel;
     private javax.swing.JList lstOnline;
+    private javax.swing.JPanel topPanel;
     private javax.swing.JTextField txtDuration;
     private javax.swing.JTextArea txtLogs;
     private javax.swing.JButton txtPlayerDetails;

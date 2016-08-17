@@ -1,6 +1,6 @@
 name: GUIPlugin
 main: io.github.davidg95.guiplugin.GUIPlugin
-version: 0.1
+version: 0.9
 commands:
    gui:
        description: This command will open the GUI.
@@ -12,3 +12,13 @@ commands:
        usage: /<command>
        permission: GUIPlugin.gui
        permission-message: You don't have <permission>
+   ignoresleep:
+       description: This command will set the server to ignore if a player sleps or not.
+       usage: /<command>
+       permission: GUIPlugin.gui
+       permission-message: You dont have <permission>
+   stopshut:
+       description: This command will stop the server and put the computer to sleep.
+       usage: /<command>
+       permission: GUIPlugin.gui
+       permission-message: You dont have <permission>

@@ -38,7 +38,7 @@ public class OutputConnection {
     public void init() {
         g.toTextArea(incoming.getInetAddress().getHostAddress() + " connected");
 
-        sendMessage("Server " + g.c.SERVER_NAME + " running on port number " + Bukkit.getPort());
+        sendMessage("Server " + Config.SERVER_NAME + " running on port number " + Bukkit.getPort());
         sendMessage("Running " + Bukkit.getVersion() + " " + Bukkit.getBukkitVersion());
         sendMessage("Up to " + Bukkit.getMaxPlayers() + " players can be on at once");
         sendMessage((Bukkit.hasWhitelist() ? "Sever is whitelisted" : "Server is not whitelisted"));

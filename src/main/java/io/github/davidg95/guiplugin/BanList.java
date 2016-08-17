@@ -7,6 +7,7 @@ package io.github.davidg95.guiplugin;
 
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -16,6 +17,8 @@ import org.bukkit.OfflinePlayer;
  * @author David
  */
 public class BanList extends javax.swing.JDialog {
+    
+    private static JDialog dialog;
 
     private ArrayList<OfflinePlayer> playerList;
     private final GUI g;
@@ -54,6 +57,13 @@ public class BanList extends javax.swing.JDialog {
         playerList = new ArrayList<>();
         updateBanList();
         this.setLocationRelativeTo(null);
+        this.setModal(true);
+    }
+    
+    public static void showBanlist(GUI g){
+        dialog = new Whitelist(g);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setVisible(true);
     }
 
     @Override
@@ -197,7 +207,7 @@ public class BanList extends javax.swing.JDialog {
     private void lstBanListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstBanListMouseClicked
         if (evt.getClickCount() == 2) {
             if (playerList.size() > 0) {
-                new PlayerDetails(playerList.get(lstBanList.getSelectedIndex()), g).setVisible(true);
+                PlayerDetails.showPlayerDetailsDialog(playerList.get(lstBanList.getSelectedIndex()));
                 this.dispose();
             }
         }

@@ -5,13 +5,15 @@
  */
 package io.github.davidg95.guiplugin;
 
-import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Properties;
+import javax.swing.JDialog;
 import org.bukkit.Bukkit;
 
 /**
@@ -19,71 +21,41 @@ import org.bukkit.Bukkit;
  * @author David
  */
 public class Config extends javax.swing.JDialog {
-
-    private final GUIInterface g;
-    public String SERVER_NAME;
-    public String CUSTOM1_TEXT;
-    public String CUSTOM2_TEXT;
-    public String CUSTOM1_COMMAND;
-    public String CUSTOM2_COMMAND;
-    public String CUSTOM3_TEXT;
-    public String CUSTOM3_COMMAND;
-    public String LOOK_FEEL;
-    private final String FILE = "GUIConfig.txt";
-    private int selected = 0;
-    public boolean autoStop = true;
+    
+    private static JDialog dialog;
+    private static GUIInterface g;
+    private static Properties properties;
+    
+    public static String SERVER_NAME = "";
+    public static String CUSTOM1_TEXT = "";
+    public static String CUSTOM2_TEXT = "";
+    public static String CUSTOM1_COMMAND = "";
+    public static String CUSTOM2_COMMAND = "";
+    public static String CUSTOM3_TEXT = "";
+    public static String CUSTOM3_COMMAND = "";
+    public static boolean CUSTOM1_LOCK = false;
+    public static boolean CUSTOM2_LOCK = false;
+    public static boolean CUSTOM3_LOCK = false;
+    public static boolean autoStop = false;
+    public static int WARNING_HOUR = 23;
+    public static int WARNING_MINUTE = 59;
+    public static int STOP_HOUR = 23;
+    public static int STOP_MINUTE = 59;
+    public static String WARNING_MESSAGE = "***SERVER SHUTDOWN***";
+    public static boolean GUI_LOCK = false;
+    public static boolean BACKUP_ON_CLOSE = true;
+    
     public boolean initAutoStop;
-    protected static int WARNING_HOUR = 23;
-    protected static int WARNING_MINUTE = 23;
-    protected static int STOP_HOUR = 23;
-    protected static int STOP_MINUTE = 28;
-    protected static String WARNING_MESSAGE = "***SERVER SHUTDOWN IN 5 MINUTES***";
-    protected static boolean GUI_LOCK = false;
-
+    
     /**
      * Creates new form Config
-     *
-     * @param g reference to the main GUI.
      */
-    public Config(GUIInterface g) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-        //</editor-fold>
-        SERVER_NAME = "";
-        CUSTOM1_TEXT = "";
-        CUSTOM1_COMMAND = "";
-        CUSTOM2_TEXT = "";
-        CUSTOM2_COMMAND = "";
-        CUSTOM3_TEXT = "";
-        CUSTOM3_COMMAND = "";
-        LOOK_FEEL = "";
-        this.g = g;
+    public Config() {
+        loadProperties();
         initAutoStop = autoStop;
-        loadConfig();
         initComponents();
-        setModal(true);
-        getLookAndFeel();
-        cmbLookFeel.setSelectedIndex(selected);
         this.setLocationRelativeTo(null);
+        this.setModal(true);
         txtServerName.setText(SERVER_NAME);
         txtCustom1Text.setText(CUSTOM1_TEXT);
         txtCustom1Command.setText(CUSTOM1_COMMAND);
@@ -91,160 +63,94 @@ public class Config extends javax.swing.JDialog {
         txtCustom2Command.setText(CUSTOM2_COMMAND);
         txtCustom3Text.setText(CUSTOM3_TEXT);
         txtCustom3Command.setText(CUSTOM3_COMMAND);
+        chkLock1.setSelected(CUSTOM1_LOCK);
+        chkLock2.setSelected(CUSTOM2_LOCK);
+        chkLock3.setSelected(CUSTOM3_LOCK);
         checkWhitelist.setSelected(Bukkit.hasWhitelist());
         checkPasscode.setSelected(GUI_LOCK);
+        chkStop.setSelected(autoStop);
+        chkBackup.setSelected(BACKUP_ON_CLOSE);
     }
-
-    @Override
-    public void setVisible(boolean visible) {
-        this.setLocationRelativeTo(null);
-        super.setVisible(visible);
+    
+    public static void initConfig(GUIInterface gui){
+        g = gui;
+        properties = new Properties();
+        loadProperties();
+        g.updateConfig();
     }
+    
+    public static void showConfigDialog(){
+        dialog = new Config();
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setVisible(true);
+    }
+    
+    private static void loadProperties() {
+        InputStream input = null;
 
-    public final void getLookAndFeel() {
-        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-            cmbLookFeel.addItem(info.getName());
+        try {
+            input = new FileInputStream("GUIConfig.properties");
+
+            properties.load(input);
+
+            SERVER_NAME = properties.getProperty("NAME");
+            CUSTOM1_TEXT = properties.getProperty("CUST1TEXT");
+            CUSTOM1_COMMAND = properties.getProperty("CUST1COMM");
+            CUSTOM2_TEXT = properties.getProperty("CUST2TEXT");
+            CUSTOM2_COMMAND = properties.getProperty("CUST2COMM");
+            CUSTOM3_TEXT = properties.getProperty("CUST3TEXT");
+            CUSTOM2_COMMAND = properties.getProperty("CUST3COMM");
+            CUSTOM1_LOCK = Boolean.parseBoolean(properties.getProperty("CUST1LOCK"));
+            CUSTOM2_LOCK = Boolean.parseBoolean(properties.getProperty("CUST2LOCK"));
+            CUSTOM3_LOCK = Boolean.parseBoolean(properties.getProperty("CUST3LOCK"));
+            autoStop = Boolean.parseBoolean(properties.getProperty("AUTOSTOP"));
+            WARNING_HOUR = Integer.parseInt(properties.getProperty("WARNHOUR"));
+            WARNING_MINUTE = Integer.parseInt(properties.getProperty("WARNMIN"));
+            STOP_HOUR = Integer.parseInt(properties.getProperty("STOPHOUR"));
+            STOP_MINUTE = Integer.parseInt(properties.getProperty("STOPMIN"));
+            WARNING_MESSAGE = properties.getProperty("WARNMESSAGE");
+            GUI_LOCK = Boolean.parseBoolean(properties.getProperty("GUILOCK"));
+            BACKUP_ON_CLOSE = Boolean.parseBoolean(properties.getProperty("BACKUPONCLOSE"));
+            
+        } catch (FileNotFoundException ex) {
+            File file = new File("GUIConfig.properties");
+            try {
+                file.createNewFile();
+                saveProperties();
+            } catch (IOException ex1) {
+            }
+        } catch (IOException ex) {
         }
     }
 
-    public void save() {
-        GUIPlugin.conf.set("ServerName", SERVER_NAME);
-        GUIPlugin.conf.set("Custom1Text", CUSTOM1_TEXT);
-        GUIPlugin.conf.set("Custom1Command", CUSTOM1_COMMAND);
-        GUIPlugin.conf.set("Custom2Text", CUSTOM2_TEXT);
-        GUIPlugin.conf.set("Custom2Command", CUSTOM2_COMMAND);
-    }
+    private static void saveProperties() {
+        OutputStream output = null;
 
-    public void load() {
-        SERVER_NAME = (String) GUIPlugin.conf.get("ServerName");
-        CUSTOM1_TEXT = (String) GUIPlugin.conf.get("Custom1Text");
-        CUSTOM1_COMMAND = (String) GUIPlugin.conf.get("Custom1Command");
-        CUSTOM2_TEXT = (String) GUIPlugin.conf.get("Custom2Text");
-        CUSTOM2_COMMAND = (String) GUIPlugin.conf.get("Custom2Command");
-    }
-
-    public void saveConfig() {
         try {
-            File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("GUIPlugin").getDataFolder();
-            if (!dataFolder.exists()) {
-                dataFolder.mkdir();
-            }
-            File configFile = new File(Bukkit.getServer().getPluginManager().getPlugin("GUIPlugin").getDataFolder(), FILE);
-            if (!configFile.exists()) {
-                configFile.createNewFile();
-            }
-            boolean temp = configFile.delete();
-            configFile.createNewFile();
-            FileWriter fw = new FileWriter(configFile, true);
-            try (PrintWriter pw = new PrintWriter(fw)) {
-                if (SERVER_NAME.equals("")) {
-                    pw.println("NULL");
-                } else {
-                    pw.println(SERVER_NAME);
-                }
-                if (CUSTOM1_TEXT.equals("")) {
-                    pw.println("NULL");
-                } else {
-                    pw.println(CUSTOM1_TEXT);
-                }
-                if (CUSTOM1_COMMAND.equals("")) {
-                    pw.println("NULL");
-                } else {
-                    pw.println(CUSTOM1_COMMAND);
-                }
-                if (CUSTOM2_TEXT.equals("")) {
-                    pw.println("NULL");
-                } else {
-                    pw.println(CUSTOM2_TEXT);
-                }
-                if (CUSTOM2_COMMAND.equals("")) {
-                    pw.println("NULL");
-                } else {
-                    pw.println(CUSTOM2_COMMAND);
-                }
-                if (CUSTOM3_TEXT.equals("")) {
-                    pw.println("NULL");
-                } else {
-                    pw.println(CUSTOM3_TEXT);
-                }
-                if (CUSTOM3_COMMAND.equals("")) {
-                    pw.println("NULL");
-                } else {
-                    pw.println(CUSTOM3_COMMAND);
-                }
-                if (GUI_LOCK) {
-                    pw.println("TRUE");
-                } else {
-                    pw.println("FALSE");
-                }
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println(e);
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-    }
+            output = new FileOutputStream("GUIConfig.properties");
 
-    public final void loadConfig() {
-        try {
-            File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("GUIPlugin").getDataFolder();
-            if (!dataFolder.exists()) {
-                dataFolder.mkdir();
-            }
-            File configFile = new File(Bukkit.getServer().getPluginManager().getPlugin("GUIPlugin").getDataFolder(), FILE);
-            if (!configFile.exists()) {
-                configFile.createNewFile();
-                FileWriter fw = new FileWriter(configFile, true);
-                try (PrintWriter pw = new PrintWriter(fw)) {
-                    pw.println("NULL");
-                    pw.println("NULL");
-                    pw.println("NULL");
-                    pw.println("NULL");
-                    pw.println("NULL");
-                    pw.println("NULL");
-                    pw.println("NULL");
-                    pw.println("FALSE");
-                }
-            }
-            FileReader fr = new FileReader(configFile);
-            BufferedReader br = new BufferedReader(fr);
-            String name = br.readLine();
-            if (!name.equals("NULL")) {
-                SERVER_NAME = name;
-            }
-            String cus1Text = br.readLine();
-            if (!cus1Text.equals("NULL")) {
-                CUSTOM1_TEXT = cus1Text;
-            }
-            String cus1Com = br.readLine();
-            if (!cus1Com.equals("NULL")) {
-                CUSTOM1_COMMAND = cus1Com;
-            }
-            String cus2Text = br.readLine();
-            if (!cus2Text.equals("NULL")) {
-                CUSTOM2_TEXT = cus2Text;
-            }
-            String cus2Com = br.readLine();
-            if (!cus2Com.equals("NULL")) {
-                CUSTOM2_COMMAND = cus2Com;
-            }
-            String cus3Text = br.readLine();
-            if (!cus3Text.equals("NULL")) {
-                CUSTOM3_TEXT = cus3Text;
-            }
-            String cus3Com = br.readLine();
-            if (!cus3Com.equals("NULL")) {
-                CUSTOM3_COMMAND = cus3Com;
-            }
-            String lock = br.readLine();
-            if (!lock.equals("FALSE")) {
-                GUI_LOCK = true;
-            }
-            br.close();
-        } catch (FileNotFoundException e) {
-            System.out.println(e);
-        } catch (IOException e) {
-            System.out.println(e);
+            properties.setProperty("NAME", SERVER_NAME);
+            properties.setProperty("CUST1TEXT", CUSTOM1_TEXT);
+            properties.setProperty("CUST1COMM", CUSTOM1_COMMAND);
+            properties.setProperty("CUST2TEXT", CUSTOM2_TEXT);
+            properties.setProperty("CUST2COMM", CUSTOM2_COMMAND);
+            properties.setProperty("CUST3TEXT", CUSTOM3_TEXT);
+            properties.setProperty("CUST3COMM", CUSTOM3_COMMAND);
+            properties.setProperty("CUST1LOCK", Boolean.toString(CUSTOM1_LOCK));
+            properties.setProperty("CUST2LOCK", Boolean.toString(CUSTOM2_LOCK));
+            properties.setProperty("CUST3LOCK", Boolean.toString(CUSTOM3_LOCK));
+            properties.setProperty("AUTOSTOP", Boolean.toString(autoStop));
+            properties.setProperty("WARNHOUR", Integer.toString(WARNING_HOUR));
+            properties.setProperty("WARNMIN", Integer.toString(WARNING_MINUTE));
+            properties.setProperty("STOPHOUR", Integer.toString(STOP_HOUR));
+            properties.setProperty("STOPMIN", Integer.toString(STOP_MINUTE));
+            properties.setProperty("WARNMESSAGE", WARNING_MESSAGE);
+            properties.setProperty("GUILOCK", Boolean.toString(GUI_LOCK));
+            properties.setProperty("BACKUPONCLOSE", Boolean.toString(BACKUP_ON_CLOSE));
+
+            properties.store(output, null);
+        } catch (FileNotFoundException ex) {
+        } catch (IOException ex) {
         }
     }
 
@@ -260,9 +166,7 @@ public class Config extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
         txtServerName = new javax.swing.JTextField();
         btnUpdate = new javax.swing.JButton();
-        cmbLookFeel = new javax.swing.JComboBox();
-        jLabel4 = new javax.swing.JLabel();
-        jPanel4 = new javax.swing.JPanel();
+        PanelServerStop = new javax.swing.JPanel();
         txtWarnHour = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         txtWarnMin = new javax.swing.JTextField();
@@ -274,28 +178,30 @@ public class Config extends javax.swing.JDialog {
         txtStopMin = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jPanel5 = new javax.swing.JPanel();
+        chkBackup = new javax.swing.JCheckBox();
+        panelCustomButtons = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         txtCustom2Text = new javax.swing.JTextField();
         txtCustom2Command = new javax.swing.JTextField();
-        chkLog2 = new javax.swing.JCheckBox();
+        chkLock2 = new javax.swing.JCheckBox();
         jPanel3 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         txtCustom3Text = new javax.swing.JTextField();
         txtCustom3Command = new javax.swing.JTextField();
-        chkLog3 = new javax.swing.JCheckBox();
+        chkLock3 = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         txtCustom1Text = new javax.swing.JTextField();
         txtCustom1Command = new javax.swing.JTextField();
-        chkLog1 = new javax.swing.JCheckBox();
+        chkLock1 = new javax.swing.JCheckBox();
         checkWhitelist = new javax.swing.JCheckBox();
         checkPasscode = new javax.swing.JCheckBox();
         btnClose = new javax.swing.JButton();
 
         setTitle("Configuration");
         setAlwaysOnTop(true);
+        setResizable(false);
 
         jLabel1.setText("Server Name:");
 
@@ -305,10 +211,6 @@ public class Config extends javax.swing.JDialog {
                 btnUpdateActionPerformed(evt);
             }
         });
-
-        cmbLookFeel.setEnabled(false);
-
-        jLabel4.setText("Look and Feel:");
 
         txtWarnHour.setText(Integer.toString(WARNING_HOUR));
 
@@ -333,66 +235,73 @@ public class Config extends javax.swing.JDialog {
 
         jLabel8.setText("Waring Time:");
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
+        chkBackup.setText("Backup On Close");
+
+        javax.swing.GroupLayout PanelServerStopLayout = new javax.swing.GroupLayout(PanelServerStop);
+        PanelServerStop.setLayout(PanelServerStopLayout);
+        PanelServerStopLayout.setHorizontalGroup(
+            PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PanelServerStopLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(chkStop)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel10))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtStopHour)
-                                    .addComponent(txtWarnHour, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(PanelServerStopLayout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(chkBackup)
+                            .addGroup(PanelServerStopLayout.createSequentialGroup()
+                                .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel8)
+                                    .addComponent(jLabel10))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(jPanel4Layout.createSequentialGroup()
-                                        .addComponent(jLabel7)
+                                .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(PanelServerStopLayout.createSequentialGroup()
+                                        .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(txtStopHour)
+                                            .addComponent(txtWarnHour, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtStopMin, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel4Layout.createSequentialGroup()
-                                        .addComponent(jLabel9)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtWarnMin, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addComponent(txtWarnMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                        .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addGroup(PanelServerStopLayout.createSequentialGroup()
+                                                .addComponent(jLabel7)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(txtStopMin, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(PanelServerStopLayout.createSequentialGroup()
+                                                .addComponent(jLabel9)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(txtWarnMin, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(txtWarnMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
+        PanelServerStopLayout.setVerticalGroup(
+            PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PanelServerStopLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(chkStop)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(txtStopHour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7)
                     .addComponent(txtStopMin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(txtWarnHour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel9)
                     .addComponent(txtWarnMin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(8, 8, 8)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtWarnMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10))
+                .addGap(18, 18, 18)
+                .addComponent(chkBackup)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel3.setText("Custom Button 2-");
 
-        chkLog2.setText("Log Output");
-        chkLog2.setEnabled(false);
+        chkLock2.setText("Protected");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -406,7 +315,7 @@ public class Config extends javax.swing.JDialog {
                     .addComponent(txtCustom2Command, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCustom2Text, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(chkLog2)
+                .addComponent(chkLock2)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -422,14 +331,13 @@ public class Config extends javax.swing.JDialog {
                         .addComponent(txtCustom2Command, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(23, 23, 23)
-                        .addComponent(chkLog2)))
+                        .addComponent(chkLock2)))
                 .addContainerGap(16, Short.MAX_VALUE))
         );
 
         jLabel5.setText("Custom Button 3-");
 
-        chkLog3.setText("Log Output");
-        chkLog3.setEnabled(false);
+        chkLock3.setText("Protected");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -443,7 +351,7 @@ public class Config extends javax.swing.JDialog {
                     .addComponent(txtCustom3Command)
                     .addComponent(txtCustom3Text, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
-                .addComponent(chkLog3)
+                .addComponent(chkLock3)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -459,14 +367,13 @@ public class Config extends javax.swing.JDialog {
                         .addComponent(txtCustom3Command, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(21, 21, 21)
-                        .addComponent(chkLog3)))
+                        .addComponent(chkLock3)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel2.setText("Custom Button 1-");
 
-        chkLog1.setText("Log Output");
-        chkLog1.setEnabled(false);
+        chkLock1.setText("Protected");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -480,7 +387,7 @@ public class Config extends javax.swing.JDialog {
                     .addComponent(txtCustom1Command, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCustom1Text, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(chkLog1)
+                .addComponent(chkLock1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -496,25 +403,25 @@ public class Config extends javax.swing.JDialog {
                         .addComponent(txtCustom1Command, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(24, 24, 24)
-                        .addComponent(chkLog1)))
+                        .addComponent(chkLock1)))
                 .addContainerGap(16, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
+        javax.swing.GroupLayout panelCustomButtonsLayout = new javax.swing.GroupLayout(panelCustomButtons);
+        panelCustomButtons.setLayout(panelCustomButtonsLayout);
+        panelCustomButtonsLayout.setHorizontalGroup(
+            panelCustomButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelCustomButtonsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(panelCustomButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
+        panelCustomButtonsLayout.setVerticalGroup(
+            panelCustomButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelCustomButtonsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -549,45 +456,38 @@ public class Config extends javax.swing.JDialog {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(68, 68, 68)
+                                .addGap(41, 41, 41)
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtServerName, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(22, 22, 22)
-                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(20, 20, 20)
+                                .addComponent(panelCustomButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
                                 .addComponent(checkWhitelist)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(checkPasscode))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cmbLookFeel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(16, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(PanelServerStop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(14, 14, 14)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(19, 19, 19)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
                     .addComponent(txtServerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
                     .addComponent(checkWhitelist)
                     .addComponent(checkPasscode))
-                .addGap(0, 0, 0)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(cmbLookFeel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(9, 9, 9)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(panelCustomButtons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PanelServerStop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -606,8 +506,9 @@ public class Config extends javax.swing.JDialog {
         CUSTOM2_COMMAND = txtCustom2Command.getText();
         CUSTOM3_TEXT = txtCustom3Text.getText();
         CUSTOM3_COMMAND = txtCustom3Command.getText();
-        selected = cmbLookFeel.getSelectedIndex();
-        LOOK_FEEL = cmbLookFeel.getItemAt(selected).toString();
+        CUSTOM1_LOCK = chkLock1.isSelected();
+        CUSTOM2_LOCK = chkLock2.isSelected();
+        CUSTOM3_LOCK = chkLock3.isSelected();
         autoStop = chkStop.isSelected();
         Bukkit.setWhitelist(checkWhitelist.isSelected());
         Config.GUI_LOCK = checkPasscode.isSelected();
@@ -616,6 +517,7 @@ public class Config extends javax.swing.JDialog {
         STOP_HOUR = Integer.parseInt(txtStopHour.getText());
         STOP_MINUTE = Integer.parseInt(txtStopMin.getText());
         WARNING_MESSAGE = txtWarnMessage.getText();
+        BACKUP_ON_CLOSE = chkBackup.isSelected();
         if (initAutoStop == false && autoStop == true) {
             g.serverStopTimer();
             g.setStopTimeLabel("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
@@ -623,14 +525,14 @@ public class Config extends javax.swing.JDialog {
         } else if (initAutoStop == true && autoStop == false) {
             g.cancelStopTimer();
             g.setStopTimeLabel("Server stop disabled");
-            g.toTextArea("Server stip disabled");
+            g.toTextArea("Server stop disabled");
         } else if (initAutoStop == true && autoStop == true) {
             g.cancelStopTimer();
             g.serverStopTimer();
             g.setStopTimeLabel("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
         }
         initAutoStop = autoStop;
-        saveConfig();
+        saveProperties();
         g.updateConfig();
         this.setVisible(false);
     }//GEN-LAST:event_btnUpdateActionPerformed
@@ -675,20 +577,20 @@ public class Config extends javax.swing.JDialog {
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel PanelServerStop;
     private javax.swing.JButton btnClose;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JCheckBox checkPasscode;
     private javax.swing.JCheckBox checkWhitelist;
-    private javax.swing.JCheckBox chkLog1;
-    private javax.swing.JCheckBox chkLog2;
-    private javax.swing.JCheckBox chkLog3;
+    private javax.swing.JCheckBox chkBackup;
+    private javax.swing.JCheckBox chkLock1;
+    private javax.swing.JCheckBox chkLock2;
+    private javax.swing.JCheckBox chkLock3;
     private javax.swing.JCheckBox chkStop;
-    private javax.swing.JComboBox cmbLookFeel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -697,8 +599,7 @@ public class Config extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel panelCustomButtons;
     private javax.swing.JTextField txtCustom1Command;
     private javax.swing.JTextField txtCustom1Text;
     private javax.swing.JTextField txtCustom2Command;

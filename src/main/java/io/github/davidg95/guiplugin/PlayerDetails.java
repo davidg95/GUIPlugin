@@ -5,9 +5,19 @@
  */
 package io.github.davidg95.guiplugin;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -17,18 +27,20 @@ import org.bukkit.inventory.PlayerInventory;
  */
 public class PlayerDetails extends javax.swing.JDialog {
 
+    private static JDialog dialog;
+    
     private Player player;
     private OfflinePlayer offlinePlayer;
     private String PLAYER_NAME;
-    private final GUIInterface g;
+    private BufferedImage mapImage;
+    private UpdateThread updateThread;
 
     /**
      * Creates new form PlayerDetails
      *
      * @param p the Player to show details for.
-     * @param g reference to the main GUI.
      */
-    public PlayerDetails(Player p, GUIInterface g) {
+    public PlayerDetails(Player p) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -52,10 +64,8 @@ public class PlayerDetails extends javax.swing.JDialog {
 //        }
         //</editor-fold>
         this.player = p;
-        this.g = g;
         PLAYER_NAME = p.getName();
         initComponents();
-        setModal(true);
         txtName.setText(player.getName());
         txtCustomName.setText(player.getDisplayName());
         txtAddress.setText(player.getAddress().getHostString());
@@ -63,11 +73,14 @@ public class PlayerDetails extends javax.swing.JDialog {
         txtGameMode.setText(player.getGameMode().toString());
         checkOp.setSelected(player.isOp());
         checkSleep.setSelected(player.isSleepingIgnored());
-        prgHealth.setValue((int) player.getHealth());
-        prgHungar.setValue(player.getFoodLevel());
+        prgHealth.setValue((int) player.getHealth() * 5);
+        prgHungar.setValue(player.getFoodLevel() * 5);
         lblXP.setText(Integer.toString(player.getLevel()));
         prgXP.setValue((int) (player.getExp() * 100));
+        updateThread = new UpdateThread();
+        updateThread.start();
         this.setLocationRelativeTo(null);
+        this.setModal(true);
     }
 
     /**
@@ -75,7 +88,7 @@ public class PlayerDetails extends javax.swing.JDialog {
      *
      * @param p the Player to show details for.
      */
-    public PlayerDetails(OfflinePlayer p, GUIInterface g) {
+    public PlayerDetails(OfflinePlayer p) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -99,10 +112,8 @@ public class PlayerDetails extends javax.swing.JDialog {
 //        }
         //</editor-fold>
         this.offlinePlayer = p;
-        this.g = g;
         PLAYER_NAME = p.getName();
         initComponents();
-        setModal(true);
         txtName.setText(offlinePlayer.getName());
         txtCustomName.setEnabled(false);
         txtAddress.setEnabled(false);
@@ -119,12 +130,117 @@ public class PlayerDetails extends javax.swing.JDialog {
         btnKick.setEnabled(false);
         btnBan.setEnabled(false);
         this.setLocationRelativeTo(null);
+        this.setModal(true);
+    }
+    
+    private void updateDetails(){
+        txtName.setText(player.getName());
+        txtCustomName.setText(player.getDisplayName());
+        txtAddress.setText(player.getAddress().getHostString());
+        txtUUID.setText(player.getUniqueId().toString());
+        txtGameMode.setText(player.getGameMode().toString());
+        checkOp.setSelected(player.isOp());
+        checkSleep.setSelected(player.isSleepingIgnored());
+        prgHealth.setValue((int) player.getHealth() * 5);
+        prgHungar.setValue(player.getFoodLevel() * 5);
+        lblXP.setText(Integer.toString(player.getLevel()));
+        prgXP.setValue((int) (player.getExp() * 100));
     }
 
     public PlayerDetails() {
         initComponents();
         this.setLocationRelativeTo(null);
-        this.g = null;
+        this.setModal(true);
+    }
+    
+    public static void showPlayerDetailsDialog(Player p){
+        dialog = new PlayerDetails(p);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setVisible(true);
+    }
+    
+    public static void showPlayerDetailsDialog(OfflinePlayer p){
+        dialog = new PlayerDetails(p);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setVisible(true);
+    }
+    
+    public class UpdateThread extends Thread {
+
+        protected boolean isRunning;
+
+        protected boolean isRed;
+
+        public UpdateThread() {
+            this.isRunning = true;
+        }
+
+        @Override
+        public void run() {
+            while (isRunning) {
+                SwingUtilities.invokeLater(() -> {
+                    updateDetails();
+                });
+
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+
+        public void setRunning(boolean isRunning) {
+            this.isRunning = isRunning;
+        }
+    }
+
+    public void showLocation() {
+        mapImage = new BufferedImage(500, 500, BufferedImage.TYPE_INT_RGB);
+        for (int i = 0; i < 500; i++) {
+            for (int j = 0; j < 500; j++) {
+                Block bl = Bukkit.getWorld("world").getBlockAt(i, 255, j);
+                for (int k = 255; k > 0; k--) {
+                    bl = Bukkit.getWorld("world").getBlockAt(i, k, j);
+                    if (!bl.getType().equals(Material.AIR)) {
+                        break;
+                    }
+                    k--;
+                }
+                int r = 0;
+                int g = 0;
+                int b = 0;
+                if (bl.getType().equals(Material.GRASS)) {
+                    r = 0;
+                    g = 255;
+                    b = 0;
+                } else if (bl.getType().equals(Material.STONE)) {
+                    r = 155;
+                    g = 155;
+                    b = 155;
+                }
+                int col = (r << 16) | (g << 8) | b;
+                mapImage.setRGB(i, j, col);
+            }
+        }
+        
+        panImage.repaint();
+
+    }
+
+    public class ImagePanel extends JPanel {
+
+        private BufferedImage image;
+
+        public ImagePanel(BufferedImage image) {
+            this.image = image;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.drawImage(image, 0, 0, null); // see javadoc for more info on the parameters            
+        }
+
     }
 
     private void setInventoryList(PlayerInventory pi) {
@@ -170,11 +286,16 @@ public class PlayerDetails extends javax.swing.JDialog {
         lblXP = new javax.swing.JLabel();
         prgXP = new javax.swing.JProgressBar();
         checkSleep = new javax.swing.JCheckBox();
+        panImage = new ImagePanel(mapImage);
+        btnGameMode = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Details for " + PLAYER_NAME);
         setAlwaysOnTop(true);
-        setPreferredSize(new java.awt.Dimension(580, 400));
+        setMaximumSize(new java.awt.Dimension(680, 400));
+        setMinimumSize(new java.awt.Dimension(680, 400));
+        setPreferredSize(new java.awt.Dimension(680, 400));
+        setResizable(false);
 
         jLabel1.setText("Player Name:");
 
@@ -255,6 +376,28 @@ public class PlayerDetails extends javax.swing.JDialog {
             }
         });
 
+        javax.swing.GroupLayout panImageLayout = new javax.swing.GroupLayout(panImage);
+        panImage.setLayout(panImageLayout);
+        panImageLayout.setHorizontalGroup(
+            panImageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 222, Short.MAX_VALUE)
+        );
+        panImageLayout.setVerticalGroup(
+            panImageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 202, Short.MAX_VALUE)
+        );
+
+        btnGameMode.setText("Game Mode");
+        btnGameMode.setEnabled(false);
+        btnGameMode.setMaximumSize(new java.awt.Dimension(80, 80));
+        btnGameMode.setMinimumSize(new java.awt.Dimension(80, 80));
+        btnGameMode.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnGameMode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGameModeActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -263,7 +406,9 @@ public class PlayerDetails extends javax.swing.JDialog {
                 .addComponent(btnKick, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(btnBan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 0, 0)
+                .addComponent(btnGameMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -303,53 +448,61 @@ public class PlayerDetails extends javax.swing.JDialog {
                     .addComponent(txtAddress)
                     .addComponent(txtCustomName)
                     .addComponent(txtName))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnSend)
-                .addContainerGap(39, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnSend))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(panImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(67, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtCustomName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtUUID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtGameMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(checkOp)
-                    .addComponent(checkSleep))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8)
-                            .addComponent(prgHealth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(prgHungar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel10)
-                            .addComponent(lblXP, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(prgXP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                            .addComponent(txtCustomName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtUUID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6))
+                        .addGap(8, 8, 8)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtGameMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(checkOp)
+                            .addComponent(checkSleep))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel8)
+                                    .addComponent(prgHealth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(prgHungar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel9))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel10)
+                                    .addComponent(lblXP, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(prgXP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(panImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4)
@@ -359,7 +512,8 @@ public class PlayerDetails extends javax.swing.JDialog {
                     .addComponent(btnKick, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnBan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnGameMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 0, 0))
         );
 
@@ -367,7 +521,7 @@ public class PlayerDetails extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
-        player.sendMessage(txtMessage.getText());
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tell " + player.getName() + " " + txtMessage.getText());
         txtMessage.setText("");
     }//GEN-LAST:event_btnSendActionPerformed
 
@@ -397,7 +551,6 @@ public class PlayerDetails extends javax.swing.JDialog {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "op " + player.getName());
             JOptionPane.showMessageDialog(this, player.getName() + " has been opped");
         }
-        g.updateOnline();
     }//GEN-LAST:event_checkOpActionPerformed
 
     private void checkSleepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkSleepActionPerformed
@@ -407,6 +560,10 @@ public class PlayerDetails extends javax.swing.JDialog {
             player.setSleepingIgnored(true);
         }
     }//GEN-LAST:event_checkSleepActionPerformed
+
+    private void btnGameModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGameModeActionPerformed
+        player.setGameMode(GameModeDialog.showGameModeDialog(player.getGameMode()));
+    }//GEN-LAST:event_btnGameModeActionPerformed
 
 //    /**
 //     * @param args the command line arguments
@@ -446,6 +603,7 @@ public class PlayerDetails extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBan;
     private javax.swing.JButton btnClose;
+    private javax.swing.JButton btnGameMode;
     private javax.swing.JButton btnKick;
     private javax.swing.JButton btnSend;
     private javax.swing.JCheckBox checkOp;
@@ -460,6 +618,7 @@ public class PlayerDetails extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel lblXP;
+    private javax.swing.JPanel panImage;
     private javax.swing.JProgressBar prgHealth;
     private javax.swing.JProgressBar prgHungar;
     private javax.swing.JProgressBar prgXP;

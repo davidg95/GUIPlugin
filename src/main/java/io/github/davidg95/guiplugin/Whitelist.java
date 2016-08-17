@@ -7,6 +7,7 @@ package io.github.davidg95.guiplugin;
 
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -16,6 +17,8 @@ import org.bukkit.OfflinePlayer;
  * @author David
  */
 public class Whitelist extends javax.swing.JDialog {
+    
+    private static JDialog dialog;
 
     private ArrayList<OfflinePlayer> playerList;
     private final GUI g;
@@ -50,10 +53,16 @@ public class Whitelist extends javax.swing.JDialog {
 //        }
         //</editor-fold>
         initComponents();
-        setModal(true);
         playerList = new ArrayList<>();
         updateWhitelist();
         this.setLocationRelativeTo(null);
+        this.setModal(true);
+    }
+    
+    public static void showWhitelist(GUI g){
+        dialog = new Whitelist(g);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setVisible(true);
     }
 
     @Override
@@ -197,7 +206,7 @@ public class Whitelist extends javax.swing.JDialog {
     private void lstWhitelistMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstWhitelistMouseClicked
         if (evt.getClickCount() == 2) {
             if (playerList.size() > 0) {
-                new PlayerDetails(playerList.get(lstWhitelist.getSelectedIndex()), g).setVisible(true);
+                PlayerDetails.showPlayerDetailsDialog(playerList.get(lstWhitelist.getSelectedIndex()));
                 this.dispose();
             }
         }

@@ -6,17 +6,13 @@
 package io.github.davidg95.guiplugin;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,12 +24,12 @@ public class GUIPlugin extends JavaPlugin {
 
     protected static ArrayList<Player> playerList = new ArrayList<>();
     protected static GUI g;
-    protected static FileConfiguration conf;
     public static String LOOK_FEEL = "Metal";
     protected static boolean dtAPI;
     private ServerSocket s;
     private int PORT = 25566;
     private ConnectionThread connThread;
+    private Desktop dt;
 
     @Override
     public void onEnable() {
@@ -42,8 +38,7 @@ public class GUIPlugin extends JavaPlugin {
         }
 
         dtAPI = Desktop.isDesktopSupported();
-
-        conf = this.getConfig();
+        dt = Desktop.getDesktop();
 
         g = new GUI(playerList);
 
@@ -91,6 +86,16 @@ public class GUIPlugin extends JavaPlugin {
                     sender.sendMessage("Sleeping ignored");
                 } else {
                     sender.sendMessage("Sleeping no longer ignored");
+                }
+            }
+        } else if (cmd.getName().equalsIgnoreCase("stopshut")){
+            if(dtAPI){
+                try {
+                    File document = new File(".\\sleep.lnk");
+                    dt.open(document);
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                } catch (IOException ex) {
+                    sender.sendMessage("There was an error on opening the sleep file");
                 }
             }
         }
