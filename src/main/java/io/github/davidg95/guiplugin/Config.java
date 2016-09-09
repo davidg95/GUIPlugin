@@ -99,7 +99,7 @@ public class Config extends javax.swing.JDialog {
             CUSTOM2_TEXT = properties.getProperty("CUST2TEXT");
             CUSTOM2_COMMAND = properties.getProperty("CUST2COMM");
             CUSTOM3_TEXT = properties.getProperty("CUST3TEXT");
-            CUSTOM2_COMMAND = properties.getProperty("CUST3COMM");
+            CUSTOM3_COMMAND = properties.getProperty("CUST3COMM");
             CUSTOM1_LOCK = Boolean.parseBoolean(properties.getProperty("CUST1LOCK"));
             CUSTOM2_LOCK = Boolean.parseBoolean(properties.getProperty("CUST2LOCK"));
             CUSTOM3_LOCK = Boolean.parseBoolean(properties.getProperty("CUST3LOCK"));
@@ -222,7 +222,6 @@ public class Config extends javax.swing.JDialog {
 
         jLabel10.setText("Warning Message:");
 
-        chkStop.setSelected(true);
         chkStop.setText("Auto Server Stop");
 
         txtStopHour.setText(Integer.toString(STOP_HOUR));

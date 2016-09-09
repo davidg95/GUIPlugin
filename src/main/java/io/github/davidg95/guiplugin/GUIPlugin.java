@@ -8,12 +8,12 @@ package io.github.davidg95.guiplugin;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -24,15 +24,13 @@ public class GUIPlugin extends JavaPlugin {
 
     protected static ArrayList<Player> playerList = new ArrayList<>();
     protected static GUI g;
-    public static String LOOK_FEEL = "Metal";
     protected static boolean dtAPI;
-    private ServerSocket s;
-    private int PORT = 25566;
-    private ConnectionThread connThread;
+    public static Plugin plugin;
     private Desktop dt;
 
     @Override
     public void onEnable() {
+        plugin = this;
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             playerList.add(player);
         }
@@ -44,14 +42,6 @@ public class GUIPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(g, this);
         g.setVisible(true);
-        
-        try {
-            s = new ServerSocket(PORT);
-        } catch (IOException ex) {
-            
-        }
-        
-        connThread = new ConnectionThread(s, g);
 
         g.serverStopTimer();
     }
@@ -136,4 +126,5 @@ public class GUIPlugin extends JavaPlugin {
         g = new GUI(playerList);
         g.setVisible(true);
     }
+        
 }

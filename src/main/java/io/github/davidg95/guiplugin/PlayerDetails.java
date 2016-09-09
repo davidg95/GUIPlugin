@@ -134,13 +134,7 @@ public class PlayerDetails extends javax.swing.JDialog {
     }
     
     private void updateDetails(){
-        txtName.setText(player.getName());
-        txtCustomName.setText(player.getDisplayName());
-        txtAddress.setText(player.getAddress().getHostString());
-        txtUUID.setText(player.getUniqueId().toString());
         txtGameMode.setText(player.getGameMode().toString());
-        checkOp.setSelected(player.isOp());
-        checkSleep.setSelected(player.isSleepingIgnored());
         prgHealth.setValue((int) player.getHealth() * 5);
         prgHungar.setValue(player.getFoodLevel() * 5);
         lblXP.setText(Integer.toString(player.getLevel()));
@@ -168,8 +162,6 @@ public class PlayerDetails extends javax.swing.JDialog {
     public class UpdateThread extends Thread {
 
         protected boolean isRunning;
-
-        protected boolean isRed;
 
         public UpdateThread() {
             this.isRunning = true;
@@ -223,7 +215,7 @@ public class PlayerDetails extends javax.swing.JDialog {
             }
         }
         
-        panImage.repaint();
+        panImage.getGraphics().drawImage(mapImage, 0, 0, this);
 
     }
 
@@ -286,15 +278,14 @@ public class PlayerDetails extends javax.swing.JDialog {
         lblXP = new javax.swing.JLabel();
         prgXP = new javax.swing.JProgressBar();
         checkSleep = new javax.swing.JCheckBox();
-        panImage = new ImagePanel(mapImage);
         btnGameMode = new javax.swing.JButton();
+        panImage = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Details for " + PLAYER_NAME);
         setAlwaysOnTop(true);
         setMaximumSize(new java.awt.Dimension(680, 400));
         setMinimumSize(new java.awt.Dimension(680, 400));
-        setPreferredSize(new java.awt.Dimension(680, 400));
         setResizable(false);
 
         jLabel1.setText("Player Name:");
@@ -376,17 +367,6 @@ public class PlayerDetails extends javax.swing.JDialog {
             }
         });
 
-        javax.swing.GroupLayout panImageLayout = new javax.swing.GroupLayout(panImage);
-        panImage.setLayout(panImageLayout);
-        panImageLayout.setHorizontalGroup(
-            panImageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 222, Short.MAX_VALUE)
-        );
-        panImageLayout.setVerticalGroup(
-            panImageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 202, Short.MAX_VALUE)
-        );
-
         btnGameMode.setText("Game Mode");
         btnGameMode.setEnabled(false);
         btnGameMode.setMaximumSize(new java.awt.Dimension(80, 80));
@@ -397,6 +377,17 @@ public class PlayerDetails extends javax.swing.JDialog {
                 btnGameModeActionPerformed(evt);
             }
         });
+
+        javax.swing.GroupLayout panImageLayout = new javax.swing.GroupLayout(panImage);
+        panImage.setLayout(panImageLayout);
+        panImageLayout.setHorizontalGroup(
+            panImageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 290, Short.MAX_VALUE)
+        );
+        panImageLayout.setVerticalGroup(
+            panImageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -453,9 +444,9 @@ public class PlayerDetails extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSend))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(50, 50, 50)
+                        .addGap(30, 30, 30)
                         .addComponent(panImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(67, Short.MAX_VALUE))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -500,9 +491,10 @@ public class PlayerDetails extends javax.swing.JDialog {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel10)
                                     .addComponent(lblXP, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(prgXP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(panImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
+                            .addComponent(prgXP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 40, Short.MAX_VALUE))
+                    .addComponent(panImage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4)
