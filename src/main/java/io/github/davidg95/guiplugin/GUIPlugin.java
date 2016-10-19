@@ -78,8 +78,8 @@ public class GUIPlugin extends JavaPlugin {
                     sender.sendMessage("Sleeping no longer ignored");
                 }
             }
-        } else if (cmd.getName().equalsIgnoreCase("stopshut")){
-            if(dtAPI){
+        } else if (cmd.getName().equalsIgnoreCase("stopshut")) {
+            if (dtAPI) {
                 try {
                     File document = new File(".\\sleep.lnk");
                     dt.open(document);
@@ -91,8 +91,6 @@ public class GUIPlugin extends JavaPlugin {
         }
         return false;
     }
-
-    
 
     /**
      * Method to set the GUI to the decorated state. This method will dispose of
@@ -126,5 +124,5 @@ public class GUIPlugin extends JavaPlugin {
         g = new GUI(playerList);
         g.setVisible(true);
     }
-        
+
 }

@@ -5,6 +5,7 @@
  */
 package io.github.davidg95.guiplugin;
 
+import javax.swing.JDialog;
 import org.bukkit.Bukkit;
 
 /**
@@ -12,12 +13,35 @@ import org.bukkit.Bukkit;
  * @author David
  */
 public class InfoDialog extends javax.swing.JDialog {
+    
+    private static JDialog dialog;
 
     /**
      * Creates new form InfoDialog
      */
     public InfoDialog() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        this.setModal(true);
+        loadInfo();
+    }
+    
+    public static void showInfoDialog(){
+        dialog = new InfoDialog();
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setVisible(true);
+    }
+    
+    private void loadInfo(){
+        txtName.setText(Bukkit.getServerName());
+        txtVersion.setText(Bukkit.getBukkitVersion());
+        txtProcessor.setText(Runtime.getRuntime().availableProcessors() + "");
+        txtMemory.setText(Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory());
+        txtAuthentication.setText(Bukkit.getOnlineMode() ? "ENABLED" : "DISABLED");
+        txtSpawn.setText(Bukkit.getSpawnRadius() + "");
+        txtNether.setText(Bukkit.getAllowNether() ? "ENABLED" : "DISABLED");
+        txtEnd.setText(Bukkit.getAllowEnd() ? "ENABLED" : "DISABLED");
+        txtMOTD.setText(Bukkit.getMotd());
     }
 
     /**
@@ -29,54 +53,163 @@ public class InfoDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        txtCores = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
+        lblProcessor = new javax.swing.JLabel();
+        lblMemory = new javax.swing.JLabel();
+        lblName = new javax.swing.JLabel();
+        lblVersion = new javax.swing.JLabel();
+        lblAuthentication = new javax.swing.JLabel();
+        lblSpawnRadius = new javax.swing.JLabel();
+        lblNether = new javax.swing.JLabel();
+        lblEnd = new javax.swing.JLabel();
+        txtVersion = new javax.swing.JTextField();
+        txtName = new javax.swing.JTextField();
+        txtProcessor = new javax.swing.JTextField();
         txtMemory = new javax.swing.JTextField();
+        txtAuthentication = new javax.swing.JTextField();
+        txtSpawn = new javax.swing.JTextField();
+        txtNether = new javax.swing.JTextField();
+        txtEnd = new javax.swing.JTextField();
+        btnClose = new javax.swing.JButton();
+        lblMOTD = new javax.swing.JLabel();
+        txtMOTD = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Server Info");
+        setMaximumSize(new java.awt.Dimension(354, 328));
+        setMinimumSize(new java.awt.Dimension(354, 328));
+        setResizable(false);
 
-        jLabel1.setText("Processor Cores:");
+        lblProcessor.setText("Processor Cores:");
 
-        jLabel2.setText("Memory:");
+        lblMemory.setText("Memory:");
+
+        lblName.setText("World Name:");
+
+        lblVersion.setText("Server Version");
+
+        lblAuthentication.setText("Authentication");
+
+        lblSpawnRadius.setText("Spawn Radius:");
+
+        lblNether.setText("Nether:");
+
+        lblEnd.setText("End:");
+
+        btnClose.setText("Close");
+        btnClose.setMaximumSize(new java.awt.Dimension(80, 80));
+        btnClose.setMinimumSize(new java.awt.Dimension(80, 80));
+        btnClose.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCloseActionPerformed(evt);
+            }
+        });
+
+        lblMOTD.setText("MOTD:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(99, 99, 99)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel1))
+                    .addComponent(lblMOTD)
+                    .addComponent(lblEnd)
+                    .addComponent(lblNether)
+                    .addComponent(lblSpawnRadius)
+                    .addComponent(lblAuthentication)
+                    .addComponent(lblVersion)
+                    .addComponent(lblName)
+                    .addComponent(lblMemory)
+                    .addComponent(lblProcessor))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtCores, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
-                    .addComponent(txtMemory))
-                .addContainerGap(126, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtMemory, javax.swing.GroupLayout.DEFAULT_SIZE, 211, Short.MAX_VALUE)
+                    .addComponent(txtAuthentication)
+                    .addComponent(txtSpawn)
+                    .addComponent(txtNether)
+                    .addComponent(txtEnd)
+                    .addComponent(txtVersion, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(txtName, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(txtProcessor)
+                    .addComponent(txtMOTD)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(58, 58, 58)))
+                .addGap(47, 47, 47))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(35, 35, 35)
+                .addContainerGap(14, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(txtCores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblVersion)
+                    .addComponent(txtVersion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
+                    .addComponent(lblName)
+                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblProcessor)
+                    .addComponent(txtProcessor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblMemory)
                     .addComponent(txtMemory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(219, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblAuthentication)
+                    .addComponent(txtAuthentication, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblSpawnRadius)
+                    .addComponent(txtSpawn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblNether)
+                    .addComponent(txtNether, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblEnd)
+                    .addComponent(txtEnd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblMOTD)
+                    .addComponent(txtMOTD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseActionPerformed
+        this.setVisible(false);
+    }//GEN-LAST:event_btnCloseActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JTextField txtCores;
+    private javax.swing.JButton btnClose;
+    private javax.swing.JLabel lblAuthentication;
+    private javax.swing.JLabel lblEnd;
+    private javax.swing.JLabel lblMOTD;
+    private javax.swing.JLabel lblMemory;
+    private javax.swing.JLabel lblName;
+    private javax.swing.JLabel lblNether;
+    private javax.swing.JLabel lblProcessor;
+    private javax.swing.JLabel lblSpawnRadius;
+    private javax.swing.JLabel lblVersion;
+    private javax.swing.JTextField txtAuthentication;
+    private javax.swing.JTextField txtEnd;
+    private javax.swing.JTextField txtMOTD;
     private javax.swing.JTextField txtMemory;
+    private javax.swing.JTextField txtName;
+    private javax.swing.JTextField txtNether;
+    private javax.swing.JTextField txtProcessor;
+    private javax.swing.JTextField txtSpawn;
+    private javax.swing.JTextField txtVersion;
     // End of variables declaration//GEN-END:variables
 }

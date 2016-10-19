@@ -27,13 +27,13 @@ public class StopServerOptions extends javax.swing.JDialog {
     }
 
     /**
-     * Show the stop server options dialog. Returns 0 of the user selects
-     * cancel. Returns 1 if they just want to stop the server. returns 2 if they
-     * want to stop the server and shut down the computer. Returns 3 if the want
-     * to stop the server and put the computer to sleep. If backup is selected,
-     * the value returned is increased by 3.
+     * Show the stop server options dialog.
      *
-     * @return 0, 1, 2 or 3 depending on what options the user selected.
+     * 0 - do nothing. 1 - normal stop. 2 - stop and shut down. 3 - stop and
+     * sleep. 4 - normal stop with backup. 5 - shut down with backup. 6 - sleep
+     * with backup.
+     *
+     * @return option that the user selected.
      */
     public static int showStopOptions() {
         dialog = new StopServerOptions();

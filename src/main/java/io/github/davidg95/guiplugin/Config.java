@@ -5,6 +5,7 @@
  */
 package io.github.davidg95.guiplugin;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,8 +13,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.border.TitledBorder;
 import org.bukkit.Bukkit;
 
 /**
@@ -21,11 +29,11 @@ import org.bukkit.Bukkit;
  * @author David
  */
 public class Config extends javax.swing.JDialog {
-    
+
     private static JDialog dialog;
     private static GUIInterface g;
     private static Properties properties;
-    
+
     public static String SERVER_NAME = "";
     public static String CUSTOM1_TEXT = "";
     public static String CUSTOM2_TEXT = "";
@@ -42,18 +50,31 @@ public class Config extends javax.swing.JDialog {
     public static int STOP_HOUR = 23;
     public static int STOP_MINUTE = 59;
     public static String WARNING_MESSAGE = "***SERVER SHUTDOWN***";
+    public static ShutdownOption SHUTDOWN_OPTION = ShutdownOption.NOTHING;
     public static boolean GUI_LOCK = false;
     public static boolean BACKUP_ON_CLOSE = true;
-    
+    public static File bg_file;
+    public static BufferedImage bg_image;
+
+    public static List<JButton> customButtons;
+
     public boolean initAutoStop;
-    
+    public boolean shutdownChange;
+
+    public enum ShutdownOption {
+
+        SHUT_DOWN, STANDBY, NOTHING
+    }
+
     /**
      * Creates new form Config
      */
     public Config() {
-        loadProperties();
         initAutoStop = autoStop;
+        shutdownChange = false;
         initComponents();
+        panelCustomButtons.setBorder(new TitledBorder("Custom Buttons"));
+        panelServerStop.setBorder(new TitledBorder("Server Stop Options"));
         this.setLocationRelativeTo(null);
         this.setModal(true);
         txtServerName.setText(SERVER_NAME);
@@ -68,23 +89,65 @@ public class Config extends javax.swing.JDialog {
         chkLock3.setSelected(CUSTOM3_LOCK);
         checkWhitelist.setSelected(Bukkit.hasWhitelist());
         checkPasscode.setSelected(GUI_LOCK);
+        checkLockdown.setSelected(g.isLockDown());
         chkStop.setSelected(autoStop);
+        if (chkStop.isSelected()) {
+            txtStopHour.setEnabled(true);
+            txtStopMin.setEnabled(true);
+            txtWarnHour.setEnabled(true);
+            txtWarnMin.setEnabled(true);
+            txtWarnMessage.setEnabled(true);
+            chkBackup.setEnabled(true);
+            chkShutDown.setEnabled(true);
+            chkStandby.setEnabled(true);
+            chkNothing.setEnabled(true);
+            jLabel6.setEnabled(true);
+            jLabel8.setEnabled(true);
+            jLabel10.setEnabled(true);
+            jLabel4.setEnabled(true);
+        } else {
+            txtStopHour.setEnabled(false);
+            txtStopMin.setEnabled(false);
+            txtWarnHour.setEnabled(false);
+            txtWarnMin.setEnabled(false);
+            txtWarnMessage.setEnabled(false);
+            chkBackup.setEnabled(false);
+            chkShutDown.setEnabled(false);
+            chkStandby.setEnabled(false);
+            chkNothing.setEnabled(false);
+            jLabel6.setEnabled(false);
+            jLabel8.setEnabled(false);
+            jLabel10.setEnabled(false);
+            jLabel4.setEnabled(false);
+        }
         chkBackup.setSelected(BACKUP_ON_CLOSE);
+        if (SHUTDOWN_OPTION.equals(ShutdownOption.SHUT_DOWN)) {
+            chkShutDown.setSelected(true);
+        } else if (SHUTDOWN_OPTION.equals(ShutdownOption.STANDBY)) {
+            chkStandby.setSelected(true);
+        } else if (SHUTDOWN_OPTION.equals(ShutdownOption.NOTHING)) {
+            chkNothing.setSelected(true);
+        }
+        if (bg_file != null) {
+            txtImage.setText(bg_file.getName());
+        }
     }
-    
-    public static void initConfig(GUIInterface gui){
+
+    public static void initConfig(GUIInterface gui) {
         g = gui;
+        bg_image = null;
         properties = new Properties();
+        customButtons = new ArrayList<>();
         loadProperties();
         g.updateConfig();
     }
-    
-    public static void showConfigDialog(){
+
+    public static void showConfigDialog() {
         dialog = new Config();
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setVisible(true);
     }
-    
+
     private static void loadProperties() {
         InputStream input = null;
 
@@ -109,9 +172,36 @@ public class Config extends javax.swing.JDialog {
             STOP_HOUR = Integer.parseInt(properties.getProperty("STOPHOUR"));
             STOP_MINUTE = Integer.parseInt(properties.getProperty("STOPMIN"));
             WARNING_MESSAGE = properties.getProperty("WARNMESSAGE");
+            String shut_opt = properties.getProperty("SHUTOPT");
+            switch (shut_opt) {
+                case "SHUT_DOWN":
+                    SHUTDOWN_OPTION = ShutdownOption.SHUT_DOWN;
+                    break;
+                case "STANDBY":
+                    SHUTDOWN_OPTION = ShutdownOption.STANDBY;
+                    break;
+                case "NOTHING":
+                    SHUTDOWN_OPTION = ShutdownOption.NOTHING;
+                    break;
+            }
             GUI_LOCK = Boolean.parseBoolean(properties.getProperty("GUILOCK"));
             BACKUP_ON_CLOSE = Boolean.parseBoolean(properties.getProperty("BACKUPONCLOSE"));
-            
+
+            int count = Integer.parseInt(properties.getProperty("COUNT"));
+
+            for (int i = 0; i < count; i++) {
+                String text = properties.getProperty("TEXT" + i);
+                String command = properties.getProperty("COMMAND" + i);
+                JButton button = new JButton();
+                button.setText(text);
+                button.setMaximumSize(new java.awt.Dimension(100, 100));
+                button.setMinimumSize(new java.awt.Dimension(100, 100));
+                button.setPreferredSize(new java.awt.Dimension(100, 100));
+                button.setSize(100, 100);
+                button.setAction(new CustomButtonAction(text, command));
+                customButtons.add(button);
+            }
+
         } catch (FileNotFoundException ex) {
             File file = new File("GUIConfig.properties");
             try {
@@ -123,7 +213,7 @@ public class Config extends javax.swing.JDialog {
         }
     }
 
-    private static void saveProperties() {
+    public static void saveProperties() {
         OutputStream output = null;
 
         try {
@@ -145,8 +235,19 @@ public class Config extends javax.swing.JDialog {
             properties.setProperty("STOPHOUR", Integer.toString(STOP_HOUR));
             properties.setProperty("STOPMIN", Integer.toString(STOP_MINUTE));
             properties.setProperty("WARNMESSAGE", WARNING_MESSAGE);
+            properties.setProperty("SHUTOPT", SHUTDOWN_OPTION.toString());
             properties.setProperty("GUILOCK", Boolean.toString(GUI_LOCK));
             properties.setProperty("BACKUPONCLOSE", Boolean.toString(BACKUP_ON_CLOSE));
+
+            int count = customButtons.size();
+
+            properties.setProperty("COUNT", Integer.toString(count));
+
+            for (int i = 0; i < count; i++) {
+                JButton button = customButtons.get(i);
+                properties.setProperty("TEXT" + i, button.getText());
+                properties.setProperty("COMMAND" + i, button.getActionCommand());
+            }
 
             properties.store(output, null);
         } catch (FileNotFoundException ex) {
@@ -163,10 +264,11 @@ public class Config extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btngrpStopOptions = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
         txtServerName = new javax.swing.JTextField();
         btnUpdate = new javax.swing.JButton();
-        PanelServerStop = new javax.swing.JPanel();
+        panelServerStop = new javax.swing.JPanel();
         txtWarnHour = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         txtWarnMin = new javax.swing.JTextField();
@@ -179,6 +281,10 @@ public class Config extends javax.swing.JDialog {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         chkBackup = new javax.swing.JCheckBox();
+        chkShutDown = new javax.swing.JRadioButton();
+        chkStandby = new javax.swing.JRadioButton();
+        chkNothing = new javax.swing.JRadioButton();
+        jLabel4 = new javax.swing.JLabel();
         panelCustomButtons = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -198,6 +304,9 @@ public class Config extends javax.swing.JDialog {
         checkWhitelist = new javax.swing.JCheckBox();
         checkPasscode = new javax.swing.JCheckBox();
         btnClose = new javax.swing.JButton();
+        checkLockdown = new javax.swing.JCheckBox();
+        txtImage = new javax.swing.JTextField();
+        btnImage = new javax.swing.JButton();
 
         setTitle("Configuration");
         setAlwaysOnTop(true);
@@ -223,6 +332,11 @@ public class Config extends javax.swing.JDialog {
         jLabel10.setText("Warning Message:");
 
         chkStop.setText("Auto Server Stop");
+        chkStop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkStopActionPerformed(evt);
+            }
+        });
 
         txtStopHour.setText(Integer.toString(STOP_HOUR));
 
@@ -236,66 +350,104 @@ public class Config extends javax.swing.JDialog {
 
         chkBackup.setText("Backup On Close");
 
-        javax.swing.GroupLayout PanelServerStopLayout = new javax.swing.GroupLayout(PanelServerStop);
-        PanelServerStop.setLayout(PanelServerStopLayout);
-        PanelServerStopLayout.setHorizontalGroup(
-            PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelServerStopLayout.createSequentialGroup()
+        btngrpStopOptions.add(chkShutDown);
+        chkShutDown.setText("Shut Down");
+        chkShutDown.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkShutDownActionPerformed(evt);
+            }
+        });
+
+        btngrpStopOptions.add(chkStandby);
+        chkStandby.setText("Standby");
+        chkStandby.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkStandbyActionPerformed(evt);
+            }
+        });
+
+        btngrpStopOptions.add(chkNothing);
+        chkNothing.setText("Nothing");
+        chkNothing.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkNothingActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("On Stop:");
+
+        javax.swing.GroupLayout panelServerStopLayout = new javax.swing.GroupLayout(panelServerStop);
+        panelServerStop.setLayout(panelServerStopLayout);
+        panelServerStopLayout.setHorizontalGroup(
+            panelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelServerStopLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(chkStop)
-                    .addGroup(PanelServerStopLayout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(chkBackup)
-                            .addGroup(PanelServerStopLayout.createSequentialGroup()
-                                .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel6)
-                                    .addComponent(jLabel8)
-                                    .addComponent(jLabel10))
+                    .addGroup(panelServerStopLayout.createSequentialGroup()
+                        .addGroup(panelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel10))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelServerStopLayout.createSequentialGroup()
+                                .addGroup(panelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtStopHour)
+                                    .addComponent(txtWarnHour, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(PanelServerStopLayout.createSequentialGroup()
-                                        .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(txtStopHour)
-                                            .addComponent(txtWarnHour, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(panelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(panelServerStopLayout.createSequentialGroup()
+                                        .addComponent(jLabel7)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addGroup(PanelServerStopLayout.createSequentialGroup()
-                                                .addComponent(jLabel7)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(txtStopMin, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(PanelServerStopLayout.createSequentialGroup()
-                                                .addComponent(jLabel9)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(txtWarnMin, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                    .addComponent(txtWarnMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addComponent(txtStopMin, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(panelServerStopLayout.createSequentialGroup()
+                                        .addComponent(jLabel9)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtWarnMin, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(txtWarnMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(chkBackup)
+                    .addGroup(panelServerStopLayout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(chkShutDown)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(chkStandby)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(chkNothing)))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
-        PanelServerStopLayout.setVerticalGroup(
-            PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PanelServerStopLayout.createSequentialGroup()
+        panelServerStopLayout.setVerticalGroup(
+            panelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelServerStopLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(chkStop)
-                .addGap(18, 18, 18)
-                .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(txtStopHour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7)
                     .addComponent(txtStopMin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(panelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(txtWarnHour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel9)
                     .addComponent(txtWarnMin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(8, 8, 8)
-                .addGroup(PanelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(panelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtWarnMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(chkBackup)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(7, 7, 7)
+                .addGroup(panelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addGroup(panelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(chkShutDown)
+                        .addComponent(chkStandby)
+                        .addComponent(chkNothing)))
+                .addContainerGap(73, Short.MAX_VALUE))
         );
 
         jLabel3.setText("Custom Button 2-");
@@ -442,36 +594,51 @@ public class Config extends javax.swing.JDialog {
             }
         });
 
+        checkLockdown.setText("Lockdown");
+
+        txtImage.setEditable(false);
+
+        btnImage.setText("Select Image");
+        btnImage.setEnabled(false);
+        btnImage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImageActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(214, 214, 214)
+                            .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(131, 131, 131)
+                            .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addGap(41, 41, 41)
+                            .addComponent(jLabel1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(txtServerName, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(65, 65, 65)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(checkWhitelist)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(checkPasscode))
+                                .addComponent(txtImage))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(checkLockdown)
+                                .addComponent(btnImage))))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(131, 131, 131)
-                        .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(41, 41, 41)
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtServerName, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(22, 22, 22)
-                                .addComponent(panelCustomButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(checkWhitelist)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(checkPasscode))
-                            .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(PanelServerStop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(14, 14, 14)))
+                        .addGap(21, 21, 21)
+                        .addComponent(panelCustomButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panelServerStop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -482,12 +649,17 @@ public class Config extends javax.swing.JDialog {
                     .addComponent(txtServerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1)
                     .addComponent(checkWhitelist)
-                    .addComponent(checkPasscode))
-                .addGap(9, 9, 9)
+                    .addComponent(checkPasscode)
+                    .addComponent(checkLockdown))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnImage))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(panelCustomButtons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PanelServerStop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
+                    .addComponent(panelServerStop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(37, 37, 37)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -510,6 +682,8 @@ public class Config extends javax.swing.JDialog {
         CUSTOM3_LOCK = chkLock3.isSelected();
         autoStop = chkStop.isSelected();
         Bukkit.setWhitelist(checkWhitelist.isSelected());
+        boolean initLockdown = g.isLockDown();
+        g.setLockDown(checkLockdown.isSelected());
         Config.GUI_LOCK = checkPasscode.isSelected();
         WARNING_HOUR = Integer.parseInt(txtWarnHour.getText());
         WARNING_MINUTE = Integer.parseInt(txtWarnMin.getText());
@@ -517,18 +691,32 @@ public class Config extends javax.swing.JDialog {
         STOP_MINUTE = Integer.parseInt(txtStopMin.getText());
         WARNING_MESSAGE = txtWarnMessage.getText();
         BACKUP_ON_CLOSE = chkBackup.isSelected();
-        if (initAutoStop == false && autoStop == true) {
-            g.serverStopTimer();
-            g.setStopTimeLabel("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
-            g.toTextArea("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
-        } else if (initAutoStop == true && autoStop == false) {
+        if (autoStop == false) {
             g.cancelStopTimer();
             g.setStopTimeLabel("Server stop disabled");
             g.toTextArea("Server stop disabled");
-        } else if (initAutoStop == true && autoStop == true) {
-            g.cancelStopTimer();
-            g.serverStopTimer();
-            g.setStopTimeLabel("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
+        } else {
+            if (initAutoStop != autoStop) {
+                g.serverStopTimer();
+                g.setStopTimeLabel("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
+                g.toTextArea("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
+            } else if (shutdownChange) {
+                g.serverStopTimer();
+                g.setStopTimeLabel("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
+                g.toTextArea("Server will stop at " + STOP_HOUR + ":" + STOP_MINUTE);
+            }
+        }
+        if (chkShutDown.isSelected()) {
+            SHUTDOWN_OPTION = ShutdownOption.SHUT_DOWN;
+        } else if (chkStandby.isSelected()) {
+            SHUTDOWN_OPTION = ShutdownOption.STANDBY;
+        } else if (chkNothing.isSelected()) {
+            SHUTDOWN_OPTION = ShutdownOption.NOTHING;
+        }
+        if (initLockdown != g.isLockDown()) {
+            if (g.isLockDown()) {
+                JOptionPane.showMessageDialog(this, "Server is now in lockdown, no new players will be able to join", "Lockdown", JOptionPane.WARNING_MESSAGE);
+            }
         }
         initAutoStop = autoStop;
         saveProperties();
@@ -540,56 +728,87 @@ public class Config extends javax.swing.JDialog {
         this.setVisible(false);
     }//GEN-LAST:event_btnCloseActionPerformed
 
-//    /**
-//     * @param args the command line arguments
-//     */
-//    public static void main(String args[]) {
-//        /* Set the Nimbus look and feel */
-//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-//         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(Config.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(Config.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(Config.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(Config.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//        //</editor-fold>
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new Config().setVisible(true);
-//            }
-//        });
-//    }
+    private void btnImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImageActionPerformed
+        JFileChooser fc = new JFileChooser();
+        fc.setCurrentDirectory(new File(System.getProperty("user.home")));
+        int result = fc.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            bg_file = fc.getSelectedFile();
+            try {
+                bg_image = ImageIO.read(bg_file);
+                txtImage.setText(bg_file.getName());
+            } catch (IOException e) {
+
+            }
+        }
+    }//GEN-LAST:event_btnImageActionPerformed
+
+    private void chkStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkStopActionPerformed
+        if (chkStop.isSelected()) {
+            txtStopHour.setEnabled(true);
+            txtStopMin.setEnabled(true);
+            txtWarnHour.setEnabled(true);
+            txtWarnMin.setEnabled(true);
+            txtWarnMessage.setEnabled(true);
+            chkBackup.setEnabled(true);
+            chkShutDown.setEnabled(true);
+            chkStandby.setEnabled(true);
+            chkNothing.setEnabled(true);
+            jLabel6.setEnabled(true);
+            jLabel8.setEnabled(true);
+            jLabel10.setEnabled(true);
+            jLabel4.setEnabled(true);
+        } else {
+            txtStopHour.setEnabled(false);
+            txtStopMin.setEnabled(false);
+            txtWarnHour.setEnabled(false);
+            txtWarnMin.setEnabled(false);
+            txtWarnMessage.setEnabled(false);
+            chkBackup.setEnabled(false);
+            chkShutDown.setEnabled(false);
+            chkStandby.setEnabled(false);
+            chkNothing.setEnabled(false);
+            jLabel6.setEnabled(false);
+            jLabel8.setEnabled(false);
+            jLabel10.setEnabled(false);
+            jLabel4.setEnabled(false);
+        }
+    }//GEN-LAST:event_chkStopActionPerformed
+
+    private void chkShutDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkShutDownActionPerformed
+        shutdownChange = true;
+    }//GEN-LAST:event_chkShutDownActionPerformed
+
+    private void chkStandbyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkStandbyActionPerformed
+        shutdownChange = true;
+    }//GEN-LAST:event_chkStandbyActionPerformed
+
+    private void chkNothingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkNothingActionPerformed
+        shutdownChange = true;
+    }//GEN-LAST:event_chkNothingActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel PanelServerStop;
     private javax.swing.JButton btnClose;
+    private javax.swing.JButton btnImage;
     private javax.swing.JButton btnUpdate;
+    private javax.swing.ButtonGroup btngrpStopOptions;
+    private javax.swing.JCheckBox checkLockdown;
     private javax.swing.JCheckBox checkPasscode;
     private javax.swing.JCheckBox checkWhitelist;
     private javax.swing.JCheckBox chkBackup;
     private javax.swing.JCheckBox chkLock1;
     private javax.swing.JCheckBox chkLock2;
     private javax.swing.JCheckBox chkLock3;
+    private javax.swing.JRadioButton chkNothing;
+    private javax.swing.JRadioButton chkShutDown;
+    private javax.swing.JRadioButton chkStandby;
     private javax.swing.JCheckBox chkStop;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -599,12 +818,14 @@ public class Config extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel panelCustomButtons;
+    private javax.swing.JPanel panelServerStop;
     private javax.swing.JTextField txtCustom1Command;
     private javax.swing.JTextField txtCustom1Text;
     private javax.swing.JTextField txtCustom2Command;
     private javax.swing.JTextField txtCustom2Text;
     private javax.swing.JTextField txtCustom3Command;
     private javax.swing.JTextField txtCustom3Text;
+    private javax.swing.JTextField txtImage;
     private javax.swing.JTextField txtServerName;
     private javax.swing.JTextField txtStopHour;
     private javax.swing.JTextField txtStopMin;

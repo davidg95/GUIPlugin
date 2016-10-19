@@ -33,6 +33,7 @@ public class GameModeDialog extends javax.swing.JDialog {
         }
         this.setLocationRelativeTo(null);
         this.setModal(true);
+        this.toFront();
     }
 
     public static GameMode showGameModeDialog(GameMode gm) {
@@ -61,7 +62,6 @@ public class GameModeDialog extends javax.swing.JDialog {
         setTitle("Game Mode");
         setMaximumSize(new java.awt.Dimension(200, 400));
         setMinimumSize(new java.awt.Dimension(200, 400));
-        setPreferredSize(new java.awt.Dimension(200, 400));
         setResizable(false);
 
         btnCreative.setText("Creative");
