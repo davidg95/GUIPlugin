@@ -22,6 +22,16 @@ public class StopServerOptions extends javax.swing.JDialog {
      */
     public StopServerOptions() {
         initComponents();
+        if(Config.SHUT_URL.equals("")){
+            radShut.setEnabled(false);
+        }
+        if(Config.SLEEP_URL.equals("")){
+            radSleep.setEnabled(false);
+        }
+        if(Config.BACKUP_URL.equals("")){
+            chkBackup.setEnabled(false);
+            chkBackup.setSelected(false);
+        }
         this.setLocationRelativeTo(null);
         this.setModal(true);
     }

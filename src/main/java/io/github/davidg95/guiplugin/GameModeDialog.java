@@ -5,7 +5,12 @@
  */
 package io.github.davidg95.guiplugin;
 
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Window;
 import javax.swing.JDialog;
+import static javax.swing.JOptionPane.getRootFrame;
 import org.bukkit.GameMode;
 
 /**
@@ -20,7 +25,28 @@ public class GameModeDialog extends javax.swing.JDialog {
     /**
      * Creates new form GameMode
      */
-    public GameModeDialog() {
+    public GameModeDialog(Frame parent) {
+        super(parent, "Select Game Mode", true);
+        initComponents();
+        if (gameMode.equals(GameMode.CREATIVE)) {
+            btnCreative.setSelected(true);
+        } else if (gameMode.equals(GameMode.SURVIVAL)) {
+            btnSurvival.setSelected(true);
+        } else if (gameMode.equals(GameMode.ADVENTURE)) {
+            btnAdventure.setSelected(true);
+        } else if (gameMode.equals(GameMode.SPECTATOR)) {
+            btnSpectator.setSelected(true);
+        }
+        this.setLocationRelativeTo(null);
+        this.setModal(true);
+        this.toFront();
+    }
+    
+    /**
+     * Creates new form GameMode
+     */
+    public GameModeDialog(Dialog parent) {
+        super(parent, "Select Game Mode", true);
         initComponents();
         if (gameMode.equals(GameMode.CREATIVE)) {
             btnCreative.setSelected(true);
@@ -36,9 +62,19 @@ public class GameModeDialog extends javax.swing.JDialog {
         this.toFront();
     }
 
-    public static GameMode showGameModeDialog(GameMode gm) {
+    public static GameMode showGameModeDialog(Component parent, GameMode gm) {
         gameMode = gm;
-        dialog = new GameModeDialog();
+        Window window;
+        if (parent instanceof Frame || parent instanceof Dialog){
+            window = (Window)parent;
+        } else {
+            window = getRootFrame();
+        }
+        if (window instanceof Frame) {
+            dialog = new GameModeDialog((Frame)window);
+        } else {
+            dialog = new GameModeDialog((Dialog)window);
+        }
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setVisible(true);
         return gameMode;

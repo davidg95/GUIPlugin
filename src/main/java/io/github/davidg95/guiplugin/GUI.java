@@ -550,23 +550,31 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     public void renderMap() {
         try {
-            File document = new File(".\\Overviewer.lnk");
-            dt.open(document);
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say ***Rendering 3D map***");
-            toTextArea("***Rendering 3D map***");
+            if (!Config.RENDER_MAP_URL.equals("")) {
+                File file = new File(Config.RENDER_MAP_URL);
+                dt.open(file);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say ***Rendering 3D map***");
+                toTextArea("***Rendering 3D map***");
+            } else{
+                toTextArea("***ERROR- A batch script has not been set for rendering a map***");
+            }
         } catch (IOException ex) {
-            toTextArea("***ERROR- Overviewer.lnk not found***");
+            toTextArea("***ERROR- " + Config.RENDER_MAP_URL + " not found***");
         }
     }
 
     public void backup() {
         try {
-            File document = new File(".\\Backup.lnk");
-            dt.open(document);
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say ***Saving Backup***");
-            toTextArea("***Saving Backup***");
+            if (!Config.BACKUP_URL.equals("")) {
+                File file = new File(Config.BACKUP_URL);
+                dt.open(file);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say ***Saving Backup***");
+                toTextArea("***Saving Backup***");
+            } else{
+                toTextArea("***ERROR- A batch script has not been set for saving a backup***");
+            }
         } catch (IOException ex) {
-            toTextArea("***ERROR- Backup.lnk not found***");
+            toTextArea("***ERROR- " + Config.BACKUP_URL + " not found***");
         }
     }
 
@@ -1775,8 +1783,12 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnDiconRDPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDiconRDPActionPerformed
         try {
-            File document = new File(TS_DISCON);
-            dt.open(document);
+            if (!Config.TS_DISCON_URL.equals("")) {
+                File file = new File(Config.TS_DISCON_URL);
+                dt.open(file);
+            } else{
+                toTextArea("***ERROR- No link/file has been set for disconnecting an RDP session***");
+            }
         } catch (IOException ex) {
 
         }

@@ -527,7 +527,7 @@ public class PlayerDetails extends javax.swing.JDialog {
     }//GEN-LAST:event_checkSleepActionPerformed
 
     private void btnGameModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGameModeActionPerformed
-        player.setGameMode(GameModeDialog.showGameModeDialog(player.getGameMode()));
+        player.setGameMode(GameModeDialog.showGameModeDialog(this, player.getGameMode()));
     }//GEN-LAST:event_btnGameModeActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
