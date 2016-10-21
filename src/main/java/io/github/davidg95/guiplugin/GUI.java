@@ -396,27 +396,107 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
         //int choice = StopServerOptions.showStopOptions();
 
         try {
-            if (option == 1) { //If stop with no backup was selected
-                if (Bukkit.getOnlinePlayers().size() > 0) {
-                    new java.util.Timer().schedule(
-                            new java.util.TimerTask() {
-                                @Override
-                                public void run() {
-                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-                                }
-                            },
-                            5000
-                    );
-                    stopPanelThread = new FlashCompThread(topPanel);
-                    stopPanelThread.start();
-                    stopPanelThread.setRunning(true);
-                    Bukkit.broadcastMessage("***SERVER STOPPING IN 5 SECONDS***");
-                    JOptionPane.showMessageDialog(this, "Server will stop in 5 seconds", "Server Stop", JOptionPane.WARNING_MESSAGE);
-                } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-                }
-            } else if (option == 2) { //If shutdown with no backup was selected
-                if (Bukkit.getOnlinePlayers().size() > 0) {
+            switch (option) {
+                case 1:
+                    //If stop with no backup was selected
+                    if (Bukkit.getOnlinePlayers().size() > 0) {
+                        new java.util.Timer().schedule(
+                                new java.util.TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                                    }
+                                },
+                                5000
+                        );
+                        stopPanelThread = new FlashCompThread(topPanel);
+                        stopPanelThread.start();
+                        stopPanelThread.setRunning(true);
+                        Bukkit.broadcastMessage("***SERVER STOPPING IN 5 SECONDS***");
+                        JOptionPane.showMessageDialog(this, "Server will stop in 5 seconds", "Server Stop", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                    }   break;
+                case 2:
+                    //If shutdown with no backup was selected
+                    if (Bukkit.getOnlinePlayers().size() > 0) {
+                        new java.util.Timer().schedule(
+                                new java.util.TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        File document = new File(".\\shutdown.lnk");
+                                        try {
+                                            dt.open(document);
+                                        } catch (IOException ex) {
+                                            
+                                        }
+                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                                    }
+                                },
+                                5000
+                        );
+                        stopPanelThread = new FlashCompThread(topPanel);
+                        stopPanelThread.start();
+                        stopPanelThread.setRunning(true);
+                        Bukkit.broadcastMessage("***SERVER STOPPING IN 5 SECONDS***");
+                        JOptionPane.showMessageDialog(this, "Server will stop in 5 seconds", "Server Stop", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        File document = new File(".\\shutdown.lnk");
+                        dt.open(document);
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                    }   break;
+                case 3:
+                    //If sleep with no backup was selected
+                    if (Bukkit.getOnlinePlayers().size() > 0) {
+                        new java.util.Timer().schedule(
+                                new java.util.TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        File document = new File(".\\sleep.lnk");
+                                        try {
+                                            dt.open(document);
+                                        } catch (IOException ex) {
+                                            
+                                        }
+                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                                    }
+                                },
+                                5000
+                        );
+                        stopPanelThread = new FlashCompThread(topPanel);
+                        stopPanelThread.start();
+                        stopPanelThread.setRunning(true);
+                        Bukkit.broadcastMessage("***SERVER STOPPING IN 5 SECONDS***");
+                        JOptionPane.showMessageDialog(this, "Server will stop in 5 seconds", "Server Stop", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        File document = new File(".\\sleep.lnk");
+                        dt.open(document);
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                    }   break;
+                case 4:
+                    //If stop with backup was selected
+                    backup();
+                    if (Bukkit.getOnlinePlayers().size() > 0) {
+                        new java.util.Timer().schedule(
+                                new java.util.TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                                    }
+                                },
+                                5000
+                        );
+                        stopPanelThread = new FlashCompThread(topPanel);
+                        stopPanelThread.start();
+                        stopPanelThread.setRunning(true);
+                        Bukkit.broadcastMessage("***SERVER STOPPING IN 5 SECONDS***");
+                        JOptionPane.showMessageDialog(this, "Server will stop in 5 seconds", "Server Stop", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+                    }   break;
+                case 5:
+                    //If shutdown with backup was selected
+                    backup();
                     new java.util.Timer().schedule(
                             new java.util.TimerTask() {
                                 @Override
@@ -430,20 +510,13 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
                                 }
                             },
-                            5000
-                    );
-                    stopPanelThread = new FlashCompThread(topPanel);
-                    stopPanelThread.start();
-                    stopPanelThread.setRunning(true);
-                    Bukkit.broadcastMessage("***SERVER STOPPING IN 5 SECONDS***");
-                    JOptionPane.showMessageDialog(this, "Server will stop in 5 seconds", "Server Stop", JOptionPane.WARNING_MESSAGE);
-                } else {
-                    File document = new File(".\\shutdown.lnk");
-                    dt.open(document);
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-                }
-            } else if (option == 3) { //If sleep with no backup was selected
-                if (Bukkit.getOnlinePlayers().size() > 0) {
+                            10000
+                    );  Bukkit.broadcastMessage("***SERVER STOPPING IN 10 SECONDS***");
+                    JOptionPane.showMessageDialog(this, "Server will stop in 10 seconds", "Server Shutdown", JOptionPane.WARNING_MESSAGE);
+                    break;
+                case 6:
+                    //If sleep with backup was selected
+                    backup();
                     new java.util.Timer().schedule(
                             new java.util.TimerTask() {
                                 @Override
@@ -457,76 +530,12 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
                                 }
                             },
-                            5000
-                    );
-                    stopPanelThread = new FlashCompThread(topPanel);
-                    stopPanelThread.start();
-                    stopPanelThread.setRunning(true);
-                    Bukkit.broadcastMessage("***SERVER STOPPING IN 5 SECONDS***");
-                    JOptionPane.showMessageDialog(this, "Server will stop in 5 seconds", "Server Stop", JOptionPane.WARNING_MESSAGE);
-                } else {
-                    File document = new File(".\\sleep.lnk");
-                    dt.open(document);
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-                }
-            } else if (option == 4) { //If stop with backup was selected
-                backup();
-                if (Bukkit.getOnlinePlayers().size() > 0) {
-                    new java.util.Timer().schedule(
-                            new java.util.TimerTask() {
-                                @Override
-                                public void run() {
-                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-                                }
-                            },
-                            5000
-                    );
-                    stopPanelThread = new FlashCompThread(topPanel);
-                    stopPanelThread.start();
-                    stopPanelThread.setRunning(true);
-                    Bukkit.broadcastMessage("***SERVER STOPPING IN 5 SECONDS***");
-                    JOptionPane.showMessageDialog(this, "Server will stop in 5 seconds", "Server Stop", JOptionPane.WARNING_MESSAGE);
-                } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-                }
-            } else if (option == 5) { //If shutdown with backup was selected
-                backup();
-                new java.util.Timer().schedule(
-                        new java.util.TimerTask() {
-                            @Override
-                            public void run() {
-                                File document = new File(".\\shutdown.lnk");
-                                try {
-                                    dt.open(document);
-                                } catch (IOException ex) {
-
-                                }
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-                            }
-                        },
-                        10000
-                );
-                Bukkit.broadcastMessage("***SERVER STOPPING IN 10 SECONDS***");
-                JOptionPane.showMessageDialog(this, "Server will stop in 10 seconds", "Server Shutdown", JOptionPane.WARNING_MESSAGE);
-            } else if (option == 6) { //If sleep with backup was selected
-                backup();
-                new java.util.Timer().schedule(
-                        new java.util.TimerTask() {
-                            @Override
-                            public void run() {
-                                File document = new File(".\\sleep.lnk");
-                                try {
-                                    dt.open(document);
-                                } catch (IOException ex) {
-
-                                }
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-                            }
-                        },
-                        10000
-                );
-                Bukkit.broadcastMessage("***SERVER STOPPING IN 10 SECONDS***");
-                JOptionPane.showMessageDialog(this, "Server will stop in 10 seconds", "Server Sleep", JOptionPane.WARNING_MESSAGE);
+                            10000
+                    );  Bukkit.broadcastMessage("***SERVER STOPPING IN 10 SECONDS***");
+                    JOptionPane.showMessageDialog(this, "Server will stop in 10 seconds", "Server Sleep", JOptionPane.WARNING_MESSAGE);
+                    break;
+                default:
+                    break;
             }
         } catch (IOException ex) {
 
@@ -710,20 +719,32 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                     @Override
                     public void run() {
                         if (!Config.BACKUP_ON_CLOSE) {
-                            if (Config.SHUTDOWN_OPTION.equals(Config.SHUTDOWN_OPTION.NOTHING)) {
-                                stop(1);
-                            } else if (Config.SHUTDOWN_OPTION.equals(Config.SHUTDOWN_OPTION.SHUT_DOWN)) {
-                                stop(2);
-                            } else if (Config.SHUTDOWN_OPTION.equals(Config.SHUTDOWN_OPTION.SHUT_DOWN)) {
-                                stop(3);
+                            switch (Config.SHUTDOWN_OPTION) {
+                                case NOTHING:
+                                    stop(1);
+                                    break;
+                                case SHUT_DOWN:
+                                    stop(2);
+                                    break;
+                                case STANDBY:
+                                    stop(3);
+                                    break;
+                                default:
+                                    break;
                             }
                         } else {
-                            if (Config.SHUTDOWN_OPTION.equals(Config.SHUTDOWN_OPTION.NOTHING)) {
-                                stop(4);
-                            } else if (Config.SHUTDOWN_OPTION.equals(Config.SHUTDOWN_OPTION.SHUT_DOWN)) {
-                                stop(5);
-                            } else if (Config.SHUTDOWN_OPTION.equals(Config.SHUTDOWN_OPTION.SHUT_DOWN)) {
-                                stop(6);
+                            switch (Config.SHUTDOWN_OPTION) {
+                                case NOTHING:
+                                    stop(4);
+                                    break;
+                                case SHUT_DOWN:
+                                    stop(5);
+                                    break;
+                                case STANDBY:
+                                    stop(6);
+                                    break;
+                                default:
+                                    break;
                             }
                         }
                     }
