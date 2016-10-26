@@ -33,7 +33,7 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
+                  <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
@@ -42,30 +42,47 @@
                           <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="txtBackup" max="32767" attributes="0"/>
-                              <Component id="txtDiscon" max="32767" attributes="0"/>
-                              <Component id="txtStandby" alignment="1" pref="317" max="32767" attributes="0"/>
-                              <Component id="txtMap" alignment="0" max="32767" attributes="0"/>
-                          </Group>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="txtBackup" max="32767" attributes="0"/>
+                          <Component id="txtDiscon" max="32767" attributes="0"/>
+                          <Component id="txtStandby" alignment="1" pref="317" max="32767" attributes="0"/>
+                          <Component id="txtMap" alignment="0" max="32767" attributes="0"/>
                           <Component id="txtShutdown" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="btnDisconnect" max="32767" attributes="0"/>
-                          <Component id="btnRender" alignment="0" max="32767" attributes="0"/>
-                          <Component id="btnBackup" alignment="0" max="32767" attributes="0"/>
-                          <Component id="btnStandby" alignment="0" max="32767" attributes="0"/>
-                          <Component id="btnShutdown" alignment="0" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="btnShutdown" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btnShutdownRemove" pref="87" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="btnRender" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btnMapRemove" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="btnStandby" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btnBackup" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btnDisconnect" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="btnDisconnectRemove" max="32767" attributes="0"/>
+                                  <Component id="btnBackupRemove" max="32767" attributes="0"/>
+                                  <Component id="btnStandbyRemove" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
                       </Group>
                   </Group>
-                  <Component id="jLabel6" alignment="0" pref="596" max="32767" attributes="0"/>
+                  <Component id="jLabel6" pref="643" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       <Component id="btnClose" min="-2" pref="115" max="-2" attributes="0"/>
                   </Group>
               </Group>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -77,35 +94,41 @@
                   <Component id="txtShutdown" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnShutdown" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnShutdownRemove" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="txtStandby" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnStandby" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnStandbyRemove" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="txtBackup" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnBackup" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnBackupRemove" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel4" alignment="3" min="-2" pref="14" max="-2" attributes="0"/>
                   <Component id="txtDiscon" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnDisconnect" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnDisconnectRemove" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="txtMap" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnRender" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnMapRemove" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jLabel6" min="-2" pref="51" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btnClose" min="-2" pref="28" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -113,7 +136,7 @@
   <SubComponents>
     <Component class="javax.swing.JButton" name="btnShutdown">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Shutdown File/Link"/>
+        <Property name="text" type="java.lang.String" value="Select File/Link"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnShutdownActionPerformed"/>
@@ -121,7 +144,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnStandby">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Standby File/Link"/>
+        <Property name="text" type="java.lang.String" value="Select File/Link"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnStandbyActionPerformed"/>
@@ -129,7 +152,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnBackup">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Backup File/Link"/>
+        <Property name="text" type="java.lang.String" value="Select File/Link"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnBackupActionPerformed"/>
@@ -137,7 +160,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnDisconnect">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Disconnect RDP File/Link"/>
+        <Property name="text" type="java.lang.String" value="Select File/Link"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDisconnectActionPerformed"/>
@@ -145,7 +168,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnRender">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Map Render File/Link"/>
+        <Property name="text" type="java.lang.String" value="Select File/Link"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRenderActionPerformed"/>
@@ -213,6 +236,46 @@
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnShutdownRemove">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Remove"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnShutdownRemoveActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnStandbyRemove">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Remove"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnStandbyRemoveActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnBackupRemove">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Remove"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnBackupRemoveActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnDisconnectRemove">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Remove"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDisconnectRemoveActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnMapRemove">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Remove"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnMapRemoveActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

@@ -24,57 +24,50 @@ public class GameModeDialog extends javax.swing.JDialog {
 
     /**
      * Creates new form GameMode
+     *
+     * @param parent the parent component.
      */
-    public GameModeDialog(Frame parent) {
-        super(parent, "Select Game Mode", true);
+    public GameModeDialog(Window parent) {
+        super(parent);
         initComponents();
-        if (gameMode.equals(GameMode.CREATIVE)) {
-            btnCreative.setSelected(true);
-        } else if (gameMode.equals(GameMode.SURVIVAL)) {
-            btnSurvival.setSelected(true);
-        } else if (gameMode.equals(GameMode.ADVENTURE)) {
-            btnAdventure.setSelected(true);
-        } else if (gameMode.equals(GameMode.SPECTATOR)) {
-            btnSpectator.setSelected(true);
+        if (gameMode != null) {
+            switch(gameMode){
+                case CREATIVE:
+                    btnCreative.setSelected(true);
+                    break;
+                case SURVIVAL:
+                    btnSurvival.setSelected(true);
+                    break;
+                case ADVENTURE:
+                    btnAdventure.setSelected(true);
+                    break;
+                case SPECTATOR:
+                    btnSpectator.setSelected(true);
+                    break;
+            }
         }
         this.setLocationRelativeTo(null);
-        this.setModal(true);
-        this.toFront();
-    }
-    
-    /**
-     * Creates new form GameMode
-     */
-    public GameModeDialog(Dialog parent) {
-        super(parent, "Select Game Mode", true);
-        initComponents();
-        if (gameMode.equals(GameMode.CREATIVE)) {
-            btnCreative.setSelected(true);
-        } else if (gameMode.equals(GameMode.SURVIVAL)) {
-            btnSurvival.setSelected(true);
-        } else if (gameMode.equals(GameMode.ADVENTURE)) {
-            btnAdventure.setSelected(true);
-        } else if (gameMode.equals(GameMode.SPECTATOR)) {
-            btnSpectator.setSelected(true);
-        }
-        this.setLocationRelativeTo(null);
+        this.setTitle("Set Game Mode");
         this.setModal(true);
         this.toFront();
     }
 
+    /**
+     * Method to show a dialog which returns a GameMode type.
+     *
+     * @param parent the parent component.
+     * @param gm the current game mode.
+     * @return
+     */
     public static GameMode showGameModeDialog(Component parent, GameMode gm) {
         gameMode = gm;
         Window window;
-        if (parent instanceof Frame || parent instanceof Dialog){
-            window = (Window)parent;
+        if (parent instanceof Frame || parent instanceof Dialog) {
+            window = (Window) parent;
         } else {
             window = getRootFrame();
         }
-        if (window instanceof Frame) {
-            dialog = new GameModeDialog((Frame)window);
-        } else {
-            dialog = new GameModeDialog((Dialog)window);
-        }
+        dialog = new GameModeDialog(window);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setVisible(true);
         return gameMode;

@@ -5,7 +5,12 @@
  */
 package io.github.davidg95.guiplugin;
 
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Window;
 import javax.swing.JDialog;
+import static javax.swing.JOptionPane.getRootFrame;
 import org.bukkit.Bukkit;
 
 /**
@@ -13,30 +18,39 @@ import org.bukkit.Bukkit;
  * @author David
  */
 public class InfoDialog extends javax.swing.JDialog {
-    
+
     private static JDialog dialog;
 
     /**
      * Creates new form InfoDialog
+     *
+     * @param parent the parent component;
      */
-    public InfoDialog() {
+    public InfoDialog(Window parent) {
+        super(parent);
         initComponents();
         this.setLocationRelativeTo(null);
         this.setModal(true);
         loadInfo();
     }
-    
-    public static void showInfoDialog(){
-        dialog = new InfoDialog();
+
+    public static void showInfoDialog(Component parent) {
+        Window window;
+        if (parent instanceof Frame || parent instanceof Dialog) {
+            window = (Window) parent;
+        } else {
+            window = getRootFrame();
+        }
+        dialog = new InfoDialog(window);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setVisible(true);
     }
-    
-    private void loadInfo(){
-        txtName.setText(Bukkit.getServerName());
+
+    private void loadInfo() {
         txtVersion.setText(Bukkit.getBukkitVersion());
+        txtSpigotVersion.setText(Bukkit.getVersion());
+        txtName.setText(Bukkit.getServerName());
         txtProcessor.setText(Runtime.getRuntime().availableProcessors() + "");
-        txtMemory.setText(Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory());
         txtAuthentication.setText(Bukkit.getOnlineMode() ? "ENABLED" : "DISABLED");
         txtSpawn.setText(Bukkit.getSpawnRadius() + "");
         txtNether.setText(Bukkit.getAllowNether() ? "ENABLED" : "DISABLED");
@@ -54,7 +68,6 @@ public class InfoDialog extends javax.swing.JDialog {
     private void initComponents() {
 
         lblProcessor = new javax.swing.JLabel();
-        lblMemory = new javax.swing.JLabel();
         lblName = new javax.swing.JLabel();
         lblVersion = new javax.swing.JLabel();
         lblAuthentication = new javax.swing.JLabel();
@@ -64,7 +77,6 @@ public class InfoDialog extends javax.swing.JDialog {
         txtVersion = new javax.swing.JTextField();
         txtName = new javax.swing.JTextField();
         txtProcessor = new javax.swing.JTextField();
-        txtMemory = new javax.swing.JTextField();
         txtAuthentication = new javax.swing.JTextField();
         txtSpawn = new javax.swing.JTextField();
         txtNether = new javax.swing.JTextField();
@@ -72,6 +84,8 @@ public class InfoDialog extends javax.swing.JDialog {
         btnClose = new javax.swing.JButton();
         lblMOTD = new javax.swing.JLabel();
         txtMOTD = new javax.swing.JTextField();
+        txtSpigotVersion = new javax.swing.JTextField();
+        lblSpigotVersion = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Server Info");
@@ -80,8 +94,6 @@ public class InfoDialog extends javax.swing.JDialog {
         setResizable(false);
 
         lblProcessor.setText("Processor Cores:");
-
-        lblMemory.setText("Memory:");
 
         lblName.setText("World Name:");
 
@@ -107,6 +119,8 @@ public class InfoDialog extends javax.swing.JDialog {
 
         lblMOTD.setText("MOTD:");
 
+        lblSpigotVersion.setText("Spigot Version:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -121,11 +135,11 @@ public class InfoDialog extends javax.swing.JDialog {
                     .addComponent(lblAuthentication)
                     .addComponent(lblVersion)
                     .addComponent(lblName)
-                    .addComponent(lblMemory)
-                    .addComponent(lblProcessor))
+                    .addComponent(lblProcessor)
+                    .addComponent(lblSpigotVersion))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtMemory, javax.swing.GroupLayout.DEFAULT_SIZE, 211, Short.MAX_VALUE)
+                    .addComponent(txtSpigotVersion)
                     .addComponent(txtAuthentication)
                     .addComponent(txtSpawn)
                     .addComponent(txtNether)
@@ -133,12 +147,12 @@ public class InfoDialog extends javax.swing.JDialog {
                     .addComponent(txtVersion, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(txtName, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(txtProcessor)
-                    .addComponent(txtMOTD)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(58, 58, 58)))
+                    .addComponent(txtMOTD))
                 .addGap(47, 47, 47))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(174, Short.MAX_VALUE)
+                .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(154, 154, 154))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -149,16 +163,16 @@ public class InfoDialog extends javax.swing.JDialog {
                     .addComponent(txtVersion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblName)
-                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtSpigotVersion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblSpigotVersion))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblProcessor)
-                    .addComponent(txtProcessor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblName))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblMemory)
-                    .addComponent(txtMemory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtProcessor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblProcessor))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblAuthentication)
@@ -196,20 +210,20 @@ public class InfoDialog extends javax.swing.JDialog {
     private javax.swing.JLabel lblAuthentication;
     private javax.swing.JLabel lblEnd;
     private javax.swing.JLabel lblMOTD;
-    private javax.swing.JLabel lblMemory;
     private javax.swing.JLabel lblName;
     private javax.swing.JLabel lblNether;
     private javax.swing.JLabel lblProcessor;
     private javax.swing.JLabel lblSpawnRadius;
+    private javax.swing.JLabel lblSpigotVersion;
     private javax.swing.JLabel lblVersion;
     private javax.swing.JTextField txtAuthentication;
     private javax.swing.JTextField txtEnd;
     private javax.swing.JTextField txtMOTD;
-    private javax.swing.JTextField txtMemory;
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtNether;
     private javax.swing.JTextField txtProcessor;
     private javax.swing.JTextField txtSpawn;
+    private javax.swing.JTextField txtSpigotVersion;
     private javax.swing.JTextField txtVersion;
     // End of variables declaration//GEN-END:variables
 }

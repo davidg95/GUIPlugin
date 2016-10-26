@@ -5,6 +5,10 @@
  */
 package io.github.davidg95.guiplugin;
 
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,11 +20,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.getRootFrame;
 import javax.swing.border.TitledBorder;
 import org.bukkit.Bukkit;
 
@@ -45,17 +48,18 @@ public class Config extends javax.swing.JDialog {
     public static boolean CUSTOM2_LOCK = false;
     public static boolean CUSTOM3_LOCK = false;
     public static boolean autoStop = false;
-    public static int WARNING_HOUR = 23;
-    public static int WARNING_MINUTE = 59;
-    public static int STOP_HOUR = 23;
-    public static int STOP_MINUTE = 59;
+    public static int WARNING_HOUR;
+    public static int WARNING_MINUTE;
+    public static int STOP_HOUR;
+    public static int STOP_MINUTE;
     public static String WARNING_MESSAGE = "***SERVER SHUTDOWN***";
     public static ShutdownOption SHUTDOWN_OPTION = ShutdownOption.NOTHING;
     public static boolean GUI_LOCK = false;
     public static boolean BACKUP_ON_CLOSE = true;
     public static File bg_file;
     public static BufferedImage bg_image;
-    
+    public static String CODE = "";
+
     public static String SHUT_URL = "";
     public static String SLEEP_URL = "";
     public static String TS_DISCON_URL = "";
@@ -74,8 +78,11 @@ public class Config extends javax.swing.JDialog {
 
     /**
      * Creates new form Config
+     *
+     * @param parent the parent component.
      */
-    public Config() {
+    public Config(Window parent) {
+        super(parent);
         initAutoStop = autoStop;
         shutdownChange = false;
         initComponents();
@@ -94,7 +101,14 @@ public class Config extends javax.swing.JDialog {
         chkLock2.setSelected(CUSTOM2_LOCK);
         chkLock3.setSelected(CUSTOM3_LOCK);
         checkWhitelist.setSelected(Bukkit.hasWhitelist());
-        checkPasscode.setSelected(GUI_LOCK);
+        if (CODE.equals("")) {
+            checkPasscode.setSelected(false);
+            checkPasscode.setEnabled(false);
+            GUI_LOCK = false;
+        } else {
+            checkPasscode.setEnabled(true);
+            checkPasscode.setSelected(GUI_LOCK);
+        }
         checkLockdown.setSelected(g.isLockDown());
         chkStop.setSelected(autoStop);
         if (chkStop.isSelected()) {
@@ -111,6 +125,8 @@ public class Config extends javax.swing.JDialog {
             jLabel8.setEnabled(true);
             jLabel10.setEnabled(true);
             jLabel4.setEnabled(true);
+            lblBATWarn.setEnabled(true);
+            lblBATWarn.setText("<html>The server is set to stop at " + Config.STOP_HOUR + ":" + Config.STOP_MINUTE + (BACKUP_ON_CLOSE ? ", a backup <br>will be taken" : ", a backup will not be taken</html>"));
         } else {
             txtStopHour.setEnabled(false);
             txtStopMin.setEnabled(false);
@@ -125,6 +141,8 @@ public class Config extends javax.swing.JDialog {
             jLabel8.setEnabled(false);
             jLabel10.setEnabled(false);
             jLabel4.setEnabled(false);
+            lblBATWarn.setEnabled(false);
+            lblBATWarn.setText("Server stop is diabled");
         }
         chkBackup.setSelected(BACKUP_ON_CLOSE);
         if (SHUTDOWN_OPTION.equals(ShutdownOption.SHUT_DOWN)) {
@@ -133,9 +151,6 @@ public class Config extends javax.swing.JDialog {
             chkStandby.setSelected(true);
         } else if (SHUTDOWN_OPTION.equals(ShutdownOption.NOTHING)) {
             chkNothing.setSelected(true);
-        }
-        if (bg_file != null) {
-            txtImage.setText(bg_file.getName());
         }
     }
 
@@ -148,8 +163,14 @@ public class Config extends javax.swing.JDialog {
         g.updateConfig();
     }
 
-    public static void showConfigDialog() {
-        dialog = new Config();
+    public static void showConfigDialog(Component parent) {
+        Window window;
+        if (parent instanceof Frame || parent instanceof Dialog) {
+            window = (Window) parent;
+        } else {
+            window = getRootFrame();
+        }
+        dialog = new Config(window);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setVisible(true);
     }
@@ -191,6 +212,7 @@ public class Config extends javax.swing.JDialog {
                     break;
             }
             GUI_LOCK = Boolean.parseBoolean(properties.getProperty("GUILOCK"));
+            CODE = properties.getProperty("CODE");
             BACKUP_ON_CLOSE = Boolean.parseBoolean(properties.getProperty("BACKUPONCLOSE"));
             SHUT_URL = properties.getProperty("SHUTURL");
             SLEEP_URL = properties.getProperty("SLEEPURL");
@@ -248,6 +270,7 @@ public class Config extends javax.swing.JDialog {
             properties.setProperty("WARNMESSAGE", WARNING_MESSAGE);
             properties.setProperty("SHUTOPT", SHUTDOWN_OPTION.toString());
             properties.setProperty("GUILOCK", Boolean.toString(GUI_LOCK));
+            properties.setProperty("CODE", CODE);
             properties.setProperty("BACKUPONCLOSE", Boolean.toString(BACKUP_ON_CLOSE));
             properties.setProperty("SHUTURL", SHUT_URL);
             properties.setProperty("SLEEPURL", SLEEP_URL);
@@ -269,6 +292,10 @@ public class Config extends javax.swing.JDialog {
         } catch (FileNotFoundException ex) {
         } catch (IOException ex) {
         }
+    }
+
+    private void showUpdatePrompt() {
+        lblUpdatePrompt.setText("*Click update to apply changes");
     }
 
     /**
@@ -302,7 +329,6 @@ public class Config extends javax.swing.JDialog {
         chkNothing = new javax.swing.JRadioButton();
         jLabel4 = new javax.swing.JLabel();
         lblBATWarn = new javax.swing.JLabel();
-        btnBatch = new javax.swing.JButton();
         panelCustomButtons = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -323,14 +349,23 @@ public class Config extends javax.swing.JDialog {
         checkPasscode = new javax.swing.JCheckBox();
         btnClose = new javax.swing.JButton();
         checkLockdown = new javax.swing.JCheckBox();
-        txtImage = new javax.swing.JTextField();
-        btnImage = new javax.swing.JButton();
+        btnBatch = new javax.swing.JButton();
+        lblUpdatePrompt = new javax.swing.JLabel();
+        btnPasscode = new javax.swing.JButton();
 
         setTitle("Configuration");
         setAlwaysOnTop(true);
+        setMaximumSize(new java.awt.Dimension(640, 436));
+        setMinimumSize(new java.awt.Dimension(640, 436));
         setResizable(false);
 
         jLabel1.setText("Server Name:");
+
+        txtServerName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtServerNameKeyTyped(evt);
+            }
+        });
 
         btnUpdate.setText("Update");
         btnUpdate.addActionListener(new java.awt.event.ActionListener() {
@@ -339,13 +374,32 @@ public class Config extends javax.swing.JDialog {
             }
         });
 
+        panelServerStop.setMaximumSize(new java.awt.Dimension(277, 244));
+        panelServerStop.setMinimumSize(new java.awt.Dimension(277, 244));
+        panelServerStop.setPreferredSize(new java.awt.Dimension(277, 244));
+
         txtWarnHour.setText(Integer.toString(WARNING_HOUR));
+        txtWarnHour.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtWarnHourKeyTyped(evt);
+            }
+        });
 
         jLabel9.setText(":");
 
         txtWarnMin.setText(Integer.toString(WARNING_MINUTE));
+        txtWarnMin.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtWarnMinKeyTyped(evt);
+            }
+        });
 
         txtWarnMessage.setText(WARNING_MESSAGE);
+        txtWarnMessage.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtWarnMessageKeyTyped(evt);
+            }
+        });
 
         jLabel10.setText("Warning Message:");
 
@@ -357,10 +411,20 @@ public class Config extends javax.swing.JDialog {
         });
 
         txtStopHour.setText(Integer.toString(STOP_HOUR));
+        txtStopHour.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtStopHourKeyTyped(evt);
+            }
+        });
 
         jLabel6.setText("Server Stop Time:");
 
         txtStopMin.setText(Integer.toString(STOP_MINUTE));
+        txtStopMin.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtStopMinKeyTyped(evt);
+            }
+        });
 
         jLabel7.setText(":");
 
@@ -399,13 +463,6 @@ public class Config extends javax.swing.JDialog {
 
         jLabel4.setText("On Stop:");
 
-        btnBatch.setText("Set Batch Files");
-        btnBatch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBatchActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout panelServerStopLayout = new javax.swing.GroupLayout(panelServerStop);
         panelServerStop.setLayout(panelServerStopLayout);
         panelServerStopLayout.setHorizontalGroup(
@@ -442,15 +499,12 @@ public class Config extends javax.swing.JDialog {
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelServerStopLayout.createSequentialGroup()
                             .addComponent(jLabel4)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(panelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(panelServerStopLayout.createSequentialGroup()
-                                    .addComponent(chkShutDown)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(chkStandby)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(chkNothing))
-                                .addComponent(btnBatch)))))
-                .addContainerGap(13, Short.MAX_VALUE))
+                            .addComponent(chkShutDown)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(chkStandby)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(chkNothing))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelServerStopLayout.setVerticalGroup(
             panelServerStopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -482,15 +536,33 @@ public class Config extends javax.swing.JDialog {
                     .addComponent(chkStandby)
                     .addComponent(chkNothing))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblBATWarn, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnBatch)
+                .addComponent(lblBATWarn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
+        panelCustomButtons.setMaximumSize(new java.awt.Dimension(291, 244));
+        panelCustomButtons.setMinimumSize(new java.awt.Dimension(291, 244));
+
         jLabel3.setText("Custom Button 2-");
 
+        txtCustom2Text.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCustom2TextKeyTyped(evt);
+            }
+        });
+
+        txtCustom2Command.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCustom2CommandKeyTyped(evt);
+            }
+        });
+
         chkLock2.setText("Protected");
+        chkLock2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkLock2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -526,7 +598,24 @@ public class Config extends javax.swing.JDialog {
 
         jLabel5.setText("Custom Button 3-");
 
+        txtCustom3Text.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCustom3TextKeyTyped(evt);
+            }
+        });
+
+        txtCustom3Command.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCustom3CommandKeyTyped(evt);
+            }
+        });
+
         chkLock3.setText("Protected");
+        chkLock3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkLock3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -562,7 +651,24 @@ public class Config extends javax.swing.JDialog {
 
         jLabel2.setText("Custom Button 1-");
 
+        txtCustom1Text.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCustom1TextKeyTyped(evt);
+            }
+        });
+
+        txtCustom1Command.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCustom1CommandKeyTyped(evt);
+            }
+        });
+
         chkLock1.setText("Protected");
+        chkLock1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkLock1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -621,8 +727,18 @@ public class Config extends javax.swing.JDialog {
         );
 
         checkWhitelist.setText("Enable Whitelist");
+        checkWhitelist.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkWhitelistActionPerformed(evt);
+            }
+        });
 
         checkPasscode.setText("Require Passcode");
+        checkPasscode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkPasscodeActionPerformed(evt);
+            }
+        });
 
         btnClose.setText("Close");
         btnClose.setPreferredSize(new java.awt.Dimension(67, 23));
@@ -633,14 +749,23 @@ public class Config extends javax.swing.JDialog {
         });
 
         checkLockdown.setText("Lockdown");
-
-        txtImage.setEditable(false);
-
-        btnImage.setText("Select Image");
-        btnImage.setEnabled(false);
-        btnImage.addActionListener(new java.awt.event.ActionListener() {
+        checkLockdown.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnImageActionPerformed(evt);
+                checkLockdownActionPerformed(evt);
+            }
+        });
+
+        btnBatch.setText("Set Batch Files");
+        btnBatch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBatchActionPerformed(evt);
+            }
+        });
+
+        btnPasscode.setText("Change Passcode");
+        btnPasscode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPasscodeActionPerformed(evt);
             }
         });
 
@@ -649,16 +774,17 @@ public class Config extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(panelCustomButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelServerStop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 12, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addComponent(panelCustomButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panelServerStop, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblUpdatePrompt, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
@@ -668,17 +794,17 @@ public class Config extends javax.swing.JDialog {
                         .addComponent(txtServerName, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(67, 67, 67)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(txtImage)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnBatch)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnImage))
+                                .addComponent(btnPasscode))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(checkWhitelist)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(checkPasscode)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(checkLockdown)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                                .addComponent(checkLockdown)))
+                        .addGap(0, 61, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -691,22 +817,21 @@ public class Config extends javax.swing.JDialog {
                     .addComponent(checkWhitelist)
                     .addComponent(checkPasscode)
                     .addComponent(checkLockdown))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnImage))
-                .addGap(18, 18, 18)
+                    .addComponent(btnBatch)
+                    .addComponent(btnPasscode))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(panelCustomButtons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelServerStop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(panelServerStop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(45, 45, 45)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(56, 56, 56)
-                        .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(lblUpdatePrompt, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
 
         pack();
@@ -771,21 +896,6 @@ public class Config extends javax.swing.JDialog {
         this.setVisible(false);
     }//GEN-LAST:event_btnCloseActionPerformed
 
-    private void btnImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImageActionPerformed
-        JFileChooser fc = new JFileChooser();
-        fc.setCurrentDirectory(new File(System.getProperty("user.home")));
-        int result = fc.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            bg_file = fc.getSelectedFile();
-            try {
-                bg_image = ImageIO.read(bg_file);
-                txtImage.setText(bg_file.getName());
-            } catch (IOException e) {
-
-            }
-        }
-    }//GEN-LAST:event_btnImageActionPerformed
-
     private void chkStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkStopActionPerformed
         if (chkStop.isSelected()) {
             txtStopHour.setEnabled(true);
@@ -801,6 +911,7 @@ public class Config extends javax.swing.JDialog {
             jLabel8.setEnabled(true);
             jLabel10.setEnabled(true);
             jLabel4.setEnabled(true);
+            lblBATWarn.setEnabled(true);
         } else {
             txtStopHour.setEnabled(false);
             txtStopMin.setEnabled(false);
@@ -815,44 +926,146 @@ public class Config extends javax.swing.JDialog {
             jLabel8.setEnabled(false);
             jLabel10.setEnabled(false);
             jLabel4.setEnabled(false);
+            lblBATWarn.setEnabled(false);
         }
+        showUpdatePrompt();
     }//GEN-LAST:event_chkStopActionPerformed
 
     private void chkShutDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkShutDownActionPerformed
         shutdownChange = true;
-        if(SHUT_URL.equals("")){
+        if (SHUT_URL.equals("")) {
             lblBATWarn.setText("<html>*No batch file has been specified for shutting the computer down*</html>");
         }
+        showUpdatePrompt();
     }//GEN-LAST:event_chkShutDownActionPerformed
 
     private void chkStandbyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkStandbyActionPerformed
         shutdownChange = true;
-        if(SLEEP_URL.equals("")){
+        if (SLEEP_URL.equals("")) {
             lblBATWarn.setText("<html>*No batch file has been specified for putting the computer to sleep*</html>");
         }
+        showUpdatePrompt();
     }//GEN-LAST:event_chkStandbyActionPerformed
 
     private void chkNothingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkNothingActionPerformed
         shutdownChange = true;
+        showUpdatePrompt();
     }//GEN-LAST:event_chkNothingActionPerformed
 
     private void chkBackupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkBackupActionPerformed
-        if(chkBackup.isSelected()){
-            if(BACKUP_URL.equals("")){
+        if (chkBackup.isSelected()) {
+            if (BACKUP_URL.equals("")) {
                 lblBATWarn.setText("<html>*No batch file has been specified for backing the server up*</html>");
             }
         }
+        showUpdatePrompt();
     }//GEN-LAST:event_chkBackupActionPerformed
 
     private void btnBatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatchActionPerformed
         BatchFilesDialog.showBatchDialog(this);
     }//GEN-LAST:event_btnBatchActionPerformed
 
+    private void checkWhitelistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkWhitelistActionPerformed
+        showUpdatePrompt();
+    }//GEN-LAST:event_checkWhitelistActionPerformed
+
+    private void checkPasscodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkPasscodeActionPerformed
+        showUpdatePrompt();
+    }//GEN-LAST:event_checkPasscodeActionPerformed
+
+    private void checkLockdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkLockdownActionPerformed
+        showUpdatePrompt();
+    }//GEN-LAST:event_checkLockdownActionPerformed
+
+    private void txtServerNameKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtServerNameKeyTyped
+        showUpdatePrompt();
+    }//GEN-LAST:event_txtServerNameKeyTyped
+
+    private void txtCustom1TextKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCustom1TextKeyTyped
+        showUpdatePrompt();
+    }//GEN-LAST:event_txtCustom1TextKeyTyped
+
+    private void txtCustom2TextKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCustom2TextKeyTyped
+        showUpdatePrompt();
+    }//GEN-LAST:event_txtCustom2TextKeyTyped
+
+    private void txtCustom2CommandKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCustom2CommandKeyTyped
+        showUpdatePrompt();
+    }//GEN-LAST:event_txtCustom2CommandKeyTyped
+
+    private void txtCustom3TextKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCustom3TextKeyTyped
+        showUpdatePrompt();
+    }//GEN-LAST:event_txtCustom3TextKeyTyped
+
+    private void txtCustom3CommandKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCustom3CommandKeyTyped
+        showUpdatePrompt();
+    }//GEN-LAST:event_txtCustom3CommandKeyTyped
+
+    private void chkLock1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkLock1ActionPerformed
+        showUpdatePrompt();
+    }//GEN-LAST:event_chkLock1ActionPerformed
+
+    private void chkLock2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkLock2ActionPerformed
+        showUpdatePrompt();
+    }//GEN-LAST:event_chkLock2ActionPerformed
+
+    private void chkLock3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkLock3ActionPerformed
+        showUpdatePrompt();
+    }//GEN-LAST:event_chkLock3ActionPerformed
+
+    private void txtStopHourKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtStopHourKeyTyped
+        showUpdatePrompt();
+    }//GEN-LAST:event_txtStopHourKeyTyped
+
+    private void txtStopMinKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtStopMinKeyTyped
+        showUpdatePrompt();
+    }//GEN-LAST:event_txtStopMinKeyTyped
+
+    private void txtWarnHourKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtWarnHourKeyTyped
+        showUpdatePrompt();
+    }//GEN-LAST:event_txtWarnHourKeyTyped
+
+    private void txtWarnMinKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtWarnMinKeyTyped
+        showUpdatePrompt();
+    }//GEN-LAST:event_txtWarnMinKeyTyped
+
+    private void txtWarnMessageKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtWarnMessageKeyTyped
+        showUpdatePrompt();
+    }//GEN-LAST:event_txtWarnMessageKeyTyped
+
+    private void txtCustom1CommandKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCustom1CommandKeyTyped
+        showUpdatePrompt();
+    }//GEN-LAST:event_txtCustom1CommandKeyTyped
+
+    private void btnPasscodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPasscodeActionPerformed
+        if (!CODE.equals("")) {
+            if (CodeEntry.showCodeEntryDialog(this, "Enter current code", CODE)) {
+                String newCode = CodeEntry.showCodeEntryDialog(this, "Enter new code");
+                if (CodeEntry.showCodeEntryDialog(this, "Enter again to confirm", newCode)) {
+                    CODE = newCode;
+                    checkPasscode.setEnabled(true);
+                    showUpdatePrompt();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Codes do not match", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } else {
+            String newCode = CodeEntry.showCodeEntryDialog(this, "Enter new code");
+            if (CodeEntry.showCodeEntryDialog(this, "Enter again to confirm", newCode)) {
+                CODE = newCode;
+                checkPasscode.setEnabled(true);
+                showUpdatePrompt();
+            } else {
+                JOptionPane.showMessageDialog(this, "Codes do not match", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_btnPasscodeActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBatch;
     private javax.swing.JButton btnClose;
-    private javax.swing.JButton btnImage;
+    private javax.swing.JButton btnPasscode;
     private javax.swing.JButton btnUpdate;
     private javax.swing.ButtonGroup btngrpStopOptions;
     private javax.swing.JCheckBox checkLockdown;
@@ -880,6 +1093,7 @@ public class Config extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel lblBATWarn;
+    private javax.swing.JLabel lblUpdatePrompt;
     private javax.swing.JPanel panelCustomButtons;
     private javax.swing.JPanel panelServerStop;
     private javax.swing.JTextField txtCustom1Command;
@@ -888,7 +1102,6 @@ public class Config extends javax.swing.JDialog {
     private javax.swing.JTextField txtCustom2Text;
     private javax.swing.JTextField txtCustom3Command;
     private javax.swing.JTextField txtCustom3Text;
-    private javax.swing.JTextField txtImage;
     private javax.swing.JTextField txtServerName;
     private javax.swing.JTextField txtStopHour;
     private javax.swing.JTextField txtStopMin;

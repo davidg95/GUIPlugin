@@ -63,8 +63,6 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
     private Desktop dt; //Desktop object for calling batch files
     private final String TS_DISCON = "C:\\Users\\David\\Desktop\\Disconnect RDP.lnk"; //URL of link for batch file to disconnect an RDP session
 
-    private final String CODE = "3696"; //The code for the GUI
-
     private final CardLayout card; //Card layout for the server controls
 
     private boolean commandMode; //Indicates which mode the text entry field is in
@@ -88,6 +86,10 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
         txtLogs.setLineWrap(true);
         updateOnline();
         Config.initConfig(this);
+        if (Config.SERVER_NAME.equals("")) {
+            Config.SERVER_NAME = JOptionPane.showInputDialog(this, "A name has not been set for the server, enter a name", "Server Name", JOptionPane.PLAIN_MESSAGE);
+            updateConfig();
+        }
         this.setTitle(Config.SERVER_NAME + " " + Bukkit.getBukkitVersion());
         setStopTimeLabel("Server will stop at " + Config.STOP_HOUR + ":" + Config.STOP_MINUTE);
         toTextArea("Server " + Config.SERVER_NAME + " running on port number " + Bukkit.getPort());
@@ -416,7 +418,8 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                         JOptionPane.showMessageDialog(this, "Server will stop in 5 seconds", "Server Stop", JOptionPane.WARNING_MESSAGE);
                     } else {
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-                    }   break;
+                    }
+                    break;
                 case 2:
                     //If shutdown with no backup was selected
                     if (Bukkit.getOnlinePlayers().size() > 0) {
@@ -428,7 +431,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                                         try {
                                             dt.open(document);
                                         } catch (IOException ex) {
-                                            
+
                                         }
                                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
                                     }
@@ -444,7 +447,8 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                         File document = new File(".\\shutdown.lnk");
                         dt.open(document);
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-                    }   break;
+                    }
+                    break;
                 case 3:
                     //If sleep with no backup was selected
                     if (Bukkit.getOnlinePlayers().size() > 0) {
@@ -456,7 +460,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                                         try {
                                             dt.open(document);
                                         } catch (IOException ex) {
-                                            
+
                                         }
                                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
                                     }
@@ -472,7 +476,8 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                         File document = new File(".\\sleep.lnk");
                         dt.open(document);
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-                    }   break;
+                    }
+                    break;
                 case 4:
                     //If stop with backup was selected
                     backup();
@@ -493,7 +498,8 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                         JOptionPane.showMessageDialog(this, "Server will stop in 5 seconds", "Server Stop", JOptionPane.WARNING_MESSAGE);
                     } else {
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
-                    }   break;
+                    }
+                    break;
                 case 5:
                     //If shutdown with backup was selected
                     backup();
@@ -511,7 +517,8 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                                 }
                             },
                             10000
-                    );  Bukkit.broadcastMessage("***SERVER STOPPING IN 10 SECONDS***");
+                    );
+                    Bukkit.broadcastMessage("***SERVER STOPPING IN 10 SECONDS***");
                     JOptionPane.showMessageDialog(this, "Server will stop in 10 seconds", "Server Shutdown", JOptionPane.WARNING_MESSAGE);
                     break;
                 case 6:
@@ -531,7 +538,8 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                                 }
                             },
                             10000
-                    );  Bukkit.broadcastMessage("***SERVER STOPPING IN 10 SECONDS***");
+                    );
+                    Bukkit.broadcastMessage("***SERVER STOPPING IN 10 SECONDS***");
                     JOptionPane.showMessageDialog(this, "Server will stop in 10 seconds", "Server Sleep", JOptionPane.WARNING_MESSAGE);
                     break;
                 default:
@@ -554,7 +562,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
      * Calls the GUI asking if they are sure they want to stop the server.
      */
     public void reload() {
-        new ReloadServerPrompt().setVisible(true);
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "reload");
     }
 
     public void renderMap() {
@@ -564,7 +572,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                 dt.open(file);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say ***Rendering 3D map***");
                 toTextArea("***Rendering 3D map***");
-            } else{
+            } else {
                 toTextArea("***ERROR- A batch script has not been set for rendering a map***");
             }
         } catch (IOException ex) {
@@ -579,7 +587,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                 dt.open(file);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say ***Saving Backup***");
                 toTextArea("***Saving Backup***");
-            } else{
+            } else {
                 toTextArea("***ERROR- A batch script has not been set for saving a backup***");
             }
         } catch (IOException ex) {
@@ -810,7 +818,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
         cmdEnterText = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         lblOnline = new javax.swing.JLabel();
-        btnChatMode = new javax.swing.JButton();
+        btnLogMode = new javax.swing.JToggleButton();
         centerPanel = new javax.swing.JPanel();
         buttonsPanel = new javax.swing.JPanel();
         btnDifficulty = new javax.swing.JToggleButton();
@@ -1054,15 +1062,14 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
         jLabel1.setText("* - Op");
 
-        btnChatMode.setText("Command Mode");
-        btnChatMode.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        btnChatMode.setMaximumSize(new java.awt.Dimension(73, 73));
-        btnChatMode.setMinimumSize(new java.awt.Dimension(73, 73));
-        btnChatMode.setOpaque(false);
-        btnChatMode.setPreferredSize(new java.awt.Dimension(73, 73));
-        btnChatMode.addActionListener(new java.awt.event.ActionListener() {
+        btnLogMode.setText("<html><c><c>Command</c><br><c>Mode</c></c></html>");
+        btnLogMode.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        btnLogMode.setMaximumSize(new java.awt.Dimension(73, 73));
+        btnLogMode.setMinimumSize(new java.awt.Dimension(73, 73));
+        btnLogMode.setPreferredSize(new java.awt.Dimension(73, 73));
+        btnLogMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnChatModeActionPerformed(evt);
+                btnLogModeActionPerformed(evt);
             }
         });
 
@@ -1076,17 +1083,21 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 702, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 702, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(txtPlayerDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(btnWhitelist, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnBanList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addComponent(btnChatMode, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 0, 0)
+                    .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtPlayerDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(btnWhitelist, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnBanList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, logPanelLayout.createSequentialGroup()
+                        .addGap(0, 0, 0)
+                        .addComponent(btnLogMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)))
                 .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(logPanelLayout.createSequentialGroup()
-                        .addComponent(lblOnline, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(4, 4, 4)
+                        .addComponent(lblOnline, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(29, 29, 29)
                         .addComponent(jLabel1))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1095,7 +1106,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
         logPanelLayout.setVerticalGroup(
             logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, logPanelLayout.createSequentialGroup()
-                .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(logPanelLayout.createSequentialGroup()
                         .addComponent(txtPlayerDetails, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, 0)
@@ -1103,19 +1114,16 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                         .addGap(0, 0, 0)
                         .addComponent(btnBanList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, 0)
-                        .addComponent(btnChatMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnLogMode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(4, 4, 4)
                 .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, logPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblOnline, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(logPanelLayout.createSequentialGroup()
-                        .addGap(4, 4, 4)
-                        .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1)
-                            .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(txtText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(lblOnline, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1537,7 +1545,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                 .addGroup(MainLayout.createSequentialGroup()
                     .addGap(0, 0, 0)
                     .addGroup(MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(centerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(centerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE)
                         .addComponent(logPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(topPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
@@ -1624,7 +1632,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnCloseGUIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseGUIActionPerformed
         if (Config.GUI_LOCK) {
-            if (CodeEntry.showCodeEntryDialog("Close GUI - Enter Code", CODE)) {
+            if (CodeEntry.showCodeEntryDialog(this, "Close GUI - Enter Code", Config.CODE)) {
                 this.setVisible(false);
             }
         } else {
@@ -1634,11 +1642,11 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
         if (Config.GUI_LOCK) {
-            if (CodeEntry.showCodeEntryDialog("Stop Server - Enter Code", CODE)) {
-                stop(StopServerOptions.showStopOptions());
+            if (CodeEntry.showCodeEntryDialog(this, "Stop Server - Enter Code", Config.CODE)) {
+                stop(StopServerOptions.showStopOptions(this));
             }
         } else {
-            stop(StopServerOptions.showStopOptions());
+            stop(StopServerOptions.showStopOptions(this));
         }
     }//GEN-LAST:event_btnStopActionPerformed
 
@@ -1648,8 +1656,10 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
         if (Config.GUI_LOCK) {
-            if (CodeEntry.showCodeEntryDialog("Reload Server - Enter Code", CODE)) {
-                reload();
+            if (CodeEntry.showCodeEntryDialog(this, "Reload Server - Enter Code", Config.CODE)) {
+                if (YesNoPrompt.show(this, "WARNING! Reloading can casue some plugins to misbehave, proceed?", "Server Reload")) {
+                    reload();
+                }
             }
         } else {
             reload();
@@ -1728,7 +1738,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             GUIPlugin.maximize();
         } else {
             if (Config.GUI_LOCK) {
-                if (CodeEntry.showCodeEntryDialog("Minimize GUI - Enter Code", CODE)) {
+                if (CodeEntry.showCodeEntryDialog(this, "Minimize GUI - Enter Code", Config.CODE)) {
                     GUIPlugin.minimize();
                 }
             } else {
@@ -1738,22 +1748,22 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
     }//GEN-LAST:event_btnMinMaxActionPerformed
 
     private void btnInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInfoActionPerformed
-        InfoDialog.showInfoDialog();
+        InfoDialog.showInfoDialog(this);
     }//GEN-LAST:event_btnInfoActionPerformed
 
     private void btnConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigActionPerformed
         if (Config.GUI_LOCK) {
-            if (CodeEntry.showCodeEntryDialog("Config - Enter Code", CODE)) {
-                Config.showConfigDialog();
+            if (CodeEntry.showCodeEntryDialog(this, "Config - Enter Code", Config.CODE)) {
+                Config.showConfigDialog(this);
             }
         } else {
-            Config.showConfigDialog();
+            Config.showConfigDialog(this);
         }
     }//GEN-LAST:event_btnConfigActionPerformed
 
     private void btnCustom1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustom1ActionPerformed
         if (Config.CUSTOM1_LOCK) {
-            if (CodeEntry.showCodeEntryDialog(Config.CUSTOM1_TEXT + " - Enter Code", CODE)) {
+            if (CodeEntry.showCodeEntryDialog(this, Config.CUSTOM1_TEXT + " - Enter Code", Config.CODE)) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Config.CUSTOM1_COMMAND);
             }
         } else {
@@ -1763,7 +1773,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnCustom2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustom2ActionPerformed
         if (Config.CUSTOM2_LOCK) {
-            if (CodeEntry.showCodeEntryDialog(Config.CUSTOM2_TEXT + " - Enter Code", CODE)) {
+            if (CodeEntry.showCodeEntryDialog(this, Config.CUSTOM2_TEXT + " - Enter Code", Config.CODE)) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Config.CUSTOM2_COMMAND);
             }
         } else {
@@ -1773,7 +1783,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
     private void btnCustom3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustom3ActionPerformed
         if (Config.CUSTOM3_LOCK) {
-            if (CodeEntry.showCodeEntryDialog(Config.CUSTOM3_TEXT + " - Enter Code", CODE)) {
+            if (CodeEntry.showCodeEntryDialog(this, Config.CUSTOM3_TEXT + " - Enter Code", Config.CODE)) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Config.CUSTOM3_COMMAND);
             }
         } else {
@@ -1789,7 +1799,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             //JOptionPane.showMessageDialog(rootPane, "Select a player!", "Player Details", JOptionPane.ERROR_MESSAGE);
         } else {
             if (!playerList.isEmpty()) {
-                PlayerDetails.showPlayerDetailsDialog(playerList.get(i));
+                PlayerDetails.showPlayerDetailsDialog(this, playerList.get(i));
                 this.updateOnline();
             } else {
                 BigPrompt.showMessageDialog("Player Details", "Select a player!");
@@ -1807,7 +1817,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             if (!Config.TS_DISCON_URL.equals("")) {
                 File file = new File(Config.TS_DISCON_URL);
                 dt.open(file);
-            } else{
+            } else {
                 toTextArea("***ERROR- No link/file has been set for disconnecting an RDP session***");
             }
         } catch (IOException ex) {
@@ -1861,7 +1871,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                 //new PlayerDetails().setVisible(true);
             } else {
                 if (!playerList.isEmpty()) {
-                    PlayerDetails.showPlayerDetailsDialog(playerList.get(i));
+                    PlayerDetails.showPlayerDetailsDialog(this, playerList.get(i));
                 }
             }
         }
@@ -1873,16 +1883,6 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
         addButton(text, command);
     }//GEN-LAST:event_btnAddButtonActionPerformed
 
-    private void btnChatModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChatModeActionPerformed
-        if (commandMode) {
-            btnChatMode.setText("Command Mode");
-            commandMode = false;
-        } else {
-            btnChatMode.setText("Chat Mode");
-            commandMode = true;
-        }
-    }//GEN-LAST:event_btnChatModeActionPerformed
-
     private void btnCustomButtonsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomButtonsActionPerformed
         btnWeather.setSelected(false);
         btnTime.setSelected(false);
@@ -1891,40 +1891,10 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
         card.show(Menus, "CustomCard");
     }//GEN-LAST:event_btnCustomButtonsActionPerformed
 
-//    /**
-//     * @param args the command line arguments
-//     */
-//    public static void main(String args[]) {
-//        /* Set the Nimbus look and feel */
-//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-//         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//        //</editor-fold>
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new GUI(new ArrayList<Player>()).setVisible(true);
-//            }
-//        });
-//    }
+    private void btnLogModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogModeActionPerformed
+        commandMode = !commandMode;
+    }//GEN-LAST:event_btnLogModeActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel CARDS;
@@ -1939,7 +1909,6 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
     private javax.swing.JButton btnAddButton;
     private javax.swing.JButton btnBackup;
     private javax.swing.JButton btnBanList;
-    private javax.swing.JButton btnChatMode;
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnCloseGUI;
     private javax.swing.JButton btnConfig;
@@ -1954,6 +1923,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
     private javax.swing.JButton btnEvening;
     private javax.swing.JButton btnHard;
     private javax.swing.JButton btnInfo;
+    private javax.swing.JToggleButton btnLogMode;
     private javax.swing.JButton btnMinMax;
     private javax.swing.JButton btnMorning;
     private javax.swing.JButton btnNight;

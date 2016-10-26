@@ -41,12 +41,12 @@
                   <Component id="lblAuthentication" min="-2" max="-2" attributes="0"/>
                   <Component id="lblVersion" min="-2" max="-2" attributes="0"/>
                   <Component id="lblName" min="-2" max="-2" attributes="0"/>
-                  <Component id="lblMemory" min="-2" max="-2" attributes="0"/>
                   <Component id="lblProcessor" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblSpigotVersion" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="txtMemory" pref="211" max="32767" attributes="0"/>
+                  <Component id="txtSpigotVersion" max="32767" attributes="0"/>
                   <Component id="txtAuthentication" max="32767" attributes="0"/>
                   <Component id="txtSpawn" max="32767" attributes="0"/>
                   <Component id="txtNether" max="32767" attributes="0"/>
@@ -55,13 +55,13 @@
                   <Component id="txtName" alignment="1" max="32767" attributes="0"/>
                   <Component id="txtProcessor" alignment="0" max="32767" attributes="0"/>
                   <Component id="txtMOTD" max="32767" attributes="0"/>
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                      <Component id="btnClose" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="58" max="-2" attributes="0"/>
-                  </Group>
               </Group>
               <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
+          </Group>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace pref="174" max="32767" attributes="0"/>
+              <Component id="btnClose" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="154" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -75,18 +75,18 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="lblName" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtSpigotVersion" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblSpigotVersion" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="txtName" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblName" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="lblProcessor" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="txtProcessor" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="lblMemory" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="txtMemory" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblProcessor" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -125,11 +125,6 @@
         <Property name="text" type="java.lang.String" value="Processor Cores:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="lblMemory">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Memory:"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JLabel" name="lblName">
       <Properties>
         <Property name="text" type="java.lang.String" value="World Name:"/>
@@ -166,8 +161,6 @@
     </Component>
     <Component class="javax.swing.JTextField" name="txtProcessor">
     </Component>
-    <Component class="javax.swing.JTextField" name="txtMemory">
-    </Component>
     <Component class="javax.swing.JTextField" name="txtAuthentication">
     </Component>
     <Component class="javax.swing.JTextField" name="txtSpawn">
@@ -199,6 +192,13 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtMOTD">
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtSpigotVersion">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblSpigotVersion">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Spigot Version:"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

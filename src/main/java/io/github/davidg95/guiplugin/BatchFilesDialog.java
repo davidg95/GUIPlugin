@@ -102,41 +102,46 @@ public class BatchFilesDialog extends javax.swing.JDialog {
         txtBackup = new javax.swing.JTextField();
         txtDiscon = new javax.swing.JTextField();
         txtMap = new javax.swing.JTextField();
+        btnShutdownRemove = new javax.swing.JButton();
+        btnStandbyRemove = new javax.swing.JButton();
+        btnBackupRemove = new javax.swing.JButton();
+        btnDisconnectRemove = new javax.swing.JButton();
+        btnMapRemove = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(466, 241));
         setMinimumSize(new java.awt.Dimension(466, 241));
         setResizable(false);
 
-        btnShutdown.setText("Shutdown File/Link");
+        btnShutdown.setText("Select File/Link");
         btnShutdown.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnShutdownActionPerformed(evt);
             }
         });
 
-        btnStandby.setText("Standby File/Link");
+        btnStandby.setText("Select File/Link");
         btnStandby.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnStandbyActionPerformed(evt);
             }
         });
 
-        btnBackup.setText("Backup File/Link");
+        btnBackup.setText("Select File/Link");
         btnBackup.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBackupActionPerformed(evt);
             }
         });
 
-        btnDisconnect.setText("Disconnect RDP File/Link");
+        btnDisconnect.setText("Select File/Link");
         btnDisconnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDisconnectActionPerformed(evt);
             }
         });
 
-        btnRender.setText("Map Render File/Link");
+        btnRender.setText("Select File/Link");
         btnRender.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnRenderActionPerformed(evt);
@@ -172,6 +177,41 @@ public class BatchFilesDialog extends javax.swing.JDialog {
 
         txtMap.setEditable(false);
 
+        btnShutdownRemove.setText("Remove");
+        btnShutdownRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnShutdownRemoveActionPerformed(evt);
+            }
+        });
+
+        btnStandbyRemove.setText("Remove");
+        btnStandbyRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStandbyRemoveActionPerformed(evt);
+            }
+        });
+
+        btnBackupRemove.setText("Remove");
+        btnBackupRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackupRemoveActionPerformed(evt);
+            }
+        });
+
+        btnDisconnectRemove.setText("Remove");
+        btnDisconnectRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDisconnectRemoveActionPerformed(evt);
+            }
+        });
+
+        btnMapRemove.setText("Remove");
+        btnMapRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMapRemoveActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -179,7 +219,7 @@ public class BatchFilesDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1)
@@ -187,24 +227,37 @@ public class BatchFilesDialog extends javax.swing.JDialog {
                             .addComponent(jLabel4)
                             .addComponent(jLabel5))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtBackup)
-                                .addComponent(txtDiscon)
-                                .addComponent(txtStandby, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)
-                                .addComponent(txtMap))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtBackup)
+                            .addComponent(txtDiscon)
+                            .addComponent(txtStandby, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)
+                            .addComponent(txtMap)
                             .addComponent(txtShutdown))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnDisconnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnRender, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnBackup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnStandby, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnShutdown, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 596, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnShutdown)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnShutdownRemove, javax.swing.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnRender)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnMapRemove, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnStandby)
+                                    .addComponent(btnBackup)
+                                    .addComponent(btnDisconnect))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnDisconnectRemove, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnBackupRemove, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnStandbyRemove, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -213,31 +266,37 @@ public class BatchFilesDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtShutdown, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1)
-                    .addComponent(btnShutdown))
+                    .addComponent(btnShutdown)
+                    .addComponent(btnShutdownRemove))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(txtStandby, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnStandby))
+                    .addComponent(btnStandby)
+                    .addComponent(btnStandbyRemove))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(txtBackup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnBackup))
+                    .addComponent(btnBackup)
+                    .addComponent(btnBackupRemove))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtDiscon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDisconnect))
+                    .addComponent(btnDisconnect)
+                    .addComponent(btnDisconnectRemove))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(txtMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnRender))
+                    .addComponent(btnRender)
+                    .addComponent(btnMapRemove))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         pack();
@@ -297,14 +356,44 @@ public class BatchFilesDialog extends javax.swing.JDialog {
         this.setVisible(false);
     }//GEN-LAST:event_btnCloseActionPerformed
 
+    private void btnShutdownRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShutdownRemoveActionPerformed
+        txtShutdown.setText("");
+        Config.SHUT_URL = "";
+    }//GEN-LAST:event_btnShutdownRemoveActionPerformed
+
+    private void btnStandbyRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStandbyRemoveActionPerformed
+        txtStandby.setText("");
+        Config.SLEEP_URL = "";
+    }//GEN-LAST:event_btnStandbyRemoveActionPerformed
+
+    private void btnBackupRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackupRemoveActionPerformed
+        txtBackup.setText("");
+        Config.BACKUP_URL = "";
+    }//GEN-LAST:event_btnBackupRemoveActionPerformed
+
+    private void btnDisconnectRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisconnectRemoveActionPerformed
+        txtDiscon.setText("");
+        Config.TS_DISCON_URL = "";
+    }//GEN-LAST:event_btnDisconnectRemoveActionPerformed
+
+    private void btnMapRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMapRemoveActionPerformed
+        txtMap.setText("");
+        Config.RENDER_MAP_URL = "";
+    }//GEN-LAST:event_btnMapRemoveActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBackup;
+    private javax.swing.JButton btnBackupRemove;
     private javax.swing.JButton btnClose;
     private javax.swing.JButton btnDisconnect;
+    private javax.swing.JButton btnDisconnectRemove;
+    private javax.swing.JButton btnMapRemove;
     private javax.swing.JButton btnRender;
     private javax.swing.JButton btnShutdown;
+    private javax.swing.JButton btnShutdownRemove;
     private javax.swing.JButton btnStandby;
+    private javax.swing.JButton btnStandbyRemove;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

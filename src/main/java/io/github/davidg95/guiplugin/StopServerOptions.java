@@ -5,7 +5,12 @@
  */
 package io.github.davidg95.guiplugin;
 
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Window;
 import javax.swing.JDialog;
+import static javax.swing.JOptionPane.getRootFrame;
 
 /**
  * From which asks the user how they want to stop the server.
@@ -19,8 +24,10 @@ public class StopServerOptions extends javax.swing.JDialog {
 
     /**
      * Creates new form StopServerOptions
+     * @param parent the parent component.
      */
-    public StopServerOptions() {
+    public StopServerOptions(Window parent) {
+        super(parent);
         initComponents();
         if(Config.SHUT_URL.equals("")){
             radShut.setEnabled(false);
@@ -43,10 +50,17 @@ public class StopServerOptions extends javax.swing.JDialog {
      * sleep. 4 - normal stop with backup. 5 - shut down with backup. 6 - sleep
      * with backup.
      *
+     * @param parent the parent component.
      * @return option that the user selected.
      */
-    public static int showStopOptions() {
-        dialog = new StopServerOptions();
+    public static int showStopOptions(Component parent) {
+        Window window;
+        if(parent instanceof Frame || parent instanceof Dialog){
+            window = (Window)parent;
+        } else {
+            window = getRootFrame();
+        }
+        dialog = new StopServerOptions(window);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         dialog.setVisible(true);

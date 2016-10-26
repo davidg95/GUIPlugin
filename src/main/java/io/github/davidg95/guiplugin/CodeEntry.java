@@ -5,9 +5,14 @@
  */
 package io.github.davidg95.guiplugin;
 
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JDialog;
+import static javax.swing.JOptionPane.getRootFrame;
 
 /**
  * A simple code entry dialog which asks the user to enter a code. If the code
@@ -17,118 +22,36 @@ import javax.swing.JDialog;
  */
 public class CodeEntry extends javax.swing.JDialog {
 
-    private final String CODE;
+    private String CODE;
     private static JDialog dialog;
     private String inputValue = "";
-    private final Runnable run1;
-    private final Runnable run2;
     private static boolean result = false;
     private static String codeResult = "";
 
     /**
      * Creates new form CodeEntry
      *
+     * @param parent the parent component.
      * @param title the title to give to the window.
      * @param CODE the code for this CodeEntry.
-     * @param run the runnable to run if the code is entered correctly.
      */
-    public CodeEntry(String title, String CODE, Runnable run) {
+    public CodeEntry(Window parent, String title, String CODE) {
+        this(parent, title);
         this.CODE = CODE;
-        this.run1 = run;
-        this.run2 = null;
-        inputValue = "";
-        initComponents();
-        this.setTitle(title);
-        this.setLocationRelativeTo(null);
-        this.setModal(true);
     }
 
     /**
      * Creates new form CodeEntry
      *
-     * @param title the title to give to the window.
-     * @param CODE the code for this CodeEntry.
-     * @param run1 the runnable which will be executed if the code is entered
-     * correctly.
-     * @param run2 the runnable which will be executed if the code is entered
-     * incorrectly.
-     */
-    public CodeEntry(String title, String CODE, Runnable run1, Runnable run2) {
-        this.CODE = CODE;
-        this.run1 = run1;
-        this.run2 = run2;
-        inputValue = "";
-        initComponents();
-        this.setTitle(title);
-        this.setLocationRelativeTo(null);
-        this.setModal(true);
-    }
-
-    /**
-     * Creates new form CodeEntry
-     *
-     * @param title the title to give to the window.
-     * @param CODE the code for this CodeEntry.
-     */
-    public CodeEntry(String title, String CODE) {
-        this.CODE = CODE;
-        this.run1 = null;
-        this.run2 = null;
-        inputValue = "";
-        initComponents();
-        this.setTitle(title);
-        this.setLocationRelativeTo(null);
-        this.setModal(true);
-    }
-
-    /**
-     * Creates new form CodeEntry
-     *
+     * @param parent the parent component.
      * @param title the title to give to the window.
      */
-    public CodeEntry(String title) {
-        this.CODE = null;
-        this.run1 = null;
-        this.run2 = null;
+    public CodeEntry(Window parent, String title) {
+        super(parent, title);
         inputValue = "";
         initComponents();
-        this.setTitle(title);
         this.setLocationRelativeTo(null);
         this.setModal(true);
-    }
-
-    /**
-     * Method to show the CodeEntry dialog.
-     *
-     * @param title the title to show on the window.
-     * @param code the code to use. The code the used enters must match this
-     * code.
-     * @param run the runnable which will be executed if the code is entered
-     * correctly.
-     */
-    public static void showCodeEntryDialog(String title, String code, Runnable run) {
-        dialog = new CodeEntry(title, code, run);
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-        dialog.setVisible(true);
-    }
-
-    /**
-     * Method to show the CodeEntry dialog.
-     *
-     * @param title the title to show on the window.
-     * @param code the code to use. The code the used enters must match this
-     * code.
-     * @param run1 the runnable which will be executed if the code is entered
-     * correctly.
-     * @param run2 the runnable which will be executed if the code is entered
-     * incorrectly.
-     */
-    public static void showCodeEntryDialog(String title, String code, Runnable run1, Runnable run2) {
-        dialog = new CodeEntry(title, code, run1, run2);
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-        dialog.setVisible(true);
     }
 
     /**
@@ -140,8 +63,14 @@ public class CodeEntry extends javax.swing.JDialog {
      * @return true if the code matches, false otherwise. false will also be
      * returned if the user cancels.
      */
-    public static boolean showCodeEntryDialog(String title, String code) {
-        dialog = new CodeEntry(title, code);
+    public static boolean showCodeEntryDialog(Component parent, String title, String code) {
+        Window window;
+        if (parent instanceof Frame || parent instanceof Dialog){
+            window = (Window)parent;
+        } else {
+            window = getRootFrame();
+        }
+        dialog = new CodeEntry(window, title, code);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         
         result = false;
@@ -155,8 +84,14 @@ public class CodeEntry extends javax.swing.JDialog {
      * @param title the title to give to the window.
      * @return the code the user entered as a String.
      */
-    public static String showCodeEntryDialog(String title) {
-        dialog = new CodeEntry(title);
+    public static String showCodeEntryDialog(Component parent, String title) {
+        Window window;
+        if (parent instanceof Frame || parent instanceof Dialog){
+            window = (Window)parent;
+        } else {
+            window = getRootFrame();
+        }
+        dialog = new CodeEntry(window, title);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         dialog.setVisible(true);
@@ -335,17 +270,9 @@ public class CodeEntry extends javax.swing.JDialog {
         if (txtCode.getPassword().length != 0) {
             if (CODE != null) {
                 if (new String(txtCode.getPassword()).equals(CODE)) { //Check the correct code was entered
-                    if (run1 != null) { //Check if a runnable was passed in
-                        run1.run();
-                    } else {
-                        result = true; //If no runnable was passed in then set the result to equal true
-                    }
+                    result = true; //If no runnable was passed in then set the result to equal true
                 } else {
-                    if (run2 != null) { //Check if a runnable was passed in
-                        run2.run();
-                    } else {
-                        result = false; //If no runnable was passed in then set the result to equal false
-                    }
+                    result = false; //If no runnable was passed in then set the result to equal false
                 }
                 txtCode.setText("");
                 this.dispose();
@@ -355,41 +282,6 @@ public class CodeEntry extends javax.swing.JDialog {
         }
         this.dispose();
     }
-
-//    /**
-//     * @param args the command line arguments
-//     */
-//    public static void main(String args[]) {
-//        /* Set the Nimbus look and feel */
-//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//                /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-//         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(CodeEntry.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(CodeEntry.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(CodeEntry.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(CodeEntry.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//        //</editor-fold>
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new CodeEntry().setVisible(true);
-//            }
-//        });
-//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton btn1;
