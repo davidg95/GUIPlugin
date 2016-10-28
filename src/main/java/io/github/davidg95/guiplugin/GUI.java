@@ -792,6 +792,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        cardsButonGroup = new javax.swing.ButtonGroup();
         CARDS = new javax.swing.JPanel();
         Main = new javax.swing.JPanel();
         btnCloseGUI = new javax.swing.JButton();
@@ -1083,17 +1084,13 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 702, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 702, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtPlayerDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(btnWhitelist, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnBanList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, logPanelLayout.createSequentialGroup()
-                        .addGap(0, 0, 0)
-                        .addComponent(btnLogMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)))
+                    .addComponent(cmdEnterText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(txtPlayerDetails, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(btnWhitelist, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnBanList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(btnLogMode, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(logPanelLayout.createSequentialGroup()
                         .addGap(4, 4, 4)
@@ -1129,6 +1126,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
         centerPanel.setLayout(new java.awt.CardLayout());
 
+        cardsButonGroup.add(btnDifficulty);
         btnDifficulty.setText("Difficulty");
         btnDifficulty.setPreferredSize(new java.awt.Dimension(100, 100));
         btnDifficulty.addActionListener(new java.awt.event.ActionListener() {
@@ -1137,6 +1135,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             }
         });
 
+        cardsButonGroup.add(btnTime);
         btnTime.setText("Time");
         btnTime.setPreferredSize(new java.awt.Dimension(100, 100));
         btnTime.addActionListener(new java.awt.event.ActionListener() {
@@ -1153,6 +1152,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
             }
         });
 
+        cardsButonGroup.add(btnWeather);
         btnWeather.setSelected(true);
         btnWeather.setText("Weather");
         btnWeather.setPreferredSize(new java.awt.Dimension(100, 100));
@@ -1458,6 +1458,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
 
         Menus.add(CustomPanel, "CustomCard");
 
+        cardsButonGroup.add(btnCustomButtons);
         btnCustomButtons.setText("Custom Buttons");
         btnCustomButtons.setMargin(new java.awt.Insets(0, 0, 0, 0));
         btnCustomButtons.setMaximumSize(new java.awt.Dimension(100, 100));
@@ -1545,7 +1546,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
                 .addGroup(MainLayout.createSequentialGroup()
                     .addGap(0, 0, 0)
                     .addGroup(MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(centerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(centerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addComponent(logPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(topPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
@@ -1838,26 +1839,14 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
     }//GEN-LAST:event_btnBanListActionPerformed
 
     private void btnWeatherActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWeatherActionPerformed
-        btnWeather.setSelected(true);
-        btnTime.setSelected(false);
-        btnDifficulty.setSelected(false);
-        btnCustomButtons.setSelected(false);
         card.show(Menus, "WeatherCard");
     }//GEN-LAST:event_btnWeatherActionPerformed
 
     private void btnTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimeActionPerformed
-        btnWeather.setSelected(false);
-        btnTime.setSelected(true);
-        btnDifficulty.setSelected(false);
-        btnCustomButtons.setSelected(false);
         card.show(Menus, "TimeCard");
     }//GEN-LAST:event_btnTimeActionPerformed
 
     private void btnDifficultyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDifficultyActionPerformed
-        btnWeather.setSelected(false);
-        btnTime.setSelected(false);
-        btnDifficulty.setSelected(true);
-        btnCustomButtons.setSelected(false);
         card.show(Menus, "DifficultyCard");
     }//GEN-LAST:event_btnDifficultyActionPerformed
 
@@ -1884,10 +1873,6 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
     }//GEN-LAST:event_btnAddButtonActionPerformed
 
     private void btnCustomButtonsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomButtonsActionPerformed
-        btnWeather.setSelected(false);
-        btnTime.setSelected(false);
-        btnDifficulty.setSelected(false);
-        btnCustomButtons.setSelected(true);
         card.show(Menus, "CustomCard");
     }//GEN-LAST:event_btnCustomButtonsActionPerformed
 
@@ -1941,6 +1926,7 @@ public class GUI extends javax.swing.JFrame implements Listener, GUIInterface {
     private javax.swing.JToggleButton btnWeather;
     private javax.swing.JButton btnWhitelist;
     private javax.swing.JPanel buttonsPanel;
+    private javax.swing.ButtonGroup cardsButonGroup;
     private javax.swing.JPanel centerPanel;
     private javax.swing.JButton cmdEnterText;
     private javax.swing.JLabel jLabel1;
